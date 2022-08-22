@@ -11,9 +11,8 @@ export default function Registro({navigation}) {
   const [form, setForm]= useState({
     email:"",
     password:"",
-    name:"",
+    nombre:"",
     apellidos:"",
-    confirm: "",
     fechaNacimiento: new Date(),
     localidad: ""
   })
@@ -42,9 +41,8 @@ export default function Registro({navigation}) {
       const data= {
         "email": form.email,
         "password":form.password,
-        "name":form.name,
+        "nombre":form.nombre,
         "apellidos": form.apellidos,
-        "confirm": form.confirm,
         "fechaNacimiento": form.fechaNacimiento,
         "localidad":form.localidad
         }
@@ -88,17 +86,7 @@ export default function Registro({navigation}) {
         </View>
         <FormErrorMessage jsonErrors={errors} errorName="password"/>
 
-        <Text style={styles.TextoBlancoMedioGrande}>Confirmar Contraseña:</Text>
-
-        <View style={styles.inputView} >
-          <TextInput  
-            secureTextEntry
-            style={styles.inputText}
-            placeholderTextColor="#003f5c"
-            onChangeText={text => setForm({...form,["confirm"]:text})
-            }/>
-        </View>
-        <FormErrorMessage jsonErrors={errors} errorName="confirm"/>
+      
 
 
 
@@ -109,10 +97,10 @@ export default function Registro({navigation}) {
             style={styles.inputText}
             placeholder="Antonio" 
             placeholderTextColor="#003f5c"
-            onChangeText={text => setForm({...form,["name"]:text})
+            onChangeText={text => setForm({...form,["nombre"]:text})
             }/>
         </View>
-        <FormErrorMessage jsonErrors={errors} errorName="name"/>
+        <FormErrorMessage jsonErrors={errors} errorName="nombre"/>
 
         <Text style={styles.TextoBlancoMedioGrande}>Apellidos:</Text>
 

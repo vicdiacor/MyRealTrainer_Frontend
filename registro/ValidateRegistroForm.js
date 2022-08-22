@@ -21,18 +21,13 @@ export default function validateRegistroForm(form){
         errors.password= "La contraseña no puede tener más de 25 caracteres" 
     }
 
-    // Validación confirmar password
-    if(form.password!=form.confirm){
-        errors.confirm= "Las contraseñas no coinciden" 
-    }
-
 
     
     // Validacion nombre
-    if(!form.name.trim()){
-        errors.name= "El nombre es un campo obligatorio" 
-    }else if(form.name.length>25){
-        errors.name= "El nombre no puede tener más de 25 caracteres" 
+    if(!form.nombre.trim()){
+        errors.nombre= "El nombre es un campo obligatorio" 
+    }else if(form.nombre.length>25){
+        errors.nombre= "El nombre no puede tener más de 25 caracteres" 
     }
 
     
