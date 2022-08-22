@@ -2,7 +2,7 @@ import * as React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, SafeAreaView , Platform} from 'react-native';
 import MainStack from './navigation/MainStack';
-import HomeScreen from './HomeScreen';
+
 
 
 
@@ -12,6 +12,7 @@ export default function App() {
       <>
      
       <MainStack/>
+       
       </>
     
 
