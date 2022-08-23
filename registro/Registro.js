@@ -52,7 +52,7 @@ export default function Registro({navigation}) {
         .then(response => {
           
           if (response.ok){
-           //navigation.navigate('Login')
+           navigation.navigate('Login')
             console.log(response)
           }
         })
@@ -70,7 +70,7 @@ export default function Registro({navigation}) {
             style={styles.inputText}
             placeholder="antonio@gmail.com" 
             placeholderTextColor="#003f5c"
-            onChangeText={text => setForm({...form,["email"]:text}) }/>
+            onChangeText={text => setForm({...form,["email"]:text.replace(/\s/g, "")}) }/>
         </View>
         <FormErrorMessage jsonErrors={errors} errorName="email"/>
 
@@ -119,7 +119,7 @@ export default function Registro({navigation}) {
         <Text style={styles.TextoBlancoMedioGrande}>Localidad:</Text>
         <View style={styles.inputView} >
           <TextInput  
-            secureTextEntry
+            
             style={styles.inputText}
             placeholderTextColor="#003f5c"
             onChangeText={text => setForm({...form,["localidad"]:text})
