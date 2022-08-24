@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 
 import { StyleSheet, Text, View, TextInput,SafeAreaView, StatusBar,ScrollView, TouchableOpacity, Button } from 'react-native';
-import FormErrorMessage from '../Util/FormErrorMessage';
+import FormErrorMessage from '../components/FormErrorMessage';
 import validateRegistroForm from './ValidateRegistroForm';
 import call from '../Caller';
-import { datePicker,dateTimeFormat} from '../Util/Dates';
+import { datePicker,dateTimeFormat} from '../components/Dates';
 
 export default function Registro({navigation}) {
   
@@ -61,7 +61,7 @@ export default function Registro({navigation}) {
     return (
       <SafeAreaView style={styles.container}>
       <ScrollView  showsVerticalScrollIndicator={false}>
-
+        
         <Text style={styles.logo}>Registro</Text>
         <Text style={styles.TextoBlancoMedioGrande}>Email:</Text>
 

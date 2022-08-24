@@ -1,4 +1,4 @@
-import {calculateAge } from '../Util/Dates';
+import {calculateAge } from '../components/Dates';
 export default function validateRegistroForm(form){
 
     let errors = {}

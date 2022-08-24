@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {saveCookie,getCookie,deleteCookie} from "../temporal_database/SecureStore"
 
 import { StyleSheet,Button,Alert, ScrollView, Text, View, SafeAreaView,StatusBar, TextInput, TouchableOpacity } from 'react-native';
-import FormErrorMessage from '../Util/FormErrorMessage';
+import FormErrorMessage from '../components/FormErrorMessage';
 import validateLoginForm from './ValidateLoginForm';
 import call from '../Caller';
 import Logout from './Logout';
