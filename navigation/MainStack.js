@@ -10,7 +10,6 @@ import CrearServicio from '../servicios/CrearServicio';
 import Login from '../login/Login';
 import Home from '../Home';
 import ListadoNoticias from '../plantillas/ListadoNoticias'
-import RegisterPlantilla from '../registro/RegisterPlantilla';
 import Elements from '../plantillas/Elements';
 import Onboarding from '../plantillas/Onboarding';
 import Pro from '../plantillas/Pro';
@@ -26,9 +25,10 @@ const MainStack = () => {
        <Stack.Navigator>
      
        <Stack.Screen
-            name="RegisterPlantilla"
-            component={RegisterPlantilla}
-            options={{  headerShown: false }}
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }
+            }
             />
 
        <Stack.Screen
@@ -81,17 +81,12 @@ const MainStack = () => {
             options={{ title: 'Inicio' }
             }
             />
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ title: 'Iniciar sesión' }
-            }
-            />
+         
           
           <Stack.Screen
             name="Registro"
             component={Registro}
-            options={{ title: 'Registro' }
+            options={{ headerShown: false }
             }
             />
 

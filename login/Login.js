@@ -1,13 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import {saveCookie,getCookie,deleteCookie} from "../temporal_database/SecureStore"
-
-import { StyleSheet,Button,Alert, ScrollView, Text, View, SafeAreaView,StatusBar, TextInput, TouchableOpacity } from 'react-native';
-import FormErrorMessage from '../components/FormErrorMessage';
+import React, { useState } from 'react';
+import {saveCookie,deleteCookie} from "../temporal_database/SecureStore"
+import { StyleSheet,Alert,Dimensions, ScrollView, 
+   View, SafeAreaView,StatusBar,
+  KeyboardAvoidingView } from 'react-native';
 import validateLoginForm from './ValidateLoginForm';
 import call from '../Caller';
-import Logout from './Logout';
-// import { createDatabaseIfNotExists } from '../gestionSQLite/RepositorySQLite';
+import formErrorMessage from '../components/FormErrorMessage';
+import FloatingLabelInput from '../components/FloatingLabelInput';
+import { Button, Icon, Input} from "../components";
+import {  argonTheme } from "../constants";
+import { Block, Text } from "galio-framework";
+import { delay } from '../components/Delay';
 
+// import { createDatabaseIfNotExists } from '../gestionSQLite/RepositorySQLite';
+const { width, height } = Dimensions.get("screen");
 
 export default function Login({navigation}) {
   
@@ -16,10 +22,12 @@ export default function Login({navigation}) {
     password:"",
   })
   const[errors, setErrors]= useState({})
+  const [secureTextMode,setSecureTextMode]= useState(true);
+  const [isLoading,setIsLoading]= useState(false)
 
   
   const handleSubmit= evt => {
-   
+    setIsLoading(true)
     
     var nuevosErrores= validateLoginForm(form)
     setErrors(nuevosErrores)
@@ -55,18 +63,23 @@ export default function Login({navigation}) {
                         // createDatabaseIfNotExists() Base de datos local 
 
                         navigation.navigate('CrearServicio')
+                        await delay(1000)
+                        setIsLoading(false)
+                        
 
                     }else{
                         
                         deleteCookie("AuthToken");
+                        setIsLoading(false)
                         
                     }
                 });
                     
 
              }else{
-
+                setIsLoading(false)
                 if(data.nameOrEmail &&  data.password){
+                  setIsLoading(false)
                   Alert.alert(
                     "Error",
                     "Usuario o contraseña incorrectos",
@@ -81,6 +94,8 @@ export default function Login({navigation}) {
         })
 
     
+      }else{
+        setIsLoading(false)
       }
      
       
@@ -91,53 +106,91 @@ export default function Login({navigation}) {
 
       <SafeAreaView style={styles.container}>
         
-        <ScrollView  showsVerticalScrollIndicator={false}>
-        
-       
-
-        <Text style={styles.logo}>MyRealTrainer</Text>
-        <Text style={styles.TextoBlancoMedioGrande}>Email:</Text>
-        <View style={styles.inputView} >
-        
-          <TextInput
+        <ScrollView  showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={true}>
+          <Block flex safe  middle> 
+          <KeyboardAvoidingView
+                
+                enabled
+              >
             
-            style={styles.inputText}
-            
-            placeholder="antonio12345@gmail.com" 
-            placeholderTextColor="#003f5c"
+            <Block style={{marginTop:"10%",marginBottom:"5%"}} flex middle>
+               
+                  <Text
+                    h2
+                    bold
+                   
+                    color={argonTheme.COLORS.DEFAULT}
+                  >
+                   MyRealTrainer
+                  </Text>
+                </Block>
+           
+            <Block width={width * 0.8} style={styles.blockInput}>
+                      <FloatingLabelInput
+                        
+                        errorMessage={formErrorMessage(errors,"email")}
+                        label="Email"
+                        onChangeText={text => setForm({...form,["email"]:text.replace(/\s/g, "")})}
+                        iconContent={<Icon
+                  
+                          size={20}
+                          color={argonTheme.COLORS.ICON}
+                          name="ic_mail_24px"
+                          family="ArgonExtra"
+                          style={{marginRight: 8}}
+                        />}
+                        
+                      
+                      />
+              </Block>
+              <Block width={width * 0.8} style={styles.blockInput}>
+                    <FloatingLabelInput
+                      label="Contraseña"
+                      errorMessage={formErrorMessage(errors,"password")}
+                      secureTextEntry={secureTextMode}
+                      onChangeText={text => setForm({...form,["password"]:text})}
+                      iconContent={
+                        <Icon
+                          onPress={()=>setSecureTextMode(!secureTextMode)}
+                          size={20}
+                          color={argonTheme.COLORS.ICON}
+                          name={secureTextMode?"eye-off":"eye" }
+                          family="Ionicons"
+                          style={{marginRight:"3%"}}
+                        />
+                      }
+                    />
+                </Block>
+           
+                <Block style={{marginTop:"6%"}} middle>
+                      <Button loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
+                        <Text bold size={17} color={argonTheme.COLORS.WHITE}>
+                          Iniciar Sesión
+                        </Text>
+                      </Button>
+                </Block>
+
+                <Block  middle>
+                    <Button 
+                      onPress={() => navigation.navigate('Registro')} 
+                        style={styles.invisibleButton}
+                        shadowless
+                       
+                      >
+                       <Text bold size={18} 
+                         color={argonTheme.COLORS.ICON}>Crear cuenta</Text>
+                      </Button>
+                        
+                     
+                </Block>
+
 
         
-            onChangeText={text => setForm({...form,["email"]:text}) }/>
-        </View>
-        <FormErrorMessage jsonErrors={errors} errorName="email"/>
+          
 
-        <Text style={styles.TextoBlancoMedioGrande}>Contraseña:</Text>
-        <View style={styles.inputView} >
-          <TextInput  
-            secureTextEntry
-            style={styles.inputText}
-            placeholder="" 
-            placeholderTextColor="#003f5c"
-            onChangeText={text => setForm({...form,["password"]:text})
-            }/>
-        </View>
-        <FormErrorMessage jsonErrors={errors} errorName="password"/>
-
-     
-        <TouchableOpacity style={styles.loginBtn}>
-          <Text  onPress={handleSubmit} style={styles.loginText}>Iniciar Sesión</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.loginBtn}>
-          <Text  onPress={() =>
-            navigation.navigate('Registro')} style={styles.loginText}>Registrarme</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.loginBtn}>
-          <Text  onPress={() => { createDatabaseIfNotExists()
-          navigation.navigate("Prueba")}} style={styles.loginText}>Ver BD local</Text>
-        </TouchableOpacity>
-
+           
+            </KeyboardAvoidingView>
+          </Block>
         </ScrollView>
       </SafeAreaView>
     );
@@ -147,7 +200,7 @@ export default function Login({navigation}) {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#003f5c',
+      backgroundColor: "#F4F5F7",
       alignItems: 'center',
       justifyContent: 'center',
       padding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
@@ -159,6 +212,11 @@ export default function Login({navigation}) {
       color:"#fb5b5a",
       marginBottom:40,
       alignSelf:"center",
+    },
+    blockInput:{
+      
+      marginRight: "6%", 
+      marginLeft:"6%"
     },
     inputView:{
       width:"100%",
@@ -205,21 +263,16 @@ export default function Login({navigation}) {
     },
     loginText:{
       color:"white"
-    },
-    buttonDatesViews:{
-      marginBottom:10,
-      
-      
-    },
-    TextoBlancoMedioGrande:{
-      alignItems:"center",
-      alignSelf:"center",
-      justifyContent:"center",
-      fontSize:20,
-      color:"white",
-      marginBottom:10,
-  
-    },
+    }, createButton: {
+      width: width * 0.5,
+      marginBottom: "10%",
+    },invisibleButton:{
+      width: 128, 
+        shadowRadius: 0,
+        shadowOpacity: 0,
+        elevation: 0,
+        backgroundColor: "#F4F5F7",borderRadius:0, borderColor: "#F4F5F7"
+    }
    
   
   });

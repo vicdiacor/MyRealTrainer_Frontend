@@ -9,12 +9,13 @@ import { argonTheme } from "../constants";
 
 class ArInput extends React.Component {
   render() {
-    const { shadowless, success, error} = this.props;
+    const { shadowless, success, error,focus} = this.props;
     const inputStyles = [
       styles.input,
       !shadowless && styles.shadow,
       success && styles.success,
       error && styles.error,
+      focus && styles.focus,
 
       
      
@@ -50,6 +51,7 @@ ArInput.defaultProps = {
   shadowless: false,
   success: false,
   error: false,
+  focus:false,
   floatingLabel: false
   
 };
@@ -58,6 +60,7 @@ ArInput.propTypes = {
   shadowless: PropTypes.bool,
   success: PropTypes.bool,
   error: PropTypes.bool,
+  focus:PropTypes.bool,
   placeholderTitle: PropTypes.string,
 }
 
@@ -72,7 +75,11 @@ const styles = StyleSheet.create({
     borderColor: argonTheme.COLORS.INPUT_SUCCESS,
   },
   error: {
-    borderColor: argonTheme.COLORS.INPUT_ERROR,
+    borderColor: "#FC7370",
+    
+  },
+  focus:{
+    borderColor: '#5e72e4',
   },
   shadow: {
     shadowColor: argonTheme.COLORS.BLACK,

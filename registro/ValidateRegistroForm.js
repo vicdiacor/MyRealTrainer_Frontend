@@ -2,8 +2,11 @@ import {calculateAge } from '../components/Dates';
 export default function validateRegistroForm(form){
 
     let errors = {}
-   
-
+  
+    // Validación Terms of use and conditions
+    if(!form.politicaPrivacidad){
+        errors.politicaPrivacidad="Debes aceptar la política de privacidad"
+    }
     // Validacion email
     if(!form.email.trim()){
         errors.email= "El email es un campo obligatorio" 
@@ -49,7 +52,9 @@ export default function validateRegistroForm(form){
 
     // Validación fecha de nacimiento
       var fechaActual = new Date();
-      if (form.fechaNacimiento>fechaActual){
+      if(form.fechaNacimiento==""){
+        errors.fechaNacimiento= "La fecha es un campo obligatorio" 
+      }else if (form.fechaNacimiento>fechaActual){
           errors.fechaNacimiento= "La fecha de nacimiento no puede ser en el futuro" 
       }else if(calculateAge(form.fechaNacimiento)<18){
         errors.fechaNacimiento= "Para acceder a esta aplicación debes tener al menos 18 años" 

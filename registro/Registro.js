@@ -1,10 +1,20 @@
 import React, { useState, useEffect } from 'react';
-
-import { StyleSheet, Text, View, TextInput,SafeAreaView, StatusBar,ScrollView, TouchableOpacity, Button } from 'react-native';
-import FormErrorMessage from '../components/FormErrorMessage';
 import validateRegistroForm from './ValidateRegistroForm';
 import call from '../Caller';
 import { datePicker,dateTimeFormat} from '../components/Dates';
+import { SafeAreaView,ScrollView,
+  StyleSheet,
+  Dimensions,
+  KeyboardAvoidingView,TouchableWithoutFeedback
+} from "react-native";
+import { Block, Checkbox, Text, theme } from "galio-framework";
+import formErrorMessage from '../components/FormErrorMessage';
+import FloatingLabelInput from '../components/FloatingLabelInput';
+import { Button, Icon} from "../components";
+import { argonTheme } from "../constants";
+import { delay } from '../components/Delay';
+const { width, height } = Dimensions.get("screen");
+
 
 export default function Registro({navigation}) {
   
@@ -13,27 +23,35 @@ export default function Registro({navigation}) {
     password:"",
     nombre:"",
     apellidos:"",
-    fechaNacimiento: new Date(),
-    localidad: ""
+    fechaNacimiento: "",
+    localidad: "",
+    politicaPrivacidad:false,
   })
 
+  const[fixedLabelDate,setFixedLabelDate]= useState(false)
   
-  const[errors, setErrors]= useState({})
-
+  var[errors, setErrors]= useState({})
   const [show,setShow] = useState(false);
+  const [secureTextMode,setSecureTextMode]= useState(true);
+  const [isLoading,setIsLoading]= useState(false)
 
   const onChangeFechaNacimiento= (event,selectedDate) => {
+   
     setShow(false);
+    setFixedLabelDate(true)
     setForm({...form,["fechaNacimiento"]:selectedDate})
+
   };
 
 
   const handleSubmit= evt => {
-   
-    
+    setIsLoading(true)
+    console.log("FORM ANTES DE VALIDAR")
+    console.log(form)
     var nuevosErrores= validateRegistroForm(form)
     setErrors(nuevosErrores)
-
+    console.log("NUEVOS ERRORS")
+    console.log(nuevosErrores)
     var numeroErrores = Object.keys(nuevosErrores).length;
     if(numeroErrores===0){
       
@@ -49,166 +67,259 @@ export default function Registro({navigation}) {
          
         
       call('/api/auth/signup',"POST", navigation, data)
-        .then(response => {
+        .then(async response => {
           
           if (response.ok){
+            
            navigation.navigate('Login')
-            console.log(response)
+           await delay(1000)
+           setIsLoading(false)
+            
+          }else{
+            setIsLoading(false)
           }
         })
+      }else{
+        setIsLoading(false)
       }
-  }
-    return (
-      <SafeAreaView style={styles.container}>
-      <ScrollView  showsVerticalScrollIndicator={false}>
-        
-        <Text style={styles.logo}>Registro</Text>
-        <Text style={styles.TextoBlancoMedioGrande}>Email:</Text>
-
-        <View style={styles.inputView} >
-          <TextInput  
-            style={styles.inputText}
-            placeholder="antonio@gmail.com" 
-            placeholderTextColor="#003f5c"
-            onChangeText={text => setForm({...form,["email"]:text.replace(/\s/g, "")}) }/>
-        </View>
-        <FormErrorMessage jsonErrors={errors} errorName="email"/>
-
-        <Text style={styles.TextoBlancoMedioGrande}>Contraseña:</Text>
-
-        <View style={styles.inputView} >
-          <TextInput  
-            secureTextEntry
-            style={styles.inputText}
-            placeholderTextColor="#003f5c"
-            onChangeText={text => setForm({...form,["password"]:text})
-            }/>
-        </View>
-        <FormErrorMessage jsonErrors={errors} errorName="password"/>
-
       
+  }
 
-
-
-        <Text style={styles.TextoBlancoMedioGrande}>Nombre:</Text>
-        <View style={styles.inputView} >
-          <TextInput  
-            
-            style={styles.inputText}
-            placeholder="Antonio" 
-            placeholderTextColor="#003f5c"
-            onChangeText={text => setForm({...form,["nombre"]:text})
-            }/>
-        </View>
-        <FormErrorMessage jsonErrors={errors} errorName="nombre"/>
-
-        <Text style={styles.TextoBlancoMedioGrande}>Apellidos:</Text>
-
-        <View style={styles.inputView} >
-          <TextInput
-            
-            
-            style={styles.inputText}
-            placeholder="Salcedo Segura" 
-            placeholderTextColor="#003f5c"
-            onChangeText={text => setForm({...form,["apellidos"]:text})
-            }/>
-        </View>
-        <FormErrorMessage jsonErrors={errors} errorName="apellidos"/>
-          
-        <Text style={styles.TextoBlancoMedioGrande}>Localidad:</Text>
-        <View style={styles.inputView} >
-          <TextInput  
-            
-            style={styles.inputText}
-            placeholderTextColor="#003f5c"
-            onChangeText={text => setForm({...form,["localidad"]:text})
-            }/>
-        </View>
-        <FormErrorMessage jsonErrors={errors} errorName="localidad"/>
-
-        <Text style={styles.TextoBlancoMedioGrande}>Fecha de nacimiento:</Text>
-
-        <View style={styles.buttonDatesViews}>
-          <Button color={"#fb5b5a"} title='Seleccionar fecha de nacimiento' onPress={() => setShow(true)}/>
-        </View> 
-        
-        <Text style={styles.TextoBlancoMedioGrande}>Fecha de nacimiento seleccionada:</Text>
-        <Text style={styles.TextoBlancoMedioGrande}> {dateTimeFormat(form.fechaNacimiento,false)}</Text>
-
-
-        <FormErrorMessage jsonErrors={errors} errorName="fechaNacimiento"/>
-
-          {show ? (datePicker("date",form.fechaNacimiento,onChangeFechaNacimiento)):(null)}
-
-        
-        <TouchableOpacity style={styles.loginBtn}>
-          <Text onPress={handleSubmit} style={styles.loginText}>Registrarme</Text>
-        </TouchableOpacity>
+    return (
+      <SafeAreaView>
+      <ScrollView  showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={true}>
+      <Block  flex  middle>
         
      
+          <Block flex safe  middle>
+            <Block  flex style={styles.registerContainer}>
+              
+              <Block flex >
+                <Block style={{marginTop:"10%",marginBottom:"5%"}} flex middle>
+               
+                  <Text
+                    h3
+                    bold
+                   
+                    color={argonTheme.COLORS.DEFAULT}
+                  >
+                   Registro
+                  </Text>
+                </Block>
+                
+                
+                <Block  center>
+                  <KeyboardAvoidingView
+                
+                    enabled
+                  >
+                     <Block width={width * 0.8} style={styles.blockInput}>
+                     <FloatingLabelInput
+                      
+                      errorMessage={formErrorMessage(errors,"email")}
+                      label="Email"
+                      onChangeText={text => setForm({...form,["email"]:text.replace(/\s/g, "")})}
+                      iconContent={<Icon
+                
+                        size={20}
+                        color={argonTheme.COLORS.ICON}
+                        name="ic_mail_24px"
+                        family="ArgonExtra"
+                        style={{marginRight: 8}}
+                      />}
+                      
+                     
+                    />
+                    </Block>
+                    
 
+                    <Block width={width * 0.8} style={styles.blockInput}>
+                    <FloatingLabelInput
+                      label="Contraseña"
+                      errorMessage={formErrorMessage(errors,"password")}
+                      secureTextEntry={secureTextMode}
+                      onChangeText={text => setForm({...form,["password"]:text})}
+                      iconContent={
+                        <Icon
+                          onPress={()=>setSecureTextMode(!secureTextMode)}
+                          size={20}
+                          color={argonTheme.COLORS.ICON}
+                          name={secureTextMode?"eye-off":"eye" }
+                          family="Ionicons"
+                          style={{marginRight:"3%"}}
+                        />
+                      }
+                    />
+                    </Block>
+                    
+                    
+                    
+                    <Block width={width * 0.8} style={styles.blockInput}>
+                    <FloatingLabelInput
+                      label="Nombre"
+                      errorMessage={formErrorMessage(errors,"nombre")}
+                      onChangeText={text => setForm({...form,["nombre"]:text})}
+                      
+                    />
+                      
+                    </Block>
+                    <Block width={width * 0.8} style={styles.blockInput}>
+                    <FloatingLabelInput
+                       errorMessage={formErrorMessage(errors,"apellidos")}
+                      label="Apellidos"
+                      onChangeText={text => setForm({...form,["apellidos"]:text})}
+                      
+                    />
+                    </Block>
+                    <Block width={width * 0.8} style={styles.blockInput}>
+                    <FloatingLabelInput
+                      label="Localidad"
+                      onChangeText={text => setForm({...form,["localidad"]:text})}
+                      errorMessage={formErrorMessage(errors,"localidad")}
+                     
+                    />
+                      
+                    </Block>
+                    <TouchableWithoutFeedback style={{zIndex:50}} onPress={() => setShow(true)}>
+
+                    
+                    <Block width={width * 0.8} style={styles.blockInput}>
+                    <FloatingLabelInput
+                      errorMessage={formErrorMessage(errors,"fechaNacimiento")}
+                      fixedLabel={fixedLabelDate}
+                      label="Fecha de nacimiento"
+                      editable={false}
+                      value={form.fechaNacimiento===""? "" : dateTimeFormat(form.fechaNacimiento,false)}
+                      iconContent={
+                        <Icon
+                       
+                          onPress={() => setShow(true)}
+                          size={22}
+                          color={argonTheme.COLORS.ICON}
+                          name="calendar-edit"
+                          family="MaterialCommunityIcons"
+                          style={{marginRight:"3%"}}
+
+                          
+                        />
+                      }
+                     
+                    />
+
+                    </Block>
+                    
+                    </TouchableWithoutFeedback>
+                  
+                    {show ? (datePicker("date",form.fechaNacimiento===""?new Date():form.fechaNacimiento,onChangeFechaNacimiento)):(null)}
+                    <Block row width={width * 0.75} style={styles.blockInput}>
+                      <Checkbox
+                      onChange={() => {
+                        errors["politicaPrivacidad"]=undefined
+                        setForm({...form,["politicaPrivacidad"]:!form.politicaPrivacidad})
+
+                      }}
+                        checkboxStyle={{
+                          borderWidth: 2
+                        }}
+                        color={formErrorMessage(errors,"politicaPrivacidad")==undefined? argonTheme.COLORS.PRIMARY: argonTheme.COLORS.MESSAGE_ERROR}
+                        label="Estoy de acuerdo con la"
+                      />
+                     
+                      <Button
+                        
+                        style={styles.invisibleButton}
+                        shadowless
+                        
+                        textStyle={{
+                          color: argonTheme.COLORS.PRIMARY,
+                          fontSize: 14
+                        }}
+                      >
+                        Política de privacidad
+                      </Button>
+                     
+                      
+                    </Block>
+                    <Block  middle>
+                      <Button loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
+                        <Text bold size={17} color={argonTheme.COLORS.WHITE}>
+                          Crear cuenta
+                        </Text>
+                      </Button>
+                    </Block>
+                  </KeyboardAvoidingView>
+                </Block>
+              </Block>
+            </Block>
+          </Block>
+        
+      </Block>
       </ScrollView>
       </SafeAreaView>
-    );
+    )
   }
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#003f5c',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  
+  registerContainer: {
+    width: width,
+    backgroundColor: "#F4F5F7",
+    borderRadius: 4,
+    shadowColor: argonTheme.COLORS.BLACK,
+    shadowOffset: {
+      width: 0,
+      height: 4
+    },
+    shadowRadius: 8,
+    shadowOpacity: 0.1,
+    elevation: 1,
+    overflow: "hidden"
   },
-  logo:{
-    fontWeight:"bold",
-    fontSize:50,
-    color:"#fb5b5a",
-    marginBottom:40,
-    alignSelf:"center"
+  socialConnect: {
+    backgroundColor: argonTheme.COLORS.WHITE,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: "#8898AA"
   },
-  inputView:{
-    width:"100%",
-    backgroundColor:"#465881",
-    borderRadius:25,
-    height:50,
-    marginBottom:20,
-    justifyContent:"center",
-    padding:20,
-    alignSelf:"center"
+  socialButtons: {
+    width: 120,
+    height: 40,
+    backgroundColor: "#fff",
+    shadowColor: argonTheme.COLORS.BLACK,
+    shadowOffset: {
+      width: 0,
+      height: 4
+    },
+    shadowRadius: 8,
+    shadowOpacity: 0.1,
+    elevation: 1
   },
-  inputText:{
-    height:50,
-    color:"white",
-    alignSelf:"center",
+  socialTextButtons: {
+    color: argonTheme.COLORS.PRIMARY,
+    fontWeight: "800",
+    fontSize: 14
   },
-  forgot:{
-    color:"white",
-    fontSize:11
+  inputIcons: {
+    marginRight: 12
   },
-  loginBtn:{
-    width:"80%",
-    backgroundColor:"#fb5b5a",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    alignSelf:"center",
-    justifyContent:"center",
-    marginTop:40,
-    marginBottom:10
+  passwordCheck: {
+    paddingLeft: 15,
+    paddingTop: 13,
+    paddingBottom: 30
   },
-  loginText:{
-    color:"white"
+  createButton: {
+    width: width * 0.5,
+    marginBottom: "10%",
   },
-  TextoBlancoMedioGrande:{
-    alignItems:"center",
-    alignSelf:"center",
-    justifyContent:"center",
-    fontSize:20,
-    color:"white",
-    marginBottom:10,
-
-  },
+  blockInput:{
+    
+    marginRight: 0.06*width, 
+    marginLeft:0.06*width
+  },invisibleButton:{
+    width: 128, 
+      shadowRadius: 0,
+      shadowOpacity: 0,
+      elevation: 0,
+      backgroundColor: "#F4F5F7",borderRadius:0, borderColor: "#F4F5F7"
+  }
 });

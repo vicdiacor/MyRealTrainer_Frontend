@@ -1,55 +1,52 @@
 import React, { Component } from 'react';
 import {
   View,
-  StatusBar,
   TextInput,
   Text,
 } from 'react-native';
-import { Button, Icon, Input } from "./";
+import {  Input } from "./";
 import { argonTheme } from "../constants";
-import {Block} from 'galio-framework';
 class FloatingLabelInput extends Component {
   state = {
     isFocused: false,
+    haveValue:false,
   };
 
   handleFocus = () => {
-    this.setState({ isFocused: true });
+    this.setState({...this.state, isFocused: true });
 
   }
   
-  handleBlur = (valor) => this.setState({ isFocused: false });
+  handleBlur = (valor) => this.setState({isFocused: false });
   handleEdit= (inputInfo) => 
     {
     
     if(!inputInfo["nativeEvent"]["text"].trim()){
     
-      this.setState({ isFocused: false });
+      this.setState({ isFocused:false, haveValue: false });
     }else{
-      this.setState({ isFocused: true });
+      this.setState({ isFocused:false, haveValue: true });
     }
   }
-  handleChangeText= (texto) => {
-    console.log("ahwdawwa")
-    console.log(texto)
-  }
+ 
   
 
   
 
   render() {
     
-    const { label,date,fixedLabel,...props } = this.props;
+    const { label,date,error,fixedLabel,errorMessage,...props } = this.props;
     
     
-    const { isFocused, presentValue} = this.state;
-    
+    const isFocused = this.state.isFocused;
+    const haveValue= this.state.haveValue;
+   
     const labelStyle = {
       position: 'absolute',
       left: 20,
-      top: !isFocused ? 28 : 15,
-      fontSize: !isFocused ? 17 : 14,
-      color: !isFocused ? '#aaa' : '#5e72e4',
+      top: isFocused || haveValue ? 15 : 28,
+      fontSize: isFocused || haveValue ? 14 : 17,
+      color: isFocused || haveValue ?  '#5e72e4': '#aaa',
       zIndex: 4,
       flex: this.props.iconContent==undefined? 0.87: 0.72,
       flexDirection: 'row',      
@@ -74,12 +71,18 @@ class FloatingLabelInput extends Component {
       top: 40,
       zIndex: 5, 
       height: 21, 
-      fontSize: 17, 
+      fontSize: 17,
       color: '#000',
       flex: this.props.iconContent==undefined? 0.87: 0.72,
       flexDirection: 'row',      
       width:this.props.iconContent==undefined? '87%':'72%',
     };
+    const errorMessageStyle={
+      color: argonTheme.COLORS.MESSAGE_ERROR,
+      left:5
+    }
+    
+
     return (
       
       <View style={{flex:1}}>
@@ -91,17 +94,17 @@ class FloatingLabelInput extends Component {
         <TextInput
         
         ref={input => { this.input = input}}
-          {...props}
+          
           style={textInputStyle}
           onFocus={this.handleFocus}
           onEndEditing={this.handleEdit}
-          onChangeText={this.handleChangeText}
-          
+          {...props}
           
         />
           <View style={{zIndex:1}}>
               <Input
-               
+                focus={isFocused && errorMessage == undefined}
+                error={errorMessage == undefined ? false : true}
                 editable={false}
                 right
                   iconContent={
@@ -109,7 +112,11 @@ class FloatingLabelInput extends Component {
                   }
                   
                 />
-            </View> 
+            </View>
+            {errorMessage==undefined? null : 
+            <Text style={errorMessageStyle}>{errorMessage}</Text> 
+            }
+            
         </View>
       
     );

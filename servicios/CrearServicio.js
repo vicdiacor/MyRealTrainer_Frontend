@@ -1,7 +1,7 @@
 import React from 'react';
-import { Text } from 'react-native-elements';
+import { Text , View} from 'react-native';
 
 
 export default function CrearServicio({navigation}) {
- return <>  <Text>HA INICIADO SESION </Text></> 
+ return (<View><Text>HA INICIADO SESION </Text></View>)
 }
