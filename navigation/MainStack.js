@@ -15,6 +15,7 @@ import Elements from '../plantillas/Elements';
 import Onboarding from '../plantillas/Onboarding';
 import Pro from '../plantillas/Pro';
 import Profile from '../plantillas/Profile';
+import Prueba from '../Prueba';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,7 +24,7 @@ const MainStack = () => {
     <NavigationContainer>
        
        <Stack.Navigator>
-        
+     
        <Stack.Screen
             name="RegisterPlantilla"
             component={RegisterPlantilla}

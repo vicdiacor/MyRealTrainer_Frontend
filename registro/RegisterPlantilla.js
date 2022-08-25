@@ -10,7 +10,7 @@ import { View,SafeAreaView,ScrollView,
   ImageBackground,
   Dimensions,
   StatusBar,
-  KeyboardAvoidingView
+  KeyboardAvoidingView, TextInput,TouchableWithoutFeedback
 } from "react-native";
 import { Block, Checkbox, Text, theme } from "galio-framework";
 
@@ -28,21 +28,23 @@ export default function RegisterPlantilla({navigation}) {
     password:"",
     nombre:"",
     apellidos:"",
-    fechaNacimiento: new Date(),
-    localidad: ""
+    fechaNacimiento: "",
+    localidad: "",
+    privacidad:false,
   })
 
-  const[placeholderFecha,setPlaceholderFecha] = useState("Fecha de nacimiento")
+  const[fixedLabelDate,setFixedLabelDate]= useState(false)
   
   const[errors, setErrors]= useState({})
-
   const [show,setShow] = useState(false);
   const [secureTextMode,setSecureTextMode]= useState(true);
 
   const onChangeFechaNacimiento= (event,selectedDate) => {
+   
     setShow(false);
+    setFixedLabelDate(true)
     setForm({...form,["fechaNacimiento"]:selectedDate})
-    setPlaceholderFecha("dontShow")
+
   };
 
 
@@ -77,29 +79,28 @@ export default function RegisterPlantilla({navigation}) {
       }
   }
     return (
-      <SafeAreaView >
+      <SafeAreaView>
       <ScrollView  showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={true}>
-      <Block   middle>
+      <Block  flex  middle>
         
-        <ImageBackground
-          source={Images.RegisterBackground}
-          >
-        
-          <Block safe  middle>
-            <Block style={styles.registerContainer}>
+     
+          <Block flex safe  middle>
+            <Block  flex style={styles.registerContainer}>
               
-              <Block >
-                <Block  middle>
+              <Block flex >
+                <Block style={{marginTop:"10%",marginBottom:"5%"}} flex middle>
                
                   <Text
                     h3
                     bold
-                    style={{ marginBottom: height*0.02, paddingTop: height*0.02}}
+                   
                     color={argonTheme.COLORS.DEFAULT}
                   >
                    Registro
                   </Text>
                 </Block>
+                
+                
                 <Block  center>
                   <KeyboardAvoidingView
                 
@@ -118,14 +119,15 @@ export default function RegisterPlantilla({navigation}) {
                         style={{marginRight: 8}}
                       />}
                       
+                      
                      
                     />
                     
                     <FormErrorMessage jsonErrors={errors} errorName="email"/>
                     </Block>
+                    
 
                     <Block width={width * 0.8} style={styles.blockInput}>
-                     
                     <FloatingLabelInput
                       label="Contraseña"
                       secureTextEntry={secureTextMode}
@@ -133,30 +135,24 @@ export default function RegisterPlantilla({navigation}) {
                       iconContent={
                         <Icon
                           onPress={()=>setSecureTextMode(!secureTextMode)}
-                          size={16}
+                          size={20}
                           color={argonTheme.COLORS.ICON}
-                          name="padlock-unlocked"
-                          family="ArgonExtra"
-                          style={styles.inputIcons}
+                          name={secureTextMode?"eye-off":"eye" }
+                          family="Ionicons"
+                          style={{marginRight:"3%"}}
                         />
                       }
                     />
                     </Block>
+                    
+                    
                     
                     <Block width={width * 0.8} style={styles.blockInput}>
                     <FloatingLabelInput
                       label="Nombre"
                       
                       onChangeText={text => setForm({...form,["nombre"]:text})}
-                        iconContent={
-                          <Icon
-                            size={16}
-                            color={argonTheme.COLORS.ICON}
-                            name="hat-3"
-                            family="ArgonExtra"
-                            style={styles.inputIcons}
-                          />
-                        }
+                      
                     />
                       
                     </Block>
@@ -164,85 +160,49 @@ export default function RegisterPlantilla({navigation}) {
                     <FloatingLabelInput
                       label="Apellidos"
                       onChangeText={text => setForm({...form,["apellidos"]:text})}
-                      iconContent={
-                        <Icon
-                          size={16}
-                          color={argonTheme.COLORS.ICON}
-                          name="hat-3"
-                          family="ArgonExtra"
-                          style={styles.inputIcons}
-                        />
-                      }
+                      
                     />
                     </Block>
                     <Block width={width * 0.8} style={styles.blockInput}>
                     <FloatingLabelInput
                       label="Localidad"
                       onChangeText={text => setForm({...form,["localidad"]:text})}
-                      iconContent={
-                        <Icon
-
-                          size={16}
-                          color={argonTheme.COLORS.ICON}
-                          name="shop"
-                          family="ArgonExtra"
-                          style={styles.inputIcons}
-                        />
-                      }
+                     
                      
                     />
                       
                     </Block>
+                    <TouchableWithoutFeedback style={{zIndex:50}} onPress={() => setShow(true)}>
+
+                    
                     <Block width={width * 0.8} style={styles.blockInput}>
                     <FloatingLabelInput
+                      fixedLabel={fixedLabelDate}
                       label="Fecha de nacimiento"
-                      
-                      
+                      editable={false}
+                      value={form.fechaNacimiento===""? "" : dateTimeFormat(form.fechaNacimiento,false)}
                       iconContent={
                         <Icon
                        
-                        onPress={() => setShow(true)}
-                          size={16}
+                        
+                          size={22}
                           color={argonTheme.COLORS.ICON}
-                          name="calendar-date"
-                          family="ArgonExtra"
-                          style={styles.inputIcons}
+                          name="calendar-edit"
+                          family="MaterialCommunityIcons"
+                          style={{marginRight:"3%"}}
+
+                          
                         />
                       }
                      
                     />
-                      
-                    </Block>
-                    <Block >
-                    <Button  onPress={() => setShow(true)} style={{marginLeft:0.06*width,width: width*0.8,marginBottom: 0.04 * width}}>
-                    
-                    <Input
-                       
-                        editable={false}
-                        
-                        value={placeholderFecha==="dontShow"? dateTimeFormat(form.fechaNacimiento,false): placeholderFecha}
-                        placeholder={placeholderFecha}
-                        
-                        iconContent={
-                          <Icon
-                          right
-                          onPress={() => setShow(true)}
-                            size={16}
-                            color={argonTheme.COLORS.ICON}
-                            name="calendar-date"
-                            family="ArgonExtra"
-                            style={styles.inputIcons}
-                          />
-                        }
-                      /> 
-                    </Button>
-                     
-                     
-                      
-                    </Block>
                     <FormErrorMessage jsonErrors={errors} errorName="fechaNacimiento"/>
+
+                    </Block>
                     
-                    {show ? (datePicker("date",form.fechaNacimiento,onChangeFechaNacimiento)):(null)}
+                    </TouchableWithoutFeedback>
+                  
+                    {show ? (datePicker("date",form.fechaNacimiento===""?new Date():form.fechaNacimiento,onChangeFechaNacimiento)):(null)}
                     <Block row width={width * 0.75} style={styles.blockInput}>
                       <Checkbox
                         checkboxStyle={{
@@ -276,7 +236,7 @@ export default function RegisterPlantilla({navigation}) {
               </Block>
             </Block>
           </Block>
-        </ImageBackground>
+        
       </Block>
       </ScrollView>
       </SafeAreaView>
@@ -287,7 +247,7 @@ export default function RegisterPlantilla({navigation}) {
 const styles = StyleSheet.create({
   
   registerContainer: {
-    
+    width: width,
     backgroundColor: "#F4F5F7",
     borderRadius: 4,
     shadowColor: argonTheme.COLORS.BLACK,
@@ -333,7 +293,7 @@ const styles = StyleSheet.create({
   },
   createButton: {
     width: width * 0.5,
-    marginBottom: 0.03 * height,
+    marginBottom: "10%",
   },
   blockInput:{
     
