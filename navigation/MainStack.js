@@ -15,6 +15,7 @@ import Onboarding from '../plantillas/Onboarding';
 import Pro from '../plantillas/Pro';
 import Profile from '../plantillas/Profile';
 import Prueba from '../Prueba';
+import AfterRegister from '../registro/AfterRegister';
 
 const Stack = createNativeStackNavigator();
 
@@ -23,7 +24,13 @@ const MainStack = () => {
     <NavigationContainer>
        
        <Stack.Navigator>
-     
+       <Stack.Screen
+            name="AfterRegister"
+            component={AfterRegister}
+            options={{ headerShown: false }
+            }
+            />
+
        <Stack.Screen
             name="Login"
             component={Login}

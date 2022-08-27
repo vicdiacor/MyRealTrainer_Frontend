@@ -71,7 +71,7 @@ export default function Registro({navigation}) {
           
           if (response.ok){
             
-           navigation.navigate('Login')
+           navigation.navigate('AfterRegister')
            await delay(1000)
            setIsLoading(false)
             

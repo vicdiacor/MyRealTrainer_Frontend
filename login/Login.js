@@ -183,12 +183,6 @@ export default function Login({navigation}) {
                         
                      
                 </Block>
-
-
-        
-          
-
-           
             </KeyboardAvoidingView>
           </Block>
         </ScrollView>
@@ -206,64 +200,12 @@ export default function Login({navigation}) {
       padding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
       
     },
-    logo:{
-      fontWeight:"bold",
-      fontSize:45,
-      color:"#fb5b5a",
-      marginBottom:40,
-      alignSelf:"center",
-    },
     blockInput:{
       
       marginRight: "6%", 
       marginLeft:"6%"
     },
-    inputView:{
-      width:"100%",
-      backgroundColor:"#465881",
-      alignItems:"center",
-      justifyContent:"center",
-      alignSelf:"center",
-      borderRadius:25,
-      height:50,
-      marginBottom:20,
-      
-      padding:20
-    },
-    inputViewAlto:{
-      width:"100%",
-      backgroundColor:"#465881",
-      alignItems:"center",
-      justifyContent:"center",
-      alignSelf:"center",
-      borderRadius:25,
-      height:100,
-      marginBottom:20,
-      
-      padding:20
-    },
-    inputText:{
-      height:50,
-      color:"white"
-    },
-    forgot:{
-      color:"white",
-      fontSize:11
-    },
-    loginBtn:{
-      width:"100%",
-      backgroundColor:"#fb5b5a",
-      borderRadius:25,
-      height:50,
-      alignItems:"center",
-      alignSelf:"center",
-      justifyContent:"center",
-      marginTop:40,
-      marginBottom:10
-    },
-    loginText:{
-      color:"white"
-    }, createButton: {
+   createButton: {
       width: width * 0.5,
       marginBottom: "10%",
     },invisibleButton:{

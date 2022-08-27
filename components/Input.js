@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
     
   },
   focus:{
+    borderWidth:2,
     borderColor: '#5e72e4',
   },
   shadow: {
