@@ -118,6 +118,7 @@ export default function Registro({navigation}) {
                       
                       errorMessage={formErrorMessage(errors,"email")}
                       label="Email"
+                      value={form.email}
                       onChangeText={text => setForm({...form,["email"]:text.replace(/\s/g, "")})}
                       iconContent={<Icon
                 
@@ -136,6 +137,7 @@ export default function Registro({navigation}) {
                     <Block width={width * 0.8} style={styles.blockInput}>
                     <FloatingLabelInput
                       label="Contraseña"
+                      value={form.password}
                       errorMessage={formErrorMessage(errors,"password")}
                       secureTextEntry={secureTextMode}
                       onChangeText={text => setForm({...form,["password"]:text})}
@@ -157,6 +159,7 @@ export default function Registro({navigation}) {
                     <Block width={width * 0.8} style={styles.blockInput}>
                     <FloatingLabelInput
                       label="Nombre"
+                      value={form.nombre}
                       errorMessage={formErrorMessage(errors,"nombre")}
                       onChangeText={text => setForm({...form,["nombre"]:text})}
                       
@@ -167,6 +170,7 @@ export default function Registro({navigation}) {
                     <FloatingLabelInput
                        errorMessage={formErrorMessage(errors,"apellidos")}
                       label="Apellidos"
+                      value={form.apellidos}
                       onChangeText={text => setForm({...form,["apellidos"]:text})}
                       
                     />
@@ -174,6 +178,7 @@ export default function Registro({navigation}) {
                     <Block width={width * 0.8} style={styles.blockInput}>
                     <FloatingLabelInput
                       label="Localidad"
+                      value={form.localidad}
                       onChangeText={text => setForm({...form,["localidad"]:text})}
                       errorMessage={formErrorMessage(errors,"localidad")}
                      
@@ -187,6 +192,7 @@ export default function Registro({navigation}) {
                     <FloatingLabelInput
                       errorMessage={formErrorMessage(errors,"fechaNacimiento")}
                       fixedLabel={fixedLabelDate}
+                    
                       label="Fecha de nacimiento"
                       editable={false}
                       value={form.fechaNacimiento===""? "" : dateTimeFormat(form.fechaNacimiento,false)}

@@ -10,12 +10,11 @@ import { argonTheme } from "../constants";
 class ArInput extends React.Component {
   render() {
     const { shadowless, success, error,focus,multiline,initialNumberOfLines,dynamicHeight} = this.props;
-    console.log("INPUT")
-    console.log(dynamicHeight)
+  
     const inputStyle = {
       borderRadius: 4,
       borderColor: argonTheme.COLORS.BORDER,
-      height: multiline ? (initialNumberOfLines? Math.max(64+(19*(initialNumberOfLines-1)),dynamicHeight+46):Math.max(148,dynamicHeight+60)):64 ,
+      height: multiline ? (initialNumberOfLines? Math.max(64+(19*(initialNumberOfLines-1)),dynamicHeight+46):Math.max(148,dynamicHeight+60)):65 ,
       minHeight: 64,
       backgroundColor: '#FFFFFF'
     }
@@ -88,7 +87,8 @@ const styles = StyleSheet.create({
   },
   focus:{
     borderWidth:2,
-    borderColor: '#5e72e4',
+    borderColor: argonTheme.COLORS.PRIMARY,
+
   },
   shadow: {
     shadowColor: argonTheme.COLORS.BLACK,

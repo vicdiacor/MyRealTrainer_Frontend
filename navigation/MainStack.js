@@ -24,7 +24,7 @@ const MainStack = () => {
     <NavigationContainer>
        
        <Stack.Navigator>
-       <Stack.Screen
+          <Stack.Screen
             name="AfterRegister"
             component={AfterRegister}
             options={{ headerShown: false }

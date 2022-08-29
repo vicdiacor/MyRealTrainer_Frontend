@@ -1,60 +1,51 @@
-import React, { Component,useState } from 'react';
+import React, { Component,useState,useRef } from 'react';
 import {
   View,
-  TextInput,
-  Text
+  TextInput,Text,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {  Input } from "./";
 import { argonTheme } from "../constants";
-class FloatingLabelInput extends Component {
-  state = {
+import formErrorMessage from './FormErrorMessage';
+function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline,initialNumberOfLines,textCounter,maxLength,value,...props}) {
+
+  const [state,setState]= useState({
     isFocused: false,
-    haveValue:false,
-  };
+    haveValue: !value || !value.trim()? false:true,
+  })
 
-  dynamicHeight=21.0
+  const [dynamicHeight, setDynamicHeight]=useState(21)
+  const textInputRef = useRef(null);
 
-  handleFocus = () => {
-    this.setState({...this.state, isFocused: true });
+
+  const handleFocus = () => {
+    setState({...state, isFocused: true });
 
   }
   
-  handleBlur = (valor) => this.setState({isFocused: false });
-  handleEdit= (inputInfo) => 
+  
+  const handleEdit= (inputInfo) => 
     {
     
     if(!inputInfo["nativeEvent"]["text"].trim()){
     
-      this.setState({ isFocused:false, haveValue: false });
+      setState({ isFocused:false, haveValue: false });
     }else{
-      this.setState({ isFocused:false, haveValue: true });
+      setState({ isFocused:false, haveValue: true });
     }
   }
-
-
-
-  
-
-  render() {
-    
-    const { label,date,error,fixedLabel,errorMessage,multiline,initialNumberOfLines,...props } = this.props;
-    
-    
-    const isFocused = this.state.isFocused;
-    const haveValue= this.state.haveValue;
-    
-    
    
     const labelStyle = {
       position: 'absolute',
       left: 20,
-      top: isFocused || haveValue ? 15 : 28,
-      fontSize: isFocused || haveValue ? 14 : 17,
-      color: isFocused || haveValue ?  '#5e72e4': '#aaa',
+      top: state.isFocused || state.haveValue ? 15 : 28,
+      fontSize: state.isFocused || state.haveValue ? 14 : 17,
+      color: state.isFocused || state.haveValue ?  '#5e72e4': '#aaa',
       zIndex: 4,
-      flex: this.props.iconContent==undefined? 0.87: 0.72,
+      flex: props.iconContent==undefined? 0.87: 0.72,
       flexDirection: 'row',      
-      width:this.props.iconContent==undefined? '87%':'72%',
+      width: props.iconContent==undefined? '87%':'72%',
+      fontWeight: state.isFocused || state.haveValue?   "bold": null
       
     };
     const fixedLabelStyle = {
@@ -64,62 +55,70 @@ class FloatingLabelInput extends Component {
       fontSize:  14,
       color: '#5e72e4',
       zIndex: 4,
-      flex: this.props.iconContent==undefined? 0.87: 0.72,
+      flex: props.iconContent==undefined? 0.87: 0.72,
       flexDirection: 'row',      
-      width:this.props.iconContent==undefined? '87%':'72%',
+      width:props.iconContent==undefined? '87%':'72%',
       
     };
     const textInputStyle = { 
       position: 'absolute',
       left: 20,
-      top: 40,
+      top: 36,
       zIndex: 5,
       minHeight:21,
       fontSize: 17,
       color: '#000',
-      flex: this.props.iconContent==undefined? 0.87: 0.72,
+      flex: props.iconContent==undefined? 0.87: 0.72,
       flexDirection: 'row',      
-      width:this.props.iconContent==undefined? '87%':'72%',
+      width:props.iconContent==undefined? '87%':'72%',
       
     };
     const errorMessageStyle={
       color: argonTheme.COLORS.MESSAGE_ERROR,
-      left:5
+      left:5,
+      
+    }
+    const textCounterStyle={
+      color:state.isFocused? argonTheme.COLORS.PRIMARY : argonTheme.COLORS.ICON,
+      textAlign: 'right',
+      fontWeight:state.isFocused? "600":"400"
+      
+      
     }
     
 
     return (
       
       <View style={{flex:1}}>
-        
-        <Text onPress={() => {this.input.focus()}}
+        <TouchableWithoutFeedback onPress={() => {textInputRef.current.focus()}} >
+        <View>
+        <Text
         style={fixedLabel? fixedLabelStyle: labelStyle} >
           {label}
         </Text>
+        
         <TextInput
         
-        ref={input => { this.input = input}}
-          
+        ref={textInputRef}
+          value={value}
+          maxLength={maxLength}
           style={textInputStyle}
           multiline={multiline}
-          onFocus={this.handleFocus}
-          onEndEditing={this.handleEdit}
-          
+          onFocus={handleFocus}
+          onEndEditing={handleEdit}
           onContentSizeChange={(event) => {
-            this.dynamicHeight=event.nativeEvent.contentSize.height
-            console.log("NUM LINEAS")
-            console.log(event.nativeEvent)
-           
+            setDynamicHeight(event.nativeEvent.contentSize.height)
           }}
           {...props}
           
         />
-          <View style={{zIndex:1}}>
+          <View  style={{zIndex:1}}>
               <Input
-                dynamicHeight={this.dynamicHeight}
+              
+                dynamicHeight={dynamicHeight}
                 multiline={multiline==undefined? false:true}
                 initialNumberOfLines={initialNumberOfLines}
-                focus={isFocused && errorMessage == undefined}
+                focus={state.isFocused && errorMessage == undefined}
                 error={errorMessage == undefined ? false : true}
                 editable={false}
                 right
@@ -129,13 +128,19 @@ class FloatingLabelInput extends Component {
                   
                 />
             </View>
+          </View>
+          </TouchableWithoutFeedback>
+          
+            {textCounter!=undefined?
+            <Text  style={textCounterStyle}>{textCounter.length}{maxLength!=undefined?"/"+maxLength:null}</Text> : null}
             {errorMessage==undefined? null : 
             <Text style={errorMessageStyle}>{errorMessage}</Text> 
             }
+
             
         </View>
       
     );
-  }
+  
 }
 export default FloatingLabelInput;

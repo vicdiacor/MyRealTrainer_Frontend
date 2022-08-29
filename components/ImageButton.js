@@ -10,8 +10,8 @@ export default function ImageButton ({title,sourceParameter,selected}){
 
     const containerImageStyle= {
       borderRadius: 6 ,
-      borderColor:selected ? argonTheme.COLORS.ICON: argonTheme.COLORS.BORDER,
-      borderWidth: selected ? 4:2,
+      borderColor:selected ? argonTheme.COLORS.PRIMARY: argonTheme.COLORS.BORDER,
+      borderWidth: selected ? 3:2,
     }
 
     return (

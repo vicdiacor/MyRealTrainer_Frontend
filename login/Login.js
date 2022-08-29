@@ -130,6 +130,7 @@ export default function Login({navigation}) {
                         
                         errorMessage={formErrorMessage(errors,"email")}
                         label="Email"
+                        value={form.email}
                         onChangeText={text => setForm({...form,["email"]:text.replace(/\s/g, "")})}
                         iconContent={<Icon
                   
@@ -146,6 +147,7 @@ export default function Login({navigation}) {
               <Block width={width * 0.8} style={styles.blockInput}>
                     <FloatingLabelInput
                       label="Contraseña"
+                      value={form.password}
                       errorMessage={formErrorMessage(errors,"password")}
                       secureTextEntry={secureTextMode}
                       onChangeText={text => setForm({...form,["password"]:text})}

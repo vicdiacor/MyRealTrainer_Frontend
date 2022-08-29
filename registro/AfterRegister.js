@@ -131,15 +131,52 @@ export default function AfterRegister({navigation}) {
             </TouchableWithoutFeedback>
 
             </Block>
-            <Block width={width * 0.8} style={styles.blockInput}>
+            {trainerSelected?  
+              (
+                <> 
+                <Block flex row center width={width * 0.8} style={styles.blockInput}>
                      <FloatingLabelInput
                       multiline={true}
+                      maxLength={400}
+                      value={trainerForm.formacion}
+                      textCounter={trainerForm.formacion}
                       initialNumberOfLines={4}
                       errorMessage={formErrorMessage(errors,"formacion")}
                       label="Formación académica"
                       onChangeText={text => setTrainerForm({...trainerForm,["formacion"]:text})}
                     />
-                    </Block>
+            </Block>
+
+            <Block flex row center width={width * 0.8} style={styles.blockInput}>
+                     <FloatingLabelInput
+                      multiline={true}
+                      maxLength={500}
+                      value={trainerForm.experiencia}
+                      textCounter={trainerForm.experiencia}
+                      initialNumberOfLines={4}
+                      errorMessage={formErrorMessage(errors,"experiencia")}
+                      label="Experiencia"
+                      onChangeText={text => setTrainerForm({...trainerForm,["experiencia"]:text})}
+                    />
+            </Block>
+            <Block flex row center width={width * 0.8} style={styles.blockInput}>
+                     <FloatingLabelInput
+                      multiline={true}
+                      maxLength={500}
+                      value={trainerForm.descripcion}
+                      textCounter={trainerForm.descripcion}
+                      initialNumberOfLines={4}
+                      errorMessage={formErrorMessage(errors,"descripcion")}
+                      label="Descripción sobre mí"
+                      onChangeText={text => setTrainerForm({...trainerForm,["descripcion"]:text})}
+                    />
+            </Block>
+                
+                </>
+                )
+            
+            : null}
+            
 
             <Block style={{marginTop:"7%"}} flex middle>
                
@@ -212,8 +249,6 @@ export default function AfterRegister({navigation}) {
       
     },
     blockInput:{
-      marginRight: "6%", 
-      marginLeft:"6%",
       marginTop:"6%",
     }
     ,
