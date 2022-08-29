@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component,useState } from 'react';
 import {
   View,
   TextInput,
-  Text,
+  Text
 } from 'react-native';
 import {  Input } from "./";
 import { argonTheme } from "../constants";
@@ -11,6 +11,8 @@ class FloatingLabelInput extends Component {
     isFocused: false,
     haveValue:false,
   };
+
+  dynamicHeight=21.0
 
   handleFocus = () => {
     this.setState({...this.state, isFocused: true });
@@ -28,18 +30,20 @@ class FloatingLabelInput extends Component {
       this.setState({ isFocused:false, haveValue: true });
     }
   }
- 
-  
+
+
 
   
 
   render() {
     
-    const { label,date,error,fixedLabel,errorMessage,...props } = this.props;
+    const { label,date,error,fixedLabel,errorMessage,multiline,initialNumberOfLines,...props } = this.props;
     
     
     const isFocused = this.state.isFocused;
     const haveValue= this.state.haveValue;
+    
+    
    
     const labelStyle = {
       position: 'absolute',
@@ -69,13 +73,14 @@ class FloatingLabelInput extends Component {
       position: 'absolute',
       left: 20,
       top: 40,
-      zIndex: 5, 
-      height: 21, 
+      zIndex: 5,
+      minHeight:21,
       fontSize: 17,
       color: '#000',
       flex: this.props.iconContent==undefined? 0.87: 0.72,
       flexDirection: 'row',      
       width:this.props.iconContent==undefined? '87%':'72%',
+      
     };
     const errorMessageStyle={
       color: argonTheme.COLORS.MESSAGE_ERROR,
@@ -96,13 +101,24 @@ class FloatingLabelInput extends Component {
         ref={input => { this.input = input}}
           
           style={textInputStyle}
+          multiline={multiline}
           onFocus={this.handleFocus}
           onEndEditing={this.handleEdit}
+          
+          onContentSizeChange={(event) => {
+            this.dynamicHeight=event.nativeEvent.contentSize.height
+            console.log("NUM LINEAS")
+            console.log(event.nativeEvent)
+           
+          }}
           {...props}
           
         />
           <View style={{zIndex:1}}>
               <Input
+                dynamicHeight={this.dynamicHeight}
+                multiline={multiline==undefined? false:true}
+                initialNumberOfLines={initialNumberOfLines}
                 focus={isFocused && errorMessage == undefined}
                 error={errorMessage == undefined ? false : true}
                 editable={false}

@@ -9,9 +9,18 @@ import { argonTheme } from "../constants";
 
 class ArInput extends React.Component {
   render() {
-    const { shadowless, success, error,focus} = this.props;
+    const { shadowless, success, error,focus,multiline,initialNumberOfLines,dynamicHeight} = this.props;
+    console.log("INPUT")
+    console.log(dynamicHeight)
+    const inputStyle = {
+      borderRadius: 4,
+      borderColor: argonTheme.COLORS.BORDER,
+      height: multiline ? (initialNumberOfLines? Math.max(64+(19*(initialNumberOfLines-1)),dynamicHeight+46):Math.max(148,dynamicHeight+60)):64 ,
+      minHeight: 64,
+      backgroundColor: '#FFFFFF'
+    }
     const inputStyles = [
-      styles.input,
+      inputStyle,
       !shadowless && styles.shadow,
       success && styles.success,
       error && styles.error,
@@ -26,7 +35,6 @@ class ArInput extends React.Component {
       
        
         <Input
-          
           placeholder=""
           placeholderTextColor={argonTheme.COLORS.MUTED}
           style={inputStyles}
@@ -52,7 +60,10 @@ ArInput.defaultProps = {
   success: false,
   error: false,
   focus:false,
-  floatingLabel: false
+  floatingLabel: false,
+  multiline:false,
+  initialNumberOfLines:1,
+  dynamicHeight:21,
   
 };
 
@@ -62,15 +73,12 @@ ArInput.propTypes = {
   error: PropTypes.bool,
   focus:PropTypes.bool,
   placeholderTitle: PropTypes.string,
+  initialNumberOfLines:PropTypes.number,
+  dynamicHeight:PropTypes.number
 }
 
 const styles = StyleSheet.create({
-  input: {
-    borderRadius: 4,
-    borderColor: argonTheme.COLORS.BORDER,
-    height: 64 ,
-    backgroundColor: '#FFFFFF'
-  },
+  
   success: {
     borderColor: argonTheme.COLORS.INPUT_SUCCESS,
   },

@@ -20,6 +20,14 @@ export default function AfterRegister({navigation}) {
   
  
   const[errors, setErrors]= useState({})
+  const[trainerForm, setTrainerForm]= useState({
+    "formacion": "",
+    "experiencia":"",
+    "descripcion":"",
+    "publico":true
+
+  })
+
   const [isLoadingGuardar,setIsLoadingGuardar]= useState(false)
   const [isLoadingGaleria,setIsLoadingGaleria]= useState(false)
   const [isLoadingCamara,setIsLoadingCamara]= useState(false)
@@ -67,9 +75,9 @@ export default function AfterRegister({navigation}) {
 
   const handleSubmit= evt => {
     setIsLoadingGuardar(true)
-        
+
         const data= {
-            "trainer": trainerSelected? true:false,
+            "trainer": trainerSelected ? true:false,
             "image": image,
         }
        
@@ -102,7 +110,7 @@ export default function AfterRegister({navigation}) {
            
             <Block flex row>
             <TouchableWithoutFeedback onPress={()=> {
-              setClientSelected(!clientSelected)
+              setClientSelected(true)
               setTrainerSelected(false)
             }}>
               <Block  style={{backgroundColor:"#FFFF", width:width*0.4}}  >
@@ -113,7 +121,7 @@ export default function AfterRegister({navigation}) {
           
             <Block  style={styles.invisibleContainer}></Block>
             <TouchableWithoutFeedback onPress={()=> {
-              setTrainerSelected(!trainerSelected)
+              setTrainerSelected(true)
               setClientSelected(false)
             }}>
               <Block style={{backgroundColor:"#FFFF", width:width*0.4}}   >
@@ -123,6 +131,15 @@ export default function AfterRegister({navigation}) {
             </TouchableWithoutFeedback>
 
             </Block>
+            <Block width={width * 0.8} style={styles.blockInput}>
+                     <FloatingLabelInput
+                      multiline={true}
+                      initialNumberOfLines={4}
+                      errorMessage={formErrorMessage(errors,"formacion")}
+                      label="Formación académica"
+                      onChangeText={text => setTrainerForm({...trainerForm,["formacion"]:text})}
+                    />
+                    </Block>
 
             <Block style={{marginTop:"7%"}} flex middle>
                
@@ -196,7 +213,9 @@ export default function AfterRegister({navigation}) {
     },
     blockInput:{
       marginRight: "6%", 
-      marginLeft:"6%"}
+      marginLeft:"6%",
+      marginTop:"6%",
+    }
     ,
     loginText:{
       color:"white"

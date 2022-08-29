@@ -314,7 +314,8 @@ const styles = StyleSheet.create({
   blockInput:{
     
     marginRight: 0.06*width, 
-    marginLeft:0.06*width
+    marginLeft:0.06*width,
+    
   },invisibleButton:{
     width: 128, 
       shadowRadius: 0,
