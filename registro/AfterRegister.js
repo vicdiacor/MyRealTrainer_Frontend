@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {saveCookie,deleteCookie} from "../temporal_database/SecureStore"
 import { StyleSheet,Alert,Dimensions, ScrollView, 
    View, SafeAreaView,StatusBar,
@@ -7,18 +7,20 @@ import * as ImagePicker from 'expo-image-picker';
 import call from '../Caller';
 import formErrorMessage from '../components/FormErrorMessage';
 import FloatingLabelInput from '../components/FloatingLabelInput';
-import { Button, Icon, Input} from "../components";
+import { Button, Icon, Input, Switch} from "../components";
 import {  argonTheme } from "../constants";
 import { Block, Text } from "galio-framework";
 import { delay } from '../components/Delay';
 import ImageButton from '../components/ImageButton';
+import validateAfterRegister from './ValidateAfterRegister';
+
+
 
 // import { createDatabaseIfNotExists } from '../gestionSQLite/RepositorySQLite';
 const { width, height } = Dimensions.get("screen");
 
-export default function AfterRegister({navigation}) {
+export default function AfterRegister({navigation,route}) {
   
- 
   const[errors, setErrors]= useState({})
   const[trainerForm, setTrainerForm]= useState({
     "formacion": "",
@@ -34,10 +36,57 @@ export default function AfterRegister({navigation}) {
   const [clientSelected,setClientSelected]= useState(true)
   const [trainerSelected,setTrainerSelected]= useState(false)
   const [image, setImage] = useState(null);
+  const[logged,setLogged]= useState(false)
 
+ const login = () => { // Login
+    console.log("ENTRO EN LOGIN")
+   
+        const data= {
+          "nameOrEmail": route["params"]["email"],
+          "password": route["params"]["password"],
+        }
+        console.log(data)
+        call(`/api/auth/signin`,"POST",navigation,data)
+          .then(async response  =>  {
+
+              if(response !== undefined && response.ok){
+              let respuestaTexto= await response.text()
+              let auth_token = await respuestaTexto.split(" ")[1]
+              let emailLogeado =  await respuestaTexto.split(" ")[0]
+              
+              console.log("AUTH TOKEN en AFTER REGISTER")
+              console.log(auth_token)
+              saveCookie("AuthToken",auth_token)
+
+              call('/usuarios/email/'+emailLogeado, 'GET',navigation).then(async response => {
+                
+                  if(response !== undefined && response.ok){
+                      const usuario = await response.json()
+                    
+                      saveCookie("idLogged",""+usuario.id);
+                      saveCookie("nameLogged",""+usuario.name);
+                      saveCookie("apellidosLogged",""+usuario.apellidos);
+                      saveCookie("emailLogged",""+usuario.email);
+                      // createDatabaseIfNotExists() Base de datos local 
+                      setLogged(true)
+                      console.log("LOGEADO")
+                    
+                      
+
+                  }else{
+                      
+                      deleteCookie("AuthToken");
+                      
+                      
+                  }
+              });
+          }
+      })
+    
+  }
   const pickImage = async () => {
     setIsLoadingGaleria(true)
-    // No permissions request is necessary for launching the image library
+    
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -56,7 +105,6 @@ export default function AfterRegister({navigation}) {
   };
   const takeAPicture = async () => {
     setIsLoadingCamara(true)
-    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -72,17 +120,58 @@ export default function AfterRegister({navigation}) {
     }
   };
 
+  const toggleSwitch = () => {
+   
+    setTrainerForm({...trainerForm,["publico"]:!trainerForm["publico"]})};
+
 
   const handleSubmit= evt => {
     setIsLoadingGuardar(true)
-
-        const data= {
-            "trainer": trainerSelected ? true:false,
-            "image": image,
-        }
-       
-    // Loading guardar false
+    if (!logged){
+      login()
+    }
       
+    if(trainerSelected){
+        var nuevosErrores= validateAfterRegister(trainerForm)
+        setErrors(nuevosErrores)
+        var numeroErrores = Object.keys(nuevosErrores).length;
+        if(numeroErrores===0){ // Create Entrenador Profile
+          const data= {
+            "esPublico":trainerForm.publico,
+            "formacion": trainerForm.formacion,
+            "descripcionSobreMi":trainerForm.descripcion,
+            "descripcionExperiencia": trainerForm.experiencia,
+          }
+          
+            call('/entrenadores/'+route["params"]["email"],"POST", navigation, data)
+            .then(async response => {
+              
+              if (response.ok){
+                console.log("Entrenador creado")
+                navigation.navigate('CrearServicio')
+                await delay(1000)
+                setIsLoadingGuardar(false)
+                
+              }else{
+                setIsLoadingGuardar(false)
+              }
+            })
+  
+          ;
+  
+          
+  
+        }else{
+            setIsLoadingGuardar(false)
+        }
+      }else{
+        // When the image uploader works on Amazon S3, send a request to the backend
+        navigation.navigate('CrearServicio')
+        setIsLoadingGuardar(false)
+      }
+
+    
+    
   }  
 
     return (
@@ -171,6 +260,22 @@ export default function AfterRegister({navigation}) {
                       onChangeText={text => setTrainerForm({...trainerForm,["descripcion"]:text})}
                     />
             </Block>
+            
+            <Block flex row center>
+            <Text 
+                    h6
+                    style={{marginRight:"4%"}}
+                    bold
+          
+                    color={argonTheme.COLORS.DEFAULT}>Perfil Público</Text>
+            <Switch
+              style={{ transform: [{ scaleX: 1.2 }, { scaleY: 1.2}] }}
+              
+              color={argonTheme.COLORS.PRIMARY}
+              value={trainerForm["publico"]}
+              onValueChange={() => toggleSwitch()}
+            />
+            </Block>
                 
                 </>
                 )
@@ -195,7 +300,7 @@ export default function AfterRegister({navigation}) {
             </Block>
             <Block  flex row middle style={{marginTop:"6%"}}>
              
-                    <Button loading={isLoadingGaleria} onPress={pickImage} color="primary" style={styles.createButton}>
+                    <Button disabled={isLoadingGaleria} loading={isLoadingGaleria} onPress={pickImage} color="primary" style={styles.createButton}>
                       <Block flex row >
                       <Icon 
                         size={20}
@@ -211,7 +316,7 @@ export default function AfterRegister({navigation}) {
                      
                     </Button>
                 
-                    <Button loading={isLoadingCamara} onPress={takeAPicture} color="primary" style={styles.photoButton}>
+                    <Button disabled={isLoadingCamara} loading={isLoadingCamara} onPress={takeAPicture} color="primary" style={styles.photoButton}>
                     <Icon
                       
                       size={20}
@@ -226,7 +331,7 @@ export default function AfterRegister({navigation}) {
             
             
             <Block style={{marginTop:"6%"}} middle>
-                  <Button loading={isLoadingGuardar} onPress={handleSubmit} color="icon" style={styles.createButton}>
+                  <Button disabled={isLoadingGuardar} loading={isLoadingGuardar} onPress={handleSubmit} color="icon" style={styles.createButton}>
                     <Text bold size={17} color={argonTheme.COLORS.WHITE}>Guardar</Text>
                   </Button>
             </Block>
@@ -269,7 +374,7 @@ export default function AfterRegister({navigation}) {
       marginTop:"5%",
       marginBottom:"1%"
     }, invisibleContainer:{
-        marginRight:"8%"
+        marginRight:"5%"
     }, textInImage:{
       marginBottom: "5%"
     },photoButton:{

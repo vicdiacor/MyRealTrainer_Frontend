@@ -24,13 +24,9 @@ const MainStack = () => {
     <NavigationContainer>
        
        <Stack.Navigator>
-          <Stack.Screen
-            name="AfterRegister"
-            component={AfterRegister}
-            options={{ headerShown: false }
-            }
-            />
-
+        
+          
+    
        <Stack.Screen
             name="Login"
             component={Login}
@@ -93,6 +89,12 @@ const MainStack = () => {
           <Stack.Screen
             name="Registro"
             component={Registro}
+            options={{ headerShown: false }
+            }
+            />
+               <Stack.Screen
+            name="AfterRegister"
+            component={AfterRegister}
             options={{ headerShown: false }
             }
             />

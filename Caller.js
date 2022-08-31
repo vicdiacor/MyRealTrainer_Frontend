@@ -13,7 +13,8 @@ const urlFrontend = "http://192.168.1.15:19000";
         let headers_ = {"Content-Type": "application/json", "Access-Control-Allow-Origin" : urlFrontend, "mode": "cors"};
         
         const token = await getCookie('AuthToken');
-       
+        console.log("TOKEN DESDE EL CALL")
+        console.log(token)
 
         
         if(token !== undefined && token !== "undefined"){
@@ -42,7 +43,8 @@ const urlFrontend = "http://192.168.1.15:19000";
             headers: headers_,
             body: (JSON.stringify(body))
         };
-       
+       console.log("Request options desde el call")
+       console.log(requestOptions)
         return await fetch(urlBackend+pathToCall, requestOptions).then(response =>{
             console.log("Response en CALL para el path " + pathToCall)
             console.log(response)

@@ -113,7 +113,7 @@ export default function Login({navigation}) {
                 enabled
               >
             
-            <Block style={{marginTop:"10%",marginBottom:"5%"}} flex middle>
+            <Block style={{marginTop:"10%",marginBottom:"5%"}} flex row  center>
                
                   <Text
                     h2
@@ -125,7 +125,7 @@ export default function Login({navigation}) {
                   </Text>
                 </Block>
            
-            <Block width={width * 0.8} style={styles.blockInput}>
+            <Block flex row center width={width * 0.8} style={styles.blockInput}>
                       <FloatingLabelInput
                         
                         errorMessage={formErrorMessage(errors,"email")}
@@ -144,7 +144,7 @@ export default function Login({navigation}) {
                       
                       />
               </Block>
-              <Block width={width * 0.8} style={styles.blockInput}>
+              <Block flex row center width={width * 0.8} style={styles.blockInput}>
                     <FloatingLabelInput
                       label="Contraseña"
                       value={form.password}
@@ -164,16 +164,17 @@ export default function Login({navigation}) {
                     />
                 </Block>
            
-                <Block style={{marginTop:"6%"}} middle>
-                      <Button loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
+                <Block flex row center style={{marginTop:"6%"}} middle>
+                      <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
                         <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                           Iniciar Sesión
                         </Text>
                       </Button>
                 </Block>
 
-                <Block  middle>
+                <Block  flex row center>
                     <Button 
+                      
                       onPress={() => navigation.navigate('Registro')} 
                         style={styles.invisibleButton}
                         shadowless
@@ -204,8 +205,7 @@ export default function Login({navigation}) {
     },
     blockInput:{
       
-      marginRight: "6%", 
-      marginLeft:"6%"
+      marginTop:"6%"
     },
    createButton: {
       width: width * 0.5,

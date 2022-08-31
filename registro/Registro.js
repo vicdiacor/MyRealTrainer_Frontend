@@ -46,12 +46,8 @@ export default function Registro({navigation}) {
 
   const handleSubmit= evt => {
     setIsLoading(true)
-    console.log("FORM ANTES DE VALIDAR")
-    console.log(form)
     var nuevosErrores= validateRegistroForm(form)
     setErrors(nuevosErrores)
-    console.log("NUEVOS ERRORS")
-    console.log(nuevosErrores)
     var numeroErrores = Object.keys(nuevosErrores).length;
     if(numeroErrores===0){
       
@@ -71,7 +67,7 @@ export default function Registro({navigation}) {
           
           if (response.ok){
             
-           navigation.navigate('AfterRegister')
+           navigation.navigate('AfterRegister',{email:form.email,password:form.password})
            await delay(1000)
            setIsLoading(false)
             
@@ -95,7 +91,7 @@ export default function Registro({navigation}) {
             <Block  flex style={styles.registerContainer}>
               
               <Block flex >
-                <Block style={{marginTop:"10%",marginBottom:"5%"}} flex middle>
+                <Block style={{marginTop:"10%",marginBottom:"5%"}} flex row center>
                
                   <Text
                     h3
@@ -217,7 +213,7 @@ export default function Registro({navigation}) {
                     </TouchableWithoutFeedback>
                   
                     {show ? (datePicker("date",form.fechaNacimiento===""?new Date():form.fechaNacimiento,onChangeFechaNacimiento)):(null)}
-                    <Block row width={width * 0.75} style={styles.blockInput}>
+                    <Block center row width={width * 0.75} style={styles.blockInput}>
                       <Checkbox
                       onChange={() => {
                         errors["politicaPrivacidad"]=undefined
@@ -247,7 +243,7 @@ export default function Registro({navigation}) {
                       
                     </Block>
                     <Block  middle>
-                      <Button loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
+                      <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
                         <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                           Crear cuenta
                         </Text>
@@ -319,8 +315,7 @@ const styles = StyleSheet.create({
   },
   blockInput:{
     
-    marginRight: 0.06*width, 
-    marginLeft:0.06*width,
+  
     
   },invisibleButton:{
     width: 128, 
