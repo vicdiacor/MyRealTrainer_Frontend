@@ -7,7 +7,7 @@ import {
 import {  Input } from "./";
 import { argonTheme } from "../constants";
 import formErrorMessage from './FormErrorMessage';
-function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline,initialNumberOfLines,textCounter,maxLength,value,...props}) {
+function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline,initialNumberOfLines,textCounter,maxLength,placeholderFontSize,value,...props}) {
 
   const [state,setState]= useState({
     isFocused: false,
@@ -39,7 +39,7 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
       position: 'absolute',
       left: 20,
       top: state.isFocused || state.haveValue ? 15 : 28,
-      fontSize: state.isFocused || state.haveValue ? 14 : 17,
+      fontSize: state.isFocused || state.haveValue ? 14 : (placeholderFontSize==undefined? 17: placeholderFontSize),
       color: state.isFocused || state.haveValue ?  '#5e72e4': '#aaa',
       zIndex: 4,
       flex: props.iconContent==undefined? 0.87: 0.72,

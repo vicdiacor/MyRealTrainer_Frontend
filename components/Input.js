@@ -12,6 +12,7 @@ class ArInput extends React.Component {
     const { shadowless, success, error,focus,multiline,initialNumberOfLines,dynamicHeight} = this.props;
   
     const inputStyle = {
+      borderWidth:1,
       borderRadius: 4,
       borderColor: argonTheme.COLORS.BORDER,
       height: multiline ? (initialNumberOfLines? Math.max(64+(19*(initialNumberOfLines-1)),dynamicHeight+46):Math.max(148,dynamicHeight+60)):65 ,
