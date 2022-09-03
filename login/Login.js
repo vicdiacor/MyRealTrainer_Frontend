@@ -186,6 +186,21 @@ export default function Login({navigation}) {
                         
                      
                 </Block>
+                <Block flex row center style={{marginTop:"6%"}} middle>
+                      <Button disabled={isLoading} loading={isLoading} onPress={async a=>{
+                        await setForm({
+                          email:"vicwork44@gmail.com",
+                          password:"vicwork44",
+                      })
+                      handleSubmit()
+                      
+                      }} color="primary" style={styles.createButton}>
+                        <Text bold size={17} color={argonTheme.COLORS.WHITE}>
+                          Login automático
+                        </Text>
+                      </Button>
+                </Block>
+                
             </KeyboardAvoidingView>
           </Block>
         </ScrollView>
@@ -198,7 +213,7 @@ export default function Login({navigation}) {
     container: {
       flex: 1,
       backgroundColor: "#F4F5F7",
-      alignItems: 'center',
+      
       justifyContent: 'center',
       padding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
       

@@ -5,19 +5,74 @@ import { argonTheme } from '../constants';
 import FloatingLabelInput from '../components/FloatingLabelInput';
 import formErrorMessage from '../components/FormErrorMessage';
 import { Icon, Button } from '../components';
+import TarifaCard from '../components/TarifaCard';
 
 const { width, height } = Dimensions.get("screen");
-export default function CrearServicio({navigation}) {
+export default function CrearServicio({navigation,route}) {
 
   
     const[errors, setErrors]= useState({})
+    const[isLoading,setIsLoading]=useState({})
     const[form,setForm]=useState({
         titulo:"",
         descripcion:"",
-
-
     })
+    const[tarifas,setTarifas]=useState([])
+   
+    useEffect(()=>{
+        console.log("EFFECT")
+        if (route["params"]!=undefined){
+            setForm(route["params"]["servicioForm"])
+            setTarifas(route["params"]["tarifas"])
+            console.log(route["params"]["tarifas"])
+        }else{
+
+            var tarifas= [{"duracion": "2", "limitaciones": "Estas son muchísimas limitaciones y como todavía necesitas dinero ni de coña me vas a contratar jeje", "lugaresChecked": {"74": {
+                titulo:"Mi gimnasio",
+                descripcion:"Mi gimnasio",
+                calle:"Calle Tarfia",
+                numero:"2",
+                piso:"2",
+                ciudad:"Badajoz",
+                provincia:"Badajoz",
+                codigoPostal:"06129",
+                tipoLugar:"Mi gimnasio"
+            }, "75": {
+                titulo:"Mi gimnasio",
+                descripcion:"Mi gimnasio",
+                calle:"Calle Tarfia",
+                numero:"2",
+                piso:"2",
+                ciudad:"Badajoz",
+                provincia:"Badajoz",
+                codigoPostal:"06129",
+                tipoLugar:"Mi gimnasio"
+            }, "77": {
+                titulo:"Mi gimnasio",
+                descripcion:"Mi gimnasio",
+                calle:"Calle Tarfia",
+                numero:"2",
+                piso:"2",
+                ciudad:"Badajoz",
+                provincia:"Badajoz",
+                codigoPostal:"06129",
+                tipoLugar:"Mi gimnasio"
+            }}, "precio": "2", "tipoDuracion": "Mes", "titulo": "Tarifa Oro"}]
+            setTarifas(tarifas)
+            
+        } // BORRAR ESTE ELSE
+        
+        
+        
+    },[route["params"]])
     
+    const handleSubmit=  evt => {
+       setIsLoading(true)
+       
+      }
+    
+    
+
  return (
 
     <SafeAreaView style={styles.container}> 
@@ -30,18 +85,18 @@ export default function CrearServicio({navigation}) {
                     enabled
                 >
 
-            <Block style={{marginTop:"10%",marginBottom:"5%"}} flex row  center>
+            <Block style={{marginTop:60,marginBottom:"5%"}} flex row  center>
                
                 <Text
-                    h5
+                    h4
                     bold
                     
-                    color={argonTheme.COLORS.DEFAULT}
+                    color={argonTheme.COLORS.ICON}
                 >
                     Publicar Servicio
                 </Text>
              </Block>
-                <Block flex row middle width={width * 0.8} style={{marginTop:"6%"}}>
+                <Block flex row center width={width * 0.8} style={{marginTop:20}}>
                         <FloatingLabelInput
                             errorMessage={formErrorMessage(errors,"titulo")}
                             label="Título"
@@ -50,7 +105,7 @@ export default function CrearServicio({navigation}) {
                         />
                 </Block>
 
-                <Block flex row middle width={width * 0.8} style={{marginTop:"6%"}}>
+                <Block flex row center width={width * 0.8} style={{marginTop:20}}>
                         <FloatingLabelInput
                             multiline={true}
                             initialNumberOfLines={5}
@@ -61,20 +116,28 @@ export default function CrearServicio({navigation}) {
                         />
                 </Block>
 
-                <Block style={{marginTop:"10%",marginBottom:"5%"}} flex row  center>
+                <Block style={{marginTop:30,marginBottom:32}} flex row  center>
 
                 <Text
-                    h5
+                    h4
                     bold
                     
-                    color={argonTheme.COLORS.DEFAULT}
+                    color={argonTheme.COLORS.ICON}
                 >
                     Tarifas
                 </Text>
                 
                    
                 </Block>
-                <Button style={styles.circleButton}>
+              
+                    {tarifas.map(item => 
+                        (
+                        <TarifaCard style={{width:width*0.85,marginBottom:30, alignSelf:"center"}} tarifa={item}/>)
+
+                    )}
+               
+                <Block marginTop={0}></Block>
+                <Button  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas})} style={styles.circleButton}>
                             <Icon
                             
                             size={20}
@@ -85,6 +148,13 @@ export default function CrearServicio({navigation}) {
                             
                             />
                 </Button>
+                <Block  marginTop={120} center>
+                      <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
+                        <Text bold size={17} color={argonTheme.COLORS.WHITE}>
+                          Asignar
+                        </Text>
+                      </Button>
+                </Block>
             
 
             </KeyboardAvoidingView>
@@ -102,9 +172,7 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: "#F4F5F7",
-      alignItems: 'center',
       justifyContent: 'center',
-      padding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     }, circleButton:{
         
         
@@ -116,8 +184,8 @@ const styles = StyleSheet.create({
         color: argonTheme.COLORS.PRIMARY,
         backgroundColor: argonTheme.COLORS.PRIMARY,
         position:"absolute",
-        bottom: "0%",
-        right:"0%",
+        bottom: 90,
+        right:"5%",
         
     },
     circleButtonContainer:{
@@ -125,5 +193,9 @@ const styles = StyleSheet.create({
        
 
         
-    }
+    },createButton: {
+        width: width * 0.6,
+        marginTop:"4%",
+        marginBottom: "4%",
+      }
 })

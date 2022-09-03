@@ -8,10 +8,14 @@ import { Icon, Button, Select } from '../components';
 import RNPickerSelect from "react-native-picker-select";
 import CheckBoxLugarEntrenamiento from '../components/CheckBoxLugarEntrenamiento';
 import SelectPicker from '../components/SelectPicker';
+import { delay } from '../components/Delay';
+import call from '../Caller';
+import {getCookie} from "../temporal_database/SecureStore"
+
 
 const { width, height } = Dimensions.get("screen");
-export default function CrearTarifa({navigation}) {
-
+export default function CrearTarifa({navigation,route}) {
+    
     const [isLoading,setIsLoading]= useState(false)
     const[errors, setErrors]= useState({})
     const[form,setForm]=useState({
@@ -20,26 +24,55 @@ export default function CrearTarifa({navigation}) {
         duracion:"",
         tipoDuracion:"Mes",
         limitaciones:"",
+        
 
     })
-    const handleSubmit= evt => {
-        setIsLoading(true)
-        
     
+    const[lugares,setLugares]=useState([])
+    const[lugaresChecked,setLugaresChecked]=useState({})
+
+    const handleSubmit=  evt => {
+        setIsLoading(true)
+        var tarifaActual = {...form,["lugaresChecked"]:lugaresChecked}
+        var tarifas= route["params"]["tarifas"]
+        tarifas.push(tarifaActual)
+        navigation.navigate('CrearServicio',{"servicioForm":route["params"]["servicioForm"],"tarifas":tarifas})
+        setIsLoading(false)
       }
+    useEffect(()=>{
+        if(route["params"]["tarifaForm"]){
+            setForm(route["params"]["tarifaForm"])
+        }
+        getCookie("emailLogged").then(email => {
+            call('/lugares/'+email,"GET", navigation)
+            .then(response => {
+              if (response.ok){
+                response.json().then(data => {
+                    setLugares(data)
+                 
+                })
+              }else{
+                navigation.navigate("CrearServicio",{"servicioForm":route["params"]["servicioForm"]})
+              }
+            }) 
+        })
+     
+
+    },[route["params"]])
+
  return (
 
     <SafeAreaView style={styles.container}> 
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={true}>
-            <Block flex safe  > 
+            <Block flex safe > 
                 <KeyboardAvoidingView
                     
 
 
                     enabled
                 >
-
-            <Block style={{marginTop:"10%",marginBottom:"5%"}} flex row  center>
+             
+            <Block style={{marginTop:"20%",marginBottom:"5%"}} flex row  center>
                
                 <Text
                     h5
@@ -47,7 +80,7 @@ export default function CrearTarifa({navigation}) {
                     
                     color={argonTheme.COLORS.ICON}
                 >
-                    Crear Tarifa
+                    Asignar Tarifa
                 </Text>
              </Block>
              
@@ -60,8 +93,8 @@ export default function CrearTarifa({navigation}) {
                             onChangeText={text => setForm({...form,["titulo"]:text})}
                         />
                 </Block>
-                <Block flex row style={{marginTop:"6%"}}>
-                    <Block  flex={0.30} row width={width * 0.30}>
+                <Block center flex row style={{marginTop:"6%", left:"0%"}}>
+                    <Block  flex={0.25} row width="25%">
                             <FloatingLabelInput
                                 placeholderFontSize={15}
                                 keyboardType="numeric"
@@ -72,7 +105,7 @@ export default function CrearTarifa({navigation}) {
                             />
                             
                     </Block>
-                    <Block  style={{marginLeft:"1%"}} flex={0.30} row width={width * 0.30}>
+                    <Block  style={{marginLeft:"1%"}} flex={0.25} row width="25%">
                             <FloatingLabelInput
                                 placeholderFontSize={15}
                                 keyboardType="numeric"
@@ -83,9 +116,9 @@ export default function CrearTarifa({navigation}) {
                             />
                             
                     </Block>
-                    <Block style={{marginLeft:"1%",marginTop:"2.4%"}} flex={0.4} row>
+                    <Block style={{marginLeft:"1%"}} flex={0.4} width="40%" row>
                         <SelectPicker 
-                            width={width*0.33}
+                            width="100%"
                             height={65}
                             value={form.tipoDuracion}
                             onValueChange={(value) => setForm({...form,["tipoDuracion"]:value})}
@@ -123,31 +156,26 @@ export default function CrearTarifa({navigation}) {
                             Lugares de las sesiones
                         </Text>
                 </Block>
+                {lugares.map(lugar => (
+
                 <Block flex row center style={{width:"80%",marginTop:"5%"}}>
-                    <CheckBoxLugarEntrenamiento title={"Mi gimnasio"}>
-                    </CheckBoxLugarEntrenamiento>
-                </Block>
-                <Block flex row center style={{width:"80%",marginTop:"5%"}}>
-                    <CheckBoxLugarEntrenamiento title={"Telemático"}>
-                    </CheckBoxLugarEntrenamiento>
-                </Block>
-                <Block flex row center style={{width:"80%",marginTop:"5%"}}>
-                    <CheckBoxLugarEntrenamiento title={"Al aire libre"}>
+                    <CheckBoxLugarEntrenamiento 
+                    enableCheckbox={true}
+                    onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"lugar":lugar,"tarifaForm":form, "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})} 
+                    lugar={lugar}
+                    onChangeCheckbox={async isChecked => {
+                       setLugaresChecked({...lugaresChecked,[lugar["id"]]: (isChecked? lugar:null) })
+                    }
+                   }
+                    >
+                   
+                    
                     </CheckBoxLugarEntrenamiento>
                 </Block>
 
-                <Block flex row center style={{width:"80%",marginTop:"5%"}}>
-                    <CheckBoxLugarEntrenamiento title={"Tu domicilio"}>
-                    </CheckBoxLugarEntrenamiento>
-                </Block>
-                <Block flex row center style={{width:"80%",marginTop:"5%"}}>
-                    <CheckBoxLugarEntrenamiento title={"Mi domicilio"}>
-                    </CheckBoxLugarEntrenamiento>
-                </Block>
+                ))}
                 
-               
-                
-                <Button style={styles.circleButton}>
+                <Button onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"tarifaForm":form, "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})} style={styles.circleButton}>
                             <Icon
                             
                             size={20}
@@ -162,7 +190,7 @@ export default function CrearTarifa({navigation}) {
                 <Block  marginTop="30%" center>
                       <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
                         <Text bold size={17} color={argonTheme.COLORS.WHITE}>
-                          Guardar
+                          Asignar
                         </Text>
                       </Button>
                 </Block>
@@ -184,13 +212,9 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: "#F4F5F7",
-      alignItems: 'center',
       justifyContent: 'center',
-      padding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+
     }, circleButton:{
-        
-        
-        
         zIndex:10,
         borderRadius: 100,
         width: width*0.13,
@@ -199,9 +223,7 @@ const styles = StyleSheet.create({
         backgroundColor: argonTheme.COLORS.PRIMARY,
         position:"absolute",
         bottom: "7%",
-        right:"0%",
-    
-        
+        right:"5%",
     },
     pickerContainer:{
         marginLeft:"1%",

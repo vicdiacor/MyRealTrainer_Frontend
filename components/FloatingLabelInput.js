@@ -1,4 +1,4 @@
-import React, { Component,useState,useRef } from 'react';
+import React, { Component,useState,useRef, useEffect } from 'react';
 import {
   View,
   TextInput,Text,
@@ -11,9 +11,13 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
 
   const [state,setState]= useState({
     isFocused: false,
-    haveValue: !value || !value.trim()? false:true,
+    haveValue: false
   })
+  
+  useEffect(()=>{
+    !value || !value.trim()?  setState({...state, haveValue: false }) : setState({...state, haveValue: true })
 
+  },[])
   const [dynamicHeight, setDynamicHeight]=useState(21)
   const textInputRef = useRef(null);
 

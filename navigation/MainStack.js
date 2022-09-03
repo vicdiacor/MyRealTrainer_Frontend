@@ -26,6 +26,19 @@ const MainStack = () => {
     <NavigationContainer>
        
      <Stack.Navigator>
+    
+     <Stack.Screen
+            name="Login"
+            component={Login}
+            options={{ headerShown: false }
+            }
+            />
+      <Stack.Screen
+            name="CrearLugarEntrenamiento"
+            component={CrearLugarEntrenamiento}
+            options={{ headerShown: false }
+            }
+            />
 
        <Stack.Screen
             name="CrearTarifa"
@@ -40,13 +53,7 @@ const MainStack = () => {
             }
             />
     
-       <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: false }
-            }
-            />
-
+      
        
       
 
