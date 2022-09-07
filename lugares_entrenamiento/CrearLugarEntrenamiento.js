@@ -7,9 +7,10 @@ import formErrorMessage from '../components/FormErrorMessage';
 import { Icon, Button, Select } from '../components';
 import RNPickerSelect from "react-native-picker-select";
 import SelectPicker from '../components/SelectPicker';
-import {backendFormatLugar, frontendFormatLugar} from "../util/UtilFunctions"
+import {backendFormatLugar, frontendFormatLugar, showBackendErrors} from "../util/UtilFunctions"
 import { getCookie } from '../temporal_database/SecureStore';
 import call from '../Caller';
+import validateCrearLugarEntrenammiento from './ValidateCrearLugarEntrenamiento';
 const { width, height } = Dimensions.get("screen");
 export default function CrearLugarEntrenamiento({navigation,route}) {
 
@@ -56,31 +57,38 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
     
   const handleSubmit= evt => {
     setIsLoading(true)
-    var data={
-        titulo:form.titulo,
-        descripcion:form.descripcion,
-        direccion: form.calle + "," + form.numero + "," + form.piso,
-        ciudad:form.ciudad,
-        provincia:form.provincia,
-        codigoPostal:form.codigoPostal,
-        tipoLugar: backendFormatLugar(form.tipoLugar)
+    var nuevosErrores= validateCrearLugarEntrenammiento(form)
+    setErrors(nuevosErrores)
+    var numeroErrores = Object.keys(nuevosErrores).length;
+    if(numeroErrores===0){
+        var data={
+            titulo:form.titulo,
+            descripcion:form.descripcion,
+            tipoLugar: backendFormatLugar(form.tipoLugar),
+            direccion: {
+                calle:form.calle,
+                numero:form.numero,
+                piso:form.piso,
+                ciudad:form.ciudad,
+                provincia:form.provincia
+            }
+        }
+        getCookie("emailLogged").then(email => {
+            call('/lugares/'+email,"POST", navigation,data)
+            .then(response => {
+              if (response.ok){
+                navigation.navigate("CrearTarifa",{"tarifaForm":route["params"]["tarifaForm"], "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})
+                setIsLoading(false)
+              }else{
+                setIsLoading(false)
+                showBackendErrors(response)
+              }
+            }) 
+        })
+    }else{
+        setIsLoading(false)
     }
-    console.log("DATA")
-    console.log(data)
-    getCookie("emailLogged").then(email => {
-        call('/lugares/'+email,"POST", navigation,data)
-        .then(response => {
-          if (response.ok){
-            navigation.navigate("CrearTarifa",{"tarifaForm":route["params"]["tarifaForm"], "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})
-            setIsLoading(false)
-          }else{
-            navigation.navigate("CrearTarifa",{"tarifaForm":route["params"]["tarifaForm"], "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})
-            setIsLoading(false)
-          }
-        }) 
-    })
     
-
   }
     
  return (
@@ -135,6 +143,7 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
                                 value={form.tipoLugar}
                                 title="Tipo"
                                 onValueChange={(value) => setForm({...form,["tipoLugar"]:value})}
+                                errorMessage={formErrorMessage(errors,"tipoLugar")}
                                 items={[
                                     { color:argonTheme.COLORS.BLACK ,label: "  Mi gimnasio", value: "Mi gimnasio" },
                                     { color:argonTheme.COLORS.BLACK ,label: "  Mi domicilio", value: "Mi domicilio" },
@@ -143,6 +152,7 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
                                     { color:argonTheme.COLORS.BLACK ,label: "  Telemático", value: "Telemático" }
                                 
                                 ]}/>
+
                 </Block>
                 {form.tipoLugar==="Telemático"? null : 
                 (<>
@@ -172,7 +182,7 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
 
            <Block flex row center width={width * 0.85}>
                    <FloatingLabelInput
-                       
+                        
                        errorMessage={formErrorMessage(errors,"numero")}
                        label="Nº"
                        value={form.numero}

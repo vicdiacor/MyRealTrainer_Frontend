@@ -62,6 +62,7 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
       flex: props.iconContent==undefined? 0.87: 0.72,
       flexDirection: 'row',      
       width:props.iconContent==undefined? '87%':'72%',
+      fontWeight: "bold"
       
     };
     const textInputStyle = { 
@@ -93,7 +94,7 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
 
     return (
       
-      <View style={{flex:1}}>
+      <View style={{flex:1, alignSelf:"baseline"}}>
         <TouchableWithoutFeedback onPress={() => {textInputRef.current.focus()}} >
         <View>
         <Text

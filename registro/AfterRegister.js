@@ -13,6 +13,7 @@ import { Block, Text } from "galio-framework";
 import { delay } from '../components/Delay';
 import ImageButton from '../components/ImageButton';
 import validateAfterRegister from './ValidateAfterRegister';
+import { showBackendErrors } from '../util/UtilFunctions';
 
 
 
@@ -38,14 +39,16 @@ export default function AfterRegister({navigation,route}) {
   const [image, setImage] = useState(null);
   const[logged,setLogged]= useState(false)
 
- const login = () => { // Login
-    console.log("ENTRO EN LOGIN")
+ 
+ const handleSubmit = evt => {
+   
+    setIsLoadingGuardar(true)
    
         const data= {
           "nameOrEmail": route["params"]["email"],
           "password": route["params"]["password"],
         }
-        console.log(data)
+        
         call(`/api/auth/signin`,"POST",navigation,data)
           .then(async response  =>  {
 
@@ -54,8 +57,6 @@ export default function AfterRegister({navigation,route}) {
               let auth_token = await respuestaTexto.split(" ")[1]
               let emailLogeado =  await respuestaTexto.split(" ")[0]
               
-              console.log("AUTH TOKEN en AFTER REGISTER")
-              console.log(auth_token)
               saveCookie("AuthToken",auth_token)
 
               call('/usuarios/email/'+emailLogeado, 'GET',navigation).then(async response => {
@@ -70,13 +71,55 @@ export default function AfterRegister({navigation,route}) {
                       // createDatabaseIfNotExists() Base de datos local 
                       setLogged(true)
                       console.log("LOGEADO")
-                    
                       
+                      if(trainerSelected){
+                        console.log("Creating entrenador...")
+                        var nuevosErrores= validateAfterRegister(trainerForm)
+                        setErrors(nuevosErrores)
+                        var numeroErrores = Object.keys(nuevosErrores).length;
+                        if(numeroErrores===0){ // Create Entrenador Profile
+                          const data= {
+                            "esPublico":trainerForm.publico,
+                            "formacion": trainerForm.formacion,
+                            "descripcionSobreMi":trainerForm.descripcion,
+                            "descripcionExperiencia": trainerForm.experiencia,
+                          }
+                          
+                            call('/entrenadores/'+route["params"]["email"],"POST", navigation, data)
+                            .then(async response => {
+                              
+                              if (response.ok){
+                                console.log("Entrenador creado")
+                                navigation.navigate('CrearServicio')
+                                await delay(1000)
+                                setIsLoadingGuardar(false)
+                                
+                              }else{
+                                setIsLoadingGuardar(false)
+                                showBackendErrors(response)
+                                
+                              }
+                            })
+                  
+                          ;
+                  
+                          
+                  
+                        }else{
+                            setIsLoadingGuardar(false)
+                        }
+                      }else{
+                        // When the image uploader works on Amazon S3, send a request to the backend
+                        navigation.navigate('CrearServicio')
+                        setIsLoadingGuardar(false)
+                      }
+                          
 
                   }else{
-                      
+
+                      setIsLoadingGuardar(false)
+                      showBackendErrors(response)
                       deleteCookie("AuthToken");
-                      
                       
                   }
               });
@@ -125,54 +168,7 @@ export default function AfterRegister({navigation,route}) {
     setTrainerForm({...trainerForm,["publico"]:!trainerForm["publico"]})};
 
 
-  const handleSubmit= evt => {
-    setIsLoadingGuardar(true)
-    if (!logged){
-      login()
-    }
-      
-    if(trainerSelected){
-        var nuevosErrores= validateAfterRegister(trainerForm)
-        setErrors(nuevosErrores)
-        var numeroErrores = Object.keys(nuevosErrores).length;
-        if(numeroErrores===0){ // Create Entrenador Profile
-          const data= {
-            "esPublico":trainerForm.publico,
-            "formacion": trainerForm.formacion,
-            "descripcionSobreMi":trainerForm.descripcion,
-            "descripcionExperiencia": trainerForm.experiencia,
-          }
-          
-            call('/entrenadores/'+route["params"]["email"],"POST", navigation, data)
-            .then(async response => {
-              
-              if (response.ok){
-                console.log("Entrenador creado")
-                navigation.navigate('CrearServicio')
-                await delay(1000)
-                setIsLoadingGuardar(false)
-                
-              }else{
-                setIsLoadingGuardar(false)
-              }
-            })
   
-          ;
-  
-          
-  
-        }else{
-            setIsLoadingGuardar(false)
-        }
-      }else{
-        // When the image uploader works on Amazon S3, send a request to the backend
-        navigation.navigate('CrearServicio')
-        setIsLoadingGuardar(false)
-      }
-
-    
-    
-  }  
 
     return (
 
@@ -331,7 +327,7 @@ export default function AfterRegister({navigation,route}) {
             
             
             <Block style={{marginTop:"6%"}} middle>
-                  <Button disabled={isLoadingGuardar} loading={isLoadingGuardar} onPress={handleSubmit} color="icon" style={styles.createButton}>
+                  <Button  disabled={isLoadingGuardar} loading={isLoadingGuardar} onPress={handleSubmit} color="icon" style={styles.createButton}>
                     <Text bold size={17} color={argonTheme.COLORS.WHITE}>Guardar</Text>
                   </Button>
             </Block>
@@ -348,9 +344,8 @@ export default function AfterRegister({navigation,route}) {
     container: {
       flex: 1,
       backgroundColor: "#F4F5F7",
-      alignItems: 'center',
+     
       justifyContent: 'center',
-      padding: Platform.OS === "android" ? StatusBar.currentHeight : 0,
       
     },
     blockInput:{

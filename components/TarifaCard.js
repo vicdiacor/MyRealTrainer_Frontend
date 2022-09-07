@@ -6,8 +6,7 @@ import { Icon, Button } from '.';
 import CheckBoxLugarEntrenamiento from './CheckBoxLugarEntrenamiento';
 
 export default function TarifaCard ({tarifa,style}){
-    console.log("TARIFA CARD")
-    console.log(tarifa["lugaresChecked"])
+   
     return (
          
           <Block  style={[styles.containerStyle,style]}  flex  >
@@ -40,7 +39,7 @@ export default function TarifaCard ({tarifa,style}){
             <Text h6 style={{textAlign:'center'}} bold color={argonTheme.COLORS.BLACK}>Lugares</Text>
 
           </Block>
-            {Object.entries(tarifa["lugaresChecked"]).map(([key, value]) => 
+            {Object.entries(tarifa["lugares"]).map(([key, value]) => 
                 (
                 <Block flex row center style={{width:"90%",marginTop:"5%"}}>
                 <CheckBoxLugarEntrenamiento

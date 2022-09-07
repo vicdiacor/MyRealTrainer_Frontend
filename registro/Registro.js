@@ -13,6 +13,7 @@ import FloatingLabelInput from '../components/FloatingLabelInput';
 import { Button, Icon} from "../components";
 import { argonTheme } from "../constants";
 import { delay } from '../components/Delay';
+import { showBackendErrors } from '../util/UtilFunctions';
 const { width, height } = Dimensions.get("screen");
 
 
@@ -72,7 +73,9 @@ export default function Registro({navigation}) {
            setIsLoading(false)
             
           }else{
+            
             setIsLoading(false)
+            showBackendErrors(response)
           }
         })
       }else{
@@ -138,14 +141,15 @@ export default function Registro({navigation}) {
                       secureTextEntry={secureTextMode}
                       onChangeText={text => setForm({...form,["password"]:text})}
                       iconContent={
-                        <Icon
-                          onPress={()=>setSecureTextMode(!secureTextMode)}
-                          size={20}
-                          color={argonTheme.COLORS.ICON}
-                          name={secureTextMode?"eye-off":"eye" }
-                          family="Ionicons"
-                          style={{marginRight:"3%"}}
-                        />
+                          <Icon
+                            onPress={()=>setSecureTextMode(!secureTextMode)}
+                            size={23}
+                            color={argonTheme.COLORS.ICON}
+                            name={secureTextMode?"eye-off":"eye" }
+                            family="Ionicons"
+                            style={{ height:65, width:65, left: 36,top:20}}
+                            
+                          />
                       }
                     />
                     </Block>
@@ -188,7 +192,6 @@ export default function Registro({navigation}) {
                     <FloatingLabelInput
                       errorMessage={formErrorMessage(errors,"fechaNacimiento")}
                       fixedLabel={fixedLabelDate}
-                    
                       label="Fecha de nacimiento"
                       editable={false}
                       value={form.fechaNacimiento===""? "" : dateTimeFormat(form.fechaNacimiento,false)}
@@ -243,7 +246,7 @@ export default function Registro({navigation}) {
                       
                     </Block>
                     <Block  middle>
-                      <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
+                      <Button  disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
                         <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                           Crear cuenta
                         </Text>

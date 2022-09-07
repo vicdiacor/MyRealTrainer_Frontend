@@ -6,71 +6,101 @@ import FloatingLabelInput from '../components/FloatingLabelInput';
 import formErrorMessage from '../components/FormErrorMessage';
 import { Icon, Button } from '../components';
 import TarifaCard from '../components/TarifaCard';
+import { getCookie } from '../temporal_database/SecureStore';
+import call from '../Caller';
+import { delay } from '../components/Delay';
+import validateCrearServicio from './ValidateCrearServicio';
 
 const { width, height } = Dimensions.get("screen");
 export default function CrearServicio({navigation,route}) {
 
   
     const[errors, setErrors]= useState({})
-    const[isLoading,setIsLoading]=useState({})
+    const[isLoading,setIsLoading]=useState(false)
+    const[isLoadingContent,setIsLoadingContent]=useState(true)
     const[form,setForm]=useState({
         titulo:"",
         descripcion:"",
     })
-    const[tarifas,setTarifas]=useState([])
-   
+    const[tarifas,setTarifas]= useState([])
+ 
+
     useEffect(()=>{
-        console.log("EFFECT")
         if (route["params"]!=undefined){
             setForm(route["params"]["servicioForm"])
-            setTarifas(route["params"]["tarifas"])
-            console.log(route["params"]["tarifas"])
-        }else{
-
-            var tarifas= [{"duracion": "2", "limitaciones": "Estas son muchísimas limitaciones y como todavía necesitas dinero ni de coña me vas a contratar jeje", "lugaresChecked": {"74": {
-                titulo:"Mi gimnasio",
-                descripcion:"Mi gimnasio",
-                calle:"Calle Tarfia",
-                numero:"2",
-                piso:"2",
-                ciudad:"Badajoz",
-                provincia:"Badajoz",
-                codigoPostal:"06129",
-                tipoLugar:"Mi gimnasio"
-            }, "75": {
-                titulo:"Mi gimnasio",
-                descripcion:"Mi gimnasio",
-                calle:"Calle Tarfia",
-                numero:"2",
-                piso:"2",
-                ciudad:"Badajoz",
-                provincia:"Badajoz",
-                codigoPostal:"06129",
-                tipoLugar:"Mi gimnasio"
-            }, "77": {
-                titulo:"Mi gimnasio",
-                descripcion:"Mi gimnasio",
-                calle:"Calle Tarfia",
-                numero:"2",
-                piso:"2",
-                ciudad:"Badajoz",
-                provincia:"Badajoz",
-                codigoPostal:"06129",
-                tipoLugar:"Mi gimnasio"
-            }}, "precio": "2", "tipoDuracion": "Mes", "titulo": "Tarifa Oro"}]
-            setTarifas(tarifas)
             
-        } // BORRAR ESTE ELSE
-        
-        
-        
+            getCookie("emailLogged").then(email => {
+                call('/lugares/'+email,"GET", navigation)
+                .then(response => {
+                  if (response.ok){
+                    response.json().then(data => {
+    
+                        route["params"]["tarifas"].forEach(tarifa=>{
+                            Object.keys(tarifa["lugares"]).forEach(lugarId=>{
+                                tarifa["lugares"][lugarId]=data[lugarId]
+                            })
+                        
+                        })
+                    setTarifas(route["params"]["tarifas"])
+                    setIsLoadingContent(true)
+                    setIsLoadingContent(false) // We need to render 2 times
+
+                    })
+                  }else{
+                    showBackendErrors(response)
+                    navigation.navigate("CrearServicio",{"servicioForm":route["params"]["servicioForm"]})
+                  }
+                }) 
+            })
+
+        }
+
     },[route["params"]])
     
     const handleSubmit=  evt => {
        setIsLoading(true)
-       
+        // Validacion errores
+        var nuevosErrores= validateCrearServicio(form)
+        setErrors(nuevosErrores)
+        var numeroErrores = Object.keys(nuevosErrores).length;
+        if(numeroErrores===0){
+            var tarifasSubmit= []
+            tarifas.forEach( tarifa =>{
+            
+                var lugaresJSON= tarifa["lugares"]
+                var lugaresArray= []
+            
+                Object.values(lugaresJSON).forEach( lugar =>{
+                    lugaresArray.push(lugar)
+                })
+                tarifa["lugares"]=lugaresArray
+                tarifasSubmit.push(tarifa)
+            })
+            
+                var data={
+                    titulo:form.titulo,
+                    descripcion:form.descripcion,
+                    tarifas: tarifasSubmit,
+                }
+            
+                getCookie("emailLogged").then(email => {
+                    call('/servicios/'+email,"POST", navigation,data)
+                    .then(response => {
+                    if (response.ok){
+                
+                        setIsLoading(false)
+                    }else{
+                        setIsLoading(false)
+                        showBackendErrors(response)
+                    }
+                    }) 
+                })
+           
+        }else{
+            setIsLoading(false)
+        }
+        
       }
-    
     
 
  return (
@@ -98,6 +128,7 @@ export default function CrearServicio({navigation,route}) {
              </Block>
                 <Block flex row center width={width * 0.8} style={{marginTop:20}}>
                         <FloatingLabelInput
+                         maxLength={80}
                             errorMessage={formErrorMessage(errors,"titulo")}
                             label="Título"
                             value={form.titulo}
@@ -109,9 +140,11 @@ export default function CrearServicio({navigation,route}) {
                         <FloatingLabelInput
                             multiline={true}
                             initialNumberOfLines={5}
+                            maxLength={500}
                             errorMessage={formErrorMessage(errors,"descripcion")}
                             label="Descripción"
                             value={form.descripcion}
+                            textCounter={form.descripcion}
                             onChangeText={text => setForm({...form,["descripcion"]:text})}
                         />
                 </Block>
@@ -129,12 +162,12 @@ export default function CrearServicio({navigation,route}) {
                 
                    
                 </Block>
-              
-                    {tarifas.map(item => 
+                {!isLoadingContent? <>{tarifas.map(item => 
                         (
                         <TarifaCard style={{width:width*0.85,marginBottom:30, alignSelf:"center"}} tarifa={item}/>)
 
-                    )}
+                    )}</> :null}
+                    
                
                 <Block marginTop={0}></Block>
                 <Button  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas})} style={styles.circleButton}>

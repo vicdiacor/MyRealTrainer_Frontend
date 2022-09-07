@@ -78,6 +78,7 @@ export default function Login({navigation}) {
 
              }else{
                 setIsLoading(false)
+                
                 if(data.nameOrEmail &&  data.password){
                   setIsLoading(false)
                   Alert.alert(
@@ -154,13 +155,14 @@ export default function Login({navigation}) {
                       iconContent={
                         <Icon
                           onPress={()=>setSecureTextMode(!secureTextMode)}
-                          size={20}
+                          size={23}
                           color={argonTheme.COLORS.ICON}
                           name={secureTextMode?"eye-off":"eye" }
                           family="Ionicons"
-                          style={{marginRight:"3%"}}
+                          style={{ height:65, width:65, left: 36,top:20}}
+                          
                         />
-                      }
+                    }
                     />
                 </Block>
            
@@ -197,6 +199,19 @@ export default function Login({navigation}) {
                       }} color="primary" style={styles.createButton}>
                         <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                           Login automático
+                        </Text>
+                      </Button>
+                </Block>
+                <Block flex row center style={{marginTop:"6%"}} middle>
+                      <Button  onPress={ () =>{
+                         deleteCookie("AuthToken") // determine if authorized, from context or however you're doing it
+                         deleteCookie("idLogged")
+                         deleteCookie("nameLogged")
+                         deleteCookie("apellidosLogged")
+                         deleteCookie("emailLogged")
+                      }} color="primary" style={styles.createButton}>
+                        <Text bold size={17} color={argonTheme.COLORS.WHITE}>
+                          Logout
                         </Text>
                       </Button>
                 </Block>

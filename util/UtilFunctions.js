@@ -1,3 +1,4 @@
+import {Alert} from "react-native";
 
 const backendFormatLugar=(tipoLugar)=>{
     var res=""
@@ -43,5 +44,33 @@ const frontendFormatLugar=(tipoLugar)=>{
     return res
 }
 
-export {frontendFormatLugar,backendFormatLugar}
+const showBackendErrors= (response) =>{ // Display the backend errors in case of a failure http response
+    response.json().then(res => {
+
+        if(res.hasOwnProperty("errores")){ // show controlled Errors
+            var errores= res.errores
+            for (var i=0; i<errores.length; i++){
+                
+                Alert.alert(
+                    "Error",
+                    errores[i],
+                    [
+                      
+                      { text: "OK"}
+                    ]
+                  );
+
+                
+                
+            }
+            
+        } else{ // No controlled errors
+            
+           
+
+        }
+    })
+}
+
+export {frontendFormatLugar,backendFormatLugar,showBackendErrors}
 

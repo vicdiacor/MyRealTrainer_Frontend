@@ -4,13 +4,16 @@ import { Block, Text,Toast} from "galio-framework";
 import { argonTheme } from '../constants';
 import FloatingLabelInput from '../components/FloatingLabelInput';
 import formErrorMessage from '../components/FormErrorMessage';
-import { Icon, Button, Select } from '../components';
+import { Icon, Button, Select, Switch} from '../components';
 import RNPickerSelect from "react-native-picker-select";
 import CheckBoxLugarEntrenamiento from '../components/CheckBoxLugarEntrenamiento';
 import SelectPicker from '../components/SelectPicker';
 import { delay } from '../components/Delay';
 import call from '../Caller';
 import {getCookie} from "../temporal_database/SecureStore"
+import { showBackendErrors } from '../util/UtilFunctions';
+import validateCrearTarifa from './ValidateCrearTarifa';
+
 
 
 const { width, height } = Dimensions.get("screen");
@@ -22,10 +25,8 @@ export default function CrearTarifa({navigation,route}) {
         titulo:"",
         precio:"",
         duracion:"",
-        tipoDuracion:"Mes",
+        tipoDuracion:"MES",
         limitaciones:"",
-        
-
     })
     
     const[lugares,setLugares]=useState([])
@@ -33,12 +34,21 @@ export default function CrearTarifa({navigation,route}) {
 
     const handleSubmit=  evt => {
         setIsLoading(true)
-        var tarifaActual = {...form,["lugaresChecked"]:lugaresChecked}
-        var tarifas= route["params"]["tarifas"]
-        tarifas.push(tarifaActual)
-        navigation.navigate('CrearServicio',{"servicioForm":route["params"]["servicioForm"],"tarifas":tarifas})
-        setIsLoading(false)
+        var nuevosErrores= validateCrearTarifa(form)
+        setErrors(nuevosErrores)
+        var numeroErrores = Object.keys(nuevosErrores).length;
+        if(numeroErrores===0){
+            var tarifaActual = {...form,["lugares"]:lugaresChecked}
+            var tarifas= route["params"]["tarifas"]
+            tarifas.push(tarifaActual)
+            navigation.navigate('CrearServicio',{"servicioForm":route["params"]["servicioForm"],"tarifas":tarifas})
+            setIsLoading(false)
+        }else{
+            setIsLoading(false)
+        }
+       
       }
+    
     useEffect(()=>{
         if(route["params"]["tarifaForm"]){
             setForm(route["params"]["tarifaForm"])
@@ -49,9 +59,12 @@ export default function CrearTarifa({navigation,route}) {
               if (response.ok){
                 response.json().then(data => {
                     setLugares(data)
+                    console.log("BUCLE ")
+                    console.log(Object.keys(data).forEach((a)=> console.log(a)))
                  
                 })
               }else{
+                showBackendErrors(response)
                 navigation.navigate("CrearServicio",{"servicioForm":route["params"]["servicioForm"]})
               }
             }) 
@@ -87,13 +100,13 @@ export default function CrearTarifa({navigation,route}) {
                 <Block flex row center width={width * 0.85} style={{marginTop:"6%"}}>
                         <FloatingLabelInput
                             errorMessage={formErrorMessage(errors,"titulo")}
-                            
+                            maxLength={80}
                             label="Título"
                             value={form.titulo}
                             onChangeText={text => setForm({...form,["titulo"]:text})}
                         />
                 </Block>
-                <Block center flex row style={{marginTop:"6%", left:"0%"}}>
+                <Block center flex row style={{marginTop:"6%", left:"1.5%",alignSelf:"baseline"}}>
                     <Block  flex={0.25} row width="25%">
                             <FloatingLabelInput
                                 placeholderFontSize={15}
@@ -105,7 +118,7 @@ export default function CrearTarifa({navigation,route}) {
                             />
                             
                     </Block>
-                    <Block  style={{marginLeft:"1%"}} flex={0.25} row width="25%">
+                    <Block  style={{marginLeft:"1%",alignSelf:"baseline"}} flex={0.25} row width="25%">
                             <FloatingLabelInput
                                 placeholderFontSize={15}
                                 keyboardType="numeric"
@@ -116,16 +129,17 @@ export default function CrearTarifa({navigation,route}) {
                             />
                             
                     </Block>
-                    <Block style={{marginLeft:"1%"}} flex={0.4} width="40%" row>
+                    <Block style={{marginLeft:"1%",alignSelf:"baseline",top:7.7}} flex={0.4} width="40%" row>
                         <SelectPicker 
                             width="100%"
                             height={65}
                             value={form.tipoDuracion}
                             onValueChange={(value) => setForm({...form,["tipoDuracion"]:value})}
                             items={[
-                                { color:argonTheme.COLORS.BLACK ,label: "  Mes/es", value: "Mes" },
-                                { color:argonTheme.COLORS.BLACK,label: "  Año/s", value: "Año" },
-                                { color:argonTheme.COLORS.BLACK, label: "  Hora/s", value: "Hora" },
+                                { color:argonTheme.COLORS.BLACK ,label: "  Mes/es", value: "MES" },
+                                { color:argonTheme.COLORS.BLACK,label: "  Año/s", value: "SEMANA" },
+                                { color:argonTheme.COLORS.BLACK, label: "  Hora/s", value: "HORA" },
+                                { color:argonTheme.COLORS.BLACK, label: "  Año/s", value: "AÑO" },
                              
                             ]}
                         />
@@ -146,7 +160,6 @@ export default function CrearTarifa({navigation,route}) {
                 </Block>
                
                 <Block style={{marginTop:"10%",marginBottom:"5%"}} flex row  center>
-               
                         <Text
                             h5
                             bold
@@ -156,22 +169,24 @@ export default function CrearTarifa({navigation,route}) {
                             Lugares de las sesiones
                         </Text>
                 </Block>
-                {lugares.map(lugar => (
-
-                <Block flex row center style={{width:"80%",marginTop:"5%"}}>
+               
+                {Object.values(lugares).map( lugar => (
+              
+              <Block flex row center style={{width:"80%",marginTop:"5%"}}>
                     <CheckBoxLugarEntrenamiento 
                     enableCheckbox={true}
                     onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"lugar":lugar,"tarifaForm":form, "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})} 
                     lugar={lugar}
                     onChangeCheckbox={async isChecked => {
-                       setLugaresChecked({...lugaresChecked,[lugar["id"]]: (isChecked? lugar:null) })
+                        
+                        setLugaresChecked({...lugaresChecked,[lugar["id"]]: (isChecked? true:null) })
                     }
-                   }
+                    }
                     >
-                   
-                    
-                    </CheckBoxLugarEntrenamiento>
-                </Block>
+             
+              
+              </CheckBoxLugarEntrenamiento>
+          </Block>
 
                 ))}
                 
@@ -194,16 +209,11 @@ export default function CrearTarifa({navigation,route}) {
                         </Text>
                       </Button>
                 </Block>
-              
-                
-
             </KeyboardAvoidingView>
             </Block> 
             
         </ScrollView> 
     </SafeAreaView>
-
-
 
  )
 }

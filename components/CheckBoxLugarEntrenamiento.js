@@ -8,7 +8,6 @@ import { Icon, Button } from '.';
 export default function CheckBoxLugarEntrenamiento ({lugar,onPress,onChangeCheckbox,enableCheckbox}){
     
     const [numberLines,setNumberLines]= useState(64)
-  
     const containerStyle= {
       width:"100%",
       height: 64 + ((numberLines-1)*22),

@@ -3,8 +3,8 @@ import jwt_decode from 'jwt-decode';
 import {Alert} from "react-native";
 import { getCookie } from "./temporal_database/SecureStore";
 
-const urlBackend ="http://192.168.1.15:8080";
-const urlFrontend = "http://192.168.1.15:19000";
+const urlBackend ="http://192.168.0.63:8080";
+const urlFrontend = "http://192.168.0.63:19000";
 
 
      async function call(pathToCall,method,navigation,body){
@@ -48,35 +48,7 @@ const urlFrontend = "http://192.168.1.15:19000";
         return await fetch(urlBackend+pathToCall, requestOptions).then(response =>{
             console.log("Response en CALL para el path " + pathToCall)
             console.log(response)
-            if(response.ok){
-                console.log("200 OK")
-                return response
-            }else{
-                response.json().then(res => {
-
-                    if(res.hasOwnProperty("errores")){ // Mostrar errores CONTROLADOS
-                        var errores= res.errores
-                        for (var i=0; i<errores.length; i++){
-                            
-                            Alert.alert(
-                                "Error",
-                                errores[i],
-                                [
-                                  
-                                  { text: "OK"}
-                                ]
-                              );
-
-                            
-                            
-                        }
-                    } else{ // Errores no controlados
-                        
-                        return response
-
-                    }
-                })
-            }
+            return response
             
         }).catch(exception =>{
            
