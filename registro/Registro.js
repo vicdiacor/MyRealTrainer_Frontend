@@ -87,14 +87,14 @@ export default function Registro({navigation}) {
     return (
       <SafeAreaView>
       <ScrollView  showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={true}>
-      <Block  flex  middle>
+     
         
      
-          <Block flex safe  middle>
-            <Block  flex style={styles.registerContainer}>
+         
+            <Block center flex style={styles.registerContainer}>
               
               <Block flex >
-                <Block style={{marginTop:"10%",marginBottom:"5%"}} flex row center>
+                <Block style={{marginTop:"14%",marginBottom:"5%"}} flex row center>
                
                   <Text
                     h3
@@ -112,7 +112,7 @@ export default function Registro({navigation}) {
                 
                     enabled
                   >
-                     <Block width={width * 0.8} style={styles.blockInput}>
+                     <Block  row width={width * 0.8}>
                      <FloatingLabelInput
                       
                       errorMessage={formErrorMessage(errors,"email")}
@@ -133,7 +133,7 @@ export default function Registro({navigation}) {
                     </Block>
                     
 
-                    <Block width={width * 0.8} style={styles.blockInput}>
+                    <Block row width={width * 0.8}>
                     <FloatingLabelInput
                       label="Contraseña"
                       value={form.password}
@@ -156,7 +156,7 @@ export default function Registro({navigation}) {
                     
                     
                     
-                    <Block width={width * 0.8} style={styles.blockInput}>
+                    <Block  row center width={width * 0.8} >
                     <FloatingLabelInput
                       label="Nombre"
                       value={form.nombre}
@@ -166,7 +166,7 @@ export default function Registro({navigation}) {
                     />
                       
                     </Block>
-                    <Block width={width * 0.8} style={styles.blockInput}>
+                    <Block row center width={width * 0.8} >
                     <FloatingLabelInput
                        errorMessage={formErrorMessage(errors,"apellidos")}
                       label="Apellidos"
@@ -175,7 +175,7 @@ export default function Registro({navigation}) {
                       
                     />
                     </Block>
-                    <Block width={width * 0.8} style={styles.blockInput}>
+                    <Block row center width={width * 0.8}>
                     <FloatingLabelInput
                       label="Localidad"
                       value={form.localidad}
@@ -188,7 +188,7 @@ export default function Registro({navigation}) {
                     <TouchableWithoutFeedback style={{zIndex:50}} onPress={() => setShow(true)}>
 
                     
-                    <Block width={width * 0.8} style={styles.blockInput}>
+                    <Block  row center width={width * 0.8}>
                     <FloatingLabelInput
                       errorMessage={formErrorMessage(errors,"fechaNacimiento")}
                       fixedLabel={fixedLabelDate}
@@ -256,9 +256,9 @@ export default function Registro({navigation}) {
                 </Block>
               </Block>
             </Block>
-          </Block>
+          
         
-      </Block>
+     
       </ScrollView>
       </SafeAreaView>
     )
@@ -315,11 +315,6 @@ const styles = StyleSheet.create({
   createButton: {
     width: width * 0.5,
     marginBottom: "10%",
-  },
-  blockInput:{
-    
-  
-    
   },invisibleButton:{
     width: 128, 
       shadowRadius: 0,

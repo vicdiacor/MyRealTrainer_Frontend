@@ -5,12 +5,12 @@ import {  argonTheme } from "../constants";
 import { Icon, Button } from '.';
 
 
-export default function CheckBoxLugarEntrenamiento ({lugar,onPress,onChangeCheckbox,enableCheckbox}){
+export default function CheckBoxLugarEntrenamiento ({lugar,onPress,onChangeCheckbox,enableCheckbox,reducedMode}){
     
     const [numberLines,setNumberLines]= useState(64)
     const containerStyle= {
       width:"100%",
-      height: 64 + ((numberLines-1)*22),
+      height: reducedMode? 58 +((numberLines-1)*17) :64 + ((numberLines-1)*22),
       backgroundColor:"#FFFF",
       shadowColor: argonTheme.COLORS.BLACK,
       shadowOffset: { width: 0, height: 1 },
@@ -20,15 +20,16 @@ export default function CheckBoxLugarEntrenamiento ({lugar,onPress,onChangeCheck
       borderWidth:1,
       borderRadius: 4,
       borderColor: argonTheme.COLORS.BORDER,
+      alignSelf:"baseline"
     }
     const  circleButtonStyle= {
-      marginTop:11 + 3.8*(numberLines-1),
+      marginTop:reducedMode?12.5+9*(numberLines-1) :11 + 3.8*(numberLines-1),
       marginLeft: "5%",
       marginRight: "6%",
       zIndex:10,
       borderRadius: 100,
-      width: 40,
-      height: 40,
+      width: reducedMode? 30 :40,
+      height: reducedMode? 30 :40,
       color: argonTheme.COLORS.PRIMARY,
       backgroundColor: argonTheme.COLORS.PRIMARY,
   }
@@ -37,7 +38,7 @@ export default function CheckBoxLugarEntrenamiento ({lugar,onPress,onChangeCheck
       color: argonTheme.COLORS.BLACK,
       top:16,
       textAlign: "left",
-      marginLeft: "20%"
+      marginLeft: reducedMode?"13%" :"20%"
       }
 
     const handleOnTextLayout = (ev) => {
@@ -50,7 +51,7 @@ export default function CheckBoxLugarEntrenamiento ({lugar,onPress,onChangeCheck
          
           <Block style={containerStyle}  flex row  >
               <Block style={{ width:enableCheckbox? "60%":"70%"}}> 
-                <Text style={textStyle} onTextLayout={handleOnTextLayout}  color={argonTheme.COLORS.BLACK} bold size={20}>{lugar["titulo"]}</Text>
+                <Text style={textStyle} onTextLayout={handleOnTextLayout}  color={argonTheme.COLORS.BLACK} bold size={reducedMode? 15 : 20}>{lugar["titulo"]}</Text>
               </Block>
                <Button onPress={onPress} style={circleButtonStyle}>
                             <Icon

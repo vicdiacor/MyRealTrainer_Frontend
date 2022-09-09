@@ -18,6 +18,7 @@ import Prueba from '../Prueba';
 import AfterRegister from '../registro/AfterRegister';
 import CrearTarifa from '../tarifas/CrearTarifa';
 import CrearLugarEntrenamiento from '../lugares_entrenamiento/CrearLugarEntrenamiento';
+import ListarMisServicios from '../servicios/ListarMisServicios';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,13 +27,23 @@ const MainStack = () => {
     <NavigationContainer>
        
      <Stack.Navigator>
-    
+          
      <Stack.Screen
             name="Login"
             component={Login}
             options={{ headerShown: false }
             }
             />
+            
+     <Stack.Screen
+            name="ListarMisServicios"
+            component={ListarMisServicios}
+            options={{ headerShown: false }
+            }
+            />
+
+   
+      
       <Stack.Screen
             name="CrearLugarEntrenamiento"
             component={CrearLugarEntrenamiento}
@@ -79,19 +90,7 @@ const MainStack = () => {
             }
             />
 
-       <Stack.Screen
-            name="Articles"
-            component={Articles}
-            options={{ title: 'Articles' }
-            }
-            />
-      
-          <Stack.Screen
-            name="ListadoNoticias"
-            component={ListadoNoticias}
-            options={{ title: 'Listado Noticias' }
-            }
-            />
+     
             <Stack.Screen
             name="Home"
             component={Home}

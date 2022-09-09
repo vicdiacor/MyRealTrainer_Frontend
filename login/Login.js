@@ -62,7 +62,7 @@ export default function Login({navigation}) {
                         saveCookie("emailLogged",""+usuario.email);
                         // createDatabaseIfNotExists() Base de datos local 
 
-                        navigation.navigate('CrearServicio')
+                        navigation.navigate('ListarMisServicios')
                         await delay(1000)
                         setIsLoading(false)
                         

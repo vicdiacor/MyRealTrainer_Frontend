@@ -219,7 +219,7 @@ export default function AfterRegister({navigation,route}) {
             {trainerSelected?  
               (
                 <> 
-                <Block flex row center width={width * 0.8} style={styles.blockInput}>
+                <Block  row center width={width * 0.8} style={styles.blockInput}>
                      <FloatingLabelInput
                       multiline={true}
                       maxLength={400}
@@ -232,7 +232,7 @@ export default function AfterRegister({navigation,route}) {
                     />
             </Block>
 
-            <Block flex row center width={width * 0.8} style={styles.blockInput}>
+            <Block  row center width={width * 0.8} style={styles.blockInput}>
                      <FloatingLabelInput
                       multiline={true}
                       maxLength={500}
@@ -244,7 +244,7 @@ export default function AfterRegister({navigation,route}) {
                       onChangeText={text => setTrainerForm({...trainerForm,["experiencia"]:text})}
                     />
             </Block>
-            <Block flex row center width={width * 0.8} style={styles.blockInput}>
+            <Block  row center width={width * 0.8} style={styles.blockInput}>
                      <FloatingLabelInput
                       multiline={true}
                       maxLength={500}
@@ -257,7 +257,7 @@ export default function AfterRegister({navigation,route}) {
                     />
             </Block>
             
-            <Block flex row center>
+            <Block  row center>
             <Text 
                     h6
                     style={{marginRight:"4%"}}

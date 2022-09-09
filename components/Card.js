@@ -53,7 +53,8 @@ const styles = StyleSheet.create({
     marginVertical: theme.SIZES.BASE,
     borderWidth: 0,
     minHeight: 114,
-    marginBottom: 16
+    marginBottom: 16,
+    borderRadius:10,
   },
   cardTitle: {
     flex: 1,
@@ -64,7 +65,7 @@ const styles = StyleSheet.create({
     padding: theme.SIZES.BASE / 2
   },
   imageContainer: {
-    borderRadius: 3,
+    borderRadius: 10,
     elevation: 1,
     overflow: 'hidden',
   },
@@ -84,7 +85,9 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0
   },
   fullImage: {
-    height: 215
+    height: 215,
+    borderRadius:5,
+    
   },
   shadow: {
     shadowColor: theme.COLORS.BLACK,
