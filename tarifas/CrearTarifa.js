@@ -34,14 +34,18 @@ export default function CrearTarifa({navigation,route}) {
 
     const handleSubmit=  evt => {
         setIsLoading(true)
-        var nuevosErrores= validateCrearTarifa(form)
+        var nuevosErrores= validateCrearTarifa(form,lugaresChecked)
         setErrors(nuevosErrores)
         var numeroErrores = Object.keys(nuevosErrores).length;
         if(numeroErrores===0){
             var tarifaActual = {...form,["lugares"]:lugaresChecked}
+            console.log("TARIFA ACTUAL =================================")
+            console.log(tarifaActual);
             var tarifas= route["params"]["tarifas"]
             tarifas.push(tarifaActual)
-            navigation.navigate('CrearServicio',{"servicioForm":route["params"]["servicioForm"],"tarifas":tarifas})
+            console.log("ARRAY DE TARIFAS=============================================");
+            console.log(tarifas);
+            navigation.navigate('CrearServicio',{"servicioForm":route["params"]["servicioForm"],"tarifas":tarifas,"mode":route["params"]["mode"]})
             setIsLoading(false)
         }else{
             setIsLoading(false)
@@ -51,7 +55,13 @@ export default function CrearTarifa({navigation,route}) {
     
     useEffect(()=>{
         if(route["params"]["tarifaForm"]){
+           
             setForm(route["params"]["tarifaForm"])
+        }
+        if(route["params"]["lugaresChecked"]){
+            console.log("LUGARES CHEKCED EN CREAR TARIFA");
+            console.log(route["params"]["lugaresChecked"]);
+            setLugaresChecked(route["params"]["lugaresChecked"])
         }
         getCookie("emailLogged").then(email => {
             call('/lugares/'+email,"GET", navigation)
@@ -59,8 +69,6 @@ export default function CrearTarifa({navigation,route}) {
               if (response.ok){
                 response.json().then(data => {
                     setLugares(data)
-                    console.log("BUCLE ")
-                    console.log(Object.keys(data).forEach((a)=> console.log(a)))
                  
                 })
               }else{
@@ -85,7 +93,7 @@ export default function CrearTarifa({navigation,route}) {
                     enabled
                 >
              
-            <Block style={{marginTop:"20%",marginBottom:"5%"}} flex row  center>
+            <Block style={{marginTop:70,marginBottom:"5%"}} flex row  center>
                
                 <Text
                     h5
@@ -97,7 +105,7 @@ export default function CrearTarifa({navigation,route}) {
                 </Text>
              </Block>
              
-                <Block flex row center width={width * 0.85} style={{marginTop:"6%"}}>
+                <Block flex row center width={width * 0.85}>
                         <FloatingLabelInput
                             errorMessage={formErrorMessage(errors,"titulo")}
                             maxLength={80}
@@ -106,8 +114,8 @@ export default function CrearTarifa({navigation,route}) {
                             onChangeText={text => setForm({...form,["titulo"]:text})}
                         />
                 </Block>
-                <Block center flex row style={{marginTop:"6%", left:"1.5%",alignSelf:"baseline"}}>
-                    <Block  flex={0.25} row width="25%">
+                <Block center flex row style={{left:"1.5%",alignSelf:"baseline", marginTop:10}}>
+                    <Block style={{alignSelf:"baseline"}} flex={0.25} row width="25%">
                             <FloatingLabelInput
                                 placeholderFontSize={15}
                                 keyboardType="numeric"
@@ -131,6 +139,7 @@ export default function CrearTarifa({navigation,route}) {
                     </Block>
                     <Block style={{marginLeft:"1%",alignSelf:"baseline",top:7.7}} flex={0.4} width="40%" row>
                         <SelectPicker 
+                            errorMessage={formErrorMessage(errors,"tipoDuracion")}
                             width="100%"
                             height={65}
                             value={form.tipoDuracion}
@@ -146,7 +155,7 @@ export default function CrearTarifa({navigation,route}) {
                     </Block>
                      
                 </Block>
-                <Block flex row center width={width * 0.85} style={{marginTop:"6%"}}>
+                <Block flex row center width={width * 0.85} style={{marginTop:10}}>
                         <FloatingLabelInput
                             maxLength={500}
                             textCounter={form.limitaciones}
@@ -172,15 +181,22 @@ export default function CrearTarifa({navigation,route}) {
                
                 {Object.values(lugares).map( lugar => (
               
-              <Block flex row center style={{width:"80%",marginTop:"5%"}}>
+              <Block flex row center style={{width:"80%",marginTop:12}}>
                     <CheckBoxLugarEntrenamiento 
+                    errorMessage={formErrorMessage(errors,"lugaresChecked")}
                     enableCheckbox={true}
                     onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"lugar":lugar,"tarifaForm":form, "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})} 
                     lugar={lugar}
+                    
+                    initialValueCheckbox={lugar["id"] in route["params"]["lugaresChecked"]}
                     onChangeCheckbox={async isChecked => {
-                        
-                        setLugaresChecked({...lugaresChecked,[lugar["id"]]: (isChecked? true:null) })
+                        if (isChecked){
+                            setLugaresChecked({...lugaresChecked,[lugar["id"]]: (isChecked? true:null) })
+                        }else{
+                            delete lugaresChecked[lugar["id"]]
+                        }
                     }
+
                     }
                     >
              
@@ -189,6 +205,14 @@ export default function CrearTarifa({navigation,route}) {
           </Block>
 
                 ))}
+                {formErrorMessage(errors,"lugaresChecked")==undefined? null : 
+                    <Block flex row center style={{width:"80%",marginTop:8,left:5}}> 
+                    <Text style={{
+                        color: argonTheme.COLORS.MESSAGE_ERROR,
+                        
+                        }}>{formErrorMessage(errors,"lugaresChecked")}</Text>
+                    </Block>
+                }
                 
                 <Button onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"tarifaForm":form, "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})} style={styles.circleButton}>
                             <Icon

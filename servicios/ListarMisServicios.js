@@ -12,6 +12,7 @@ import validateCrearServicio from './ValidateCrearServicio';
 import { Card } from "../components/";
 import { Images, argonTheme, articles } from "../constants/";
 import ServicioCard from '../components/ServicioCard';
+import { useFocusEffect } from '@react-navigation/native';
 
 const { width, height } = Dimensions.get("screen");
 
@@ -20,7 +21,34 @@ export default function ListarMisServicios({navigation,route}) {
 const [servicios,setServicios]= useState()
 const [isLoading,setIsLoading]=useState(true)
 
+function editServicio(servicio){
+
+  var tarifas= servicio["tarifas"]
+  var formattedTarifas= []
+  tarifas.forEach(tarifa => {
+
+    var lugaresChecked={}
+    
+    if (!Array.isArray(tarifa["lugares"])){
+        Object.values(tarifa["lugares"]).forEach(lugar=> lugaresChecked[lugar["id"]]=true)
+    }else{
+      tarifa["lugares"].forEach(lugar => lugaresChecked[lugar["id"]]=true)
+    }
+   
+    tarifa["lugares"]=lugaresChecked
+    formattedTarifas.push(tarifa)
+    var servicioForm={
+      titulo: servicio["titulo"],
+      descripcion: servicio["descripcion"],
+      id:servicio["id"],
+    
+  }
+    navigation.navigate('CrearServicio',{"servicioForm":servicioForm,"tarifas":formattedTarifas, "mode":"edit"})
+  })
+}
+
 useEffect(()=>{
+  console.log("EFFECT LISTAR MIS SERVICIOS ======================================================")
   getCookie("emailLogged").then(email => {
     call('/servicios/'+email,"GET", navigation)
     .then(response => {
@@ -35,7 +63,7 @@ useEffect(()=>{
       }
     }) 
 })
-},[])
+},[route["params"]])
 
  return (
 
@@ -58,7 +86,7 @@ useEffect(()=>{
 
                 <Block style={{ paddingHorizontal: theme.SIZES.BASE}}>
                 
-                <ServicioCard servicio={servicio} full />
+                <ServicioCard onPressContainer={()=>editServicio(servicio)} servicio={servicio} full />
   
                 </Block>
 
@@ -66,7 +94,8 @@ useEffect(()=>{
               
             }
             <Block  marginTop={120} center>
-                      <Button  onPress={()=> navigation.navigate("CrearServicio")} color="primary" style={styles.createButton}>
+
+                      <Button  onPress={()=> navigation.navigate("CrearServicio",{"mode":"create"})} color="primary" style={styles.createButton}>
                         <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                           Crear Servicio
                         </Text>

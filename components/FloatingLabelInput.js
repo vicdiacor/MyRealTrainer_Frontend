@@ -8,22 +8,18 @@ import {  Input } from "./";
 import { argonTheme } from "../constants";
 import formErrorMessage from './FormErrorMessage';
 function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline,initialNumberOfLines,textCounter,maxLength,placeholderFontSize,value,...props}) {
-
-  const [state,setState]= useState({
-    isFocused: false,
-    haveValue: false
-  })
   
-  useEffect(()=>{
-    !value || !value.trim()?  setState({...state, haveValue: false }) : setState({...state, haveValue: true })
 
-  },[])
+  
+  const [isFocused,setIsFocused]=useState(false)
+  const [haveValue,setHaveValue]=useState(value)
+
   const [dynamicHeight, setDynamicHeight]=useState(21)
   const textInputRef = useRef(null);
 
 
   const handleFocus = () => {
-    setState({...state, isFocused: true });
+    setIsFocused(true)
 
   }
   
@@ -31,25 +27,20 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
   const handleEdit= (inputInfo) => 
     {
     
-    if(!inputInfo["nativeEvent"]["text"].trim()){
-    
-      setState({ isFocused:false, haveValue: false });
-    }else{
-      setState({ isFocused:false, haveValue: true });
-    }
+      setIsFocused(false)
   }
    
     const labelStyle = {
       position: 'absolute',
       left: 20,
-      top: state.isFocused || state.haveValue ? 15 : 28,
-      fontSize: state.isFocused || state.haveValue ? 14 : (placeholderFontSize==undefined? 17: placeholderFontSize),
-      color: state.isFocused || state.haveValue ?  '#5e72e4': '#aaa',
+      top: isFocused || value  ? 15 : 28,
+      fontSize: isFocused || value  ? 14 : (placeholderFontSize==undefined? 17: placeholderFontSize),
+      color: isFocused || value ?  '#5e72e4': '#aaa',
       zIndex: 4,
       flex: props.iconContent==undefined? 0.87: 0.72,
       flexDirection: 'row',      
       width: props.iconContent==undefined? '87%':'72%',
-      fontWeight: state.isFocused || state.haveValue?   "bold": null
+      fontWeight: isFocused  || value?   "bold": null
       
     };
     const fixedLabelStyle = {
@@ -84,9 +75,9 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
       
     }
     const textCounterStyle={
-      color:state.isFocused? argonTheme.COLORS.PRIMARY : argonTheme.COLORS.ICON,
+      color:isFocused? argonTheme.COLORS.PRIMARY : argonTheme.COLORS.ICON,
       textAlign: 'right',
-      fontWeight:state.isFocused? "600":"400"
+      fontWeight:isFocused? "600":"400"
       
       
     }
@@ -95,6 +86,7 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
     return (
       
       <View style={{flex:1, alignSelf:"baseline"}}>
+       
         <TouchableWithoutFeedback onPress={() => {textInputRef.current.focus()}} >
         <View>
         <Text
@@ -123,7 +115,7 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
                 dynamicHeight={dynamicHeight}
                 multiline={multiline==undefined? false:true}
                 initialNumberOfLines={initialNumberOfLines}
-                focus={state.isFocused && errorMessage == undefined}
+                focus={isFocused && errorMessage == undefined}
                 error={errorMessage == undefined ? false : true}
                 editable={false}
                 right
@@ -142,7 +134,7 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
             <Text style={errorMessageStyle}>{errorMessage}</Text> 
             }
 
-            
+
         </View>
       
     );

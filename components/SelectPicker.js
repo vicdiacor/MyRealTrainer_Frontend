@@ -19,30 +19,31 @@ export default function SelectPicker ({title,onValueChange,value,errorMessage,it
         borderColor: errorMessage==undefined? argonTheme.COLORS.BORDER :"#FC7370",
         borderRadius: 4,
         
+        
     }
 
     return (
-        <>
-        <Block height={height!=undefined? height:null} width={width} style={pickerContainerStyle}>
-        {title==undefined ? null :
-        <Text style={{marginLeft:15,marginTop:"3%",color:'#5e72e4', fontWeight:"bold"}}>{title}</Text>
-        }
-        <RNPickerSelect
-                value={value}
-                onValueChange={onValueChange}
-                items={items}
-            />
+        <Block flex>
+            <Block height={height!=undefined? height:null} width={width} style={pickerContainerStyle}>
+            {title==undefined ? null :
+            <Text style={{marginLeft:15,marginTop:"3%",color:'#5e72e4', fontWeight:"bold"}}>{title}</Text>
+            }
+            <RNPickerSelect
+                    value={value}
+                    onValueChange={onValueChange}
+                    items={items}
+                />
+            </Block>
+            {errorMessage== undefined? null : 
+            <Text  style={{ 
+                top:8,
+                color: argonTheme.COLORS.MESSAGE_ERROR,
+                left:5,
+                }}>{errorMessage}</Text> 
+        
+                }
+
     </Block>
-    {errorMessage== undefined? null : 
-        <Text style={{ 
-            marginTop:7,
-            color: argonTheme.COLORS.MESSAGE_ERROR,
-            left:5,
-            }}>{errorMessage}</Text> 
-       
-         
-    }
-    </>
 
     
         

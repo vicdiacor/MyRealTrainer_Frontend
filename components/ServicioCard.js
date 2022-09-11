@@ -8,7 +8,7 @@ import { useSafeAreaFrame } from 'react-native-safe-area-context';
 const { width, height } = Dimensions.get("screen");
 
 
-export default function ServicioCard({navigation, servicio,horizontal, full, style,onPressImage,
+export default function ServicioCard({navigation, servicio,horizontal, full, style,onPressContainer,
   onPressDescription, ctaColor, imageStyle}){
  
     const [minimumPrices,setMinimumPrices]=useState({})
@@ -123,15 +123,15 @@ export default function ServicioCard({navigation, servicio,horizontal, full, sty
     ];
 
     return (
-      
+      <TouchableWithoutFeedback style={{zIndex:10}} onPress={onPressContainer}>
+
       <Block row={horizontal} card flex style={cardContainer}>
        {isLoading? null: <> 
-        <TouchableWithoutFeedback onPress={onPressImage}>
+       
           <Block flex style={imgContainer}>
             <Image source={{uri: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?fit=crop&w=840&q=80"}} style={imageStyles} />
           </Block>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={onPressDescription}>
+        
           <Block flex space="between" style={styles.cardDescription}>
             <Text bold size={17} style={styles.cardTitle}>{servicio["titulo"]}</Text>
             <Text bold size={17} style={styles.minimumPricesStyle}>{renderMinimumPrices()}</Text>
@@ -175,14 +175,12 @@ export default function ServicioCard({navigation, servicio,horizontal, full, sty
 
             
           </Block>
-        </TouchableWithoutFeedback>
+    
        
        </>}
         
-          
-        
-        
       </Block>
+      </TouchableWithoutFeedback>
     
     )
   

@@ -5,10 +5,11 @@ import {  argonTheme } from "../constants";
 import { Icon, Button } from '.';
 import CheckBoxLugarEntrenamiento from './CheckBoxLugarEntrenamiento';
 
-export default function TarifaCard ({tarifa,style}){
+export default function TarifaCard ({tarifa,style,onPressContainer}){
    
     return (
-         
+      <TouchableWithoutFeedback style={{zIndex:10}} onPress={onPressContainer}>
+
           <Block  style={[styles.containerStyle,style]}  flex  >
             <Block marginTop={20} middle flex row> 
               <Text   
@@ -30,7 +31,7 @@ export default function TarifaCard ({tarifa,style}){
             </Block>
             <Block width={"75%"} marginTop={20} center flex row> 
             
-            <Text center style={{textAlign:'justify'}} size={18}>Muchisimas limitaciones jeje pero es que mira qué pedazo de limitacioines que se sale to y no se que hacer</Text>
+            <Text center style={{textAlign:'justify'}} size={18}>{tarifa["limitaciones"]}</Text>
 
             </Block>
           
@@ -57,7 +58,7 @@ export default function TarifaCard ({tarifa,style}){
             }
             <Block marginTop={50}></Block>
           </Block>
-
+          </TouchableWithoutFeedback>
     
         
        

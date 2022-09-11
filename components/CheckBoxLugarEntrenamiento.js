@@ -5,7 +5,7 @@ import {  argonTheme } from "../constants";
 import { Icon, Button } from '.';
 
 
-export default function CheckBoxLugarEntrenamiento ({lugar,onPress,onChangeCheckbox,enableCheckbox,reducedMode}){
+export default function CheckBoxLugarEntrenamiento ({lugar,onPress,errorMessage,onChangeCheckbox,enableCheckbox,initialValueCheckbox,reducedMode}){
     
     const [numberLines,setNumberLines]= useState(64)
     const containerStyle= {
@@ -19,8 +19,8 @@ export default function CheckBoxLugarEntrenamiento ({lugar,onPress,onChangeCheck
       elevation: 2,
       borderWidth:1,
       borderRadius: 4,
-      borderColor: argonTheme.COLORS.BORDER,
-      alignSelf:"baseline"
+      alignSelf:"baseline",
+      borderColor: errorMessage==undefined? argonTheme.COLORS.BORDER: "#FC7370"
     }
     const  circleButtonStyle= {
       marginTop:reducedMode?12.5+9*(numberLines-1) :11 + 3.8*(numberLines-1),
@@ -66,6 +66,7 @@ export default function CheckBoxLugarEntrenamiento ({lugar,onPress,onChangeCheck
                         onChange={onChangeCheckbox}
                         checkboxStyle={styles.checkbox}
                         color={argonTheme.COLORS.ICON}
+                        initialValue={initialValueCheckbox}
                         
                         
                       /> : null

@@ -21,13 +21,30 @@ export default function CrearServicio({navigation,route}) {
     const[form,setForm]=useState({
         titulo:"",
         descripcion:"",
+        id:"",
     })
     const[tarifas,setTarifas]= useState([])
- 
+    function editTarifa (tarifa){
+        console.log("TARIFA FORM ANTES ============================");
+        console.log(tarifa);
+        var tarifaForm= {
+            titulo:tarifa["titulo"],
+            precio:""+tarifa["precio"],
+            duracion:""+tarifa["duracion"],
+            tipoDuracion:tarifa["tipoDuracion"],
+            limitaciones:tarifa["limitaciones"],
+        }
+        var lugaresChecked=tarifa["lugares"]
+        
+        console.log(tarifaForm);
+        navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"tarifaForm":tarifaForm,"lugaresChecked":lugaresChecked})
+    }
 
     useEffect(()=>{
-        if (route["params"]!=undefined){
+        if (route["params"]["servicioForm"]!==undefined && route["params"]["tarifas"]!==undefined ){
             setForm(route["params"]["servicioForm"])
+            console.log("Servicio form desde Crear servicio ============")
+            console.log(route["params"]["servicioForm"]);
             
             getCookie("emailLogged").then(email => {
                 call('/lugares/'+email,"GET", navigation)
@@ -48,7 +65,7 @@ export default function CrearServicio({navigation,route}) {
                     })
                   }else{
                     showBackendErrors(response)
-                    navigation.navigate("CrearServicio",{"servicioForm":route["params"]["servicioForm"]})
+                    
                   }
                 }) 
             })
@@ -59,13 +76,13 @@ export default function CrearServicio({navigation,route}) {
     
     const handleSubmit=  evt => {
        setIsLoading(true)
-        // Validacion errores
+        // Errors validation
         var nuevosErrores= validateCrearServicio(form)
         setErrors(nuevosErrores)
         var numeroErrores = Object.keys(nuevosErrores).length;
         if(numeroErrores===0){
             var tarifasSubmit= []
-            tarifas.forEach( tarifa =>{
+            tarifas.forEach( tarifa =>{ // We need an array of lugares, instead of a json
             
                 var lugaresJSON= tarifa["lugares"]
                 var lugaresArray= []
@@ -82,19 +99,33 @@ export default function CrearServicio({navigation,route}) {
                     descripcion:form.descripcion,
                     tarifas: tarifasSubmit,
                 }
-            
-                getCookie("emailLogged").then(email => {
-                    call('/servicios/'+email,"POST", navigation,data)
+                if(route["params"]["mode"]==="edit"){ // Edit an existing servicio
+                    data["id"]= form.id
+                    call('/servicios/'+form.id,"PUT", navigation,data)
                     .then(response => {
                     if (response.ok){
-                
+                        navigation.navigate("ListarMisServicios",{"servicioForm":servicioForm,"tarifas":formattedTarifas})
                         setIsLoading(false)
                     }else{
                         setIsLoading(false)
                         showBackendErrors(response)
                     }
                     }) 
-                })
+                }else{ // Create Servicio
+                    getCookie("emailLogged").then(email => {
+                        call('/servicios/'+email,"POST", navigation,data)
+                        .then(response => {
+                        if (response.ok){
+                            navigation.navigate("ListarMisServicios",{"servicioForm":servicioForm,"tarifas":formattedTarifas})
+                            setIsLoading(false)
+                        }else{
+                            setIsLoading(false)
+                            showBackendErrors(response)
+                        }
+                        }) 
+                    })
+                }
+                
            
         }else{
             setIsLoading(false)
@@ -164,13 +195,13 @@ export default function CrearServicio({navigation,route}) {
                 </Block>
                 {!isLoadingContent? <>{tarifas.map(item => 
                         (
-                        <TarifaCard style={{width:width*0.85,marginBottom:30, alignSelf:"center"}} tarifa={item}/>)
+                        <TarifaCard onPressContainer={()=> editTarifa(item)} style={{width:width*0.85,marginBottom:30, alignSelf:"center"}} tarifa={item}/>)
 
                     )}</> :null}
                     
                
                 <Block marginTop={0}></Block>
-                <Button  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas})} style={styles.circleButton}>
+                <Button  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"]})} style={styles.circleButton}>
                             <Icon
                             
                             size={20}
@@ -184,7 +215,7 @@ export default function CrearServicio({navigation,route}) {
                 <Block  marginTop={120} center>
                       <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
                         <Text bold size={17} color={argonTheme.COLORS.WHITE}>
-                          Asignar
+                          Guardar
                         </Text>
                       </Button>
                 </Block>
