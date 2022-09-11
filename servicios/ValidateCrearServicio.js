@@ -1,4 +1,4 @@
-export default function validateCrearServicio(form){
+export default function validateCrearServicio(form,tarifas){
 
     let errors = {}
   
@@ -15,6 +15,11 @@ export default function validateCrearServicio(form){
         errors.descripcion= "La descripción es un campo obligatorio" 
     }else if(form.descripcion.length>500){
         errors.descripcion= "La descripción no puede tener más de 500 caracteres" 
+    }
+
+    // Validate numTarifas >=1
+    if(Object.keys(tarifas).length<1){
+        errors.tarifas= "Debes agregar al menos una tarifa" 
     }
     
     return errors

@@ -27,6 +27,7 @@ export default function CrearTarifa({navigation,route}) {
         duracion:"",
         tipoDuracion:"MES",
         limitaciones:"",
+        id:"",
     })
     
     const[lugares,setLugares]=useState([])
@@ -39,12 +40,14 @@ export default function CrearTarifa({navigation,route}) {
         var numeroErrores = Object.keys(nuevosErrores).length;
         if(numeroErrores===0){
             var tarifaActual = {...form,["lugares"]:lugaresChecked}
-            console.log("TARIFA ACTUAL =================================")
-            console.log(tarifaActual);
+           
             var tarifas= route["params"]["tarifas"]
-            tarifas.push(tarifaActual)
-            console.log("ARRAY DE TARIFAS=============================================");
-            console.log(tarifas);
+            if(route["params"]["index"]){
+                tarifas[route["params"]["index"]]=tarifaActual
+            }else{
+                tarifas[Object.keys(tarifas).length]=tarifaActual
+            }
+            
             navigation.navigate('CrearServicio',{"servicioForm":route["params"]["servicioForm"],"tarifas":tarifas,"mode":route["params"]["mode"]})
             setIsLoading(false)
         }else{
@@ -59,8 +62,7 @@ export default function CrearTarifa({navigation,route}) {
             setForm(route["params"]["tarifaForm"])
         }
         if(route["params"]["lugaresChecked"]){
-            console.log("LUGARES CHEKCED EN CREAR TARIFA");
-            console.log(route["params"]["lugaresChecked"]);
+           
             setLugaresChecked(route["params"]["lugaresChecked"])
         }
         getCookie("emailLogged").then(email => {
@@ -73,7 +75,7 @@ export default function CrearTarifa({navigation,route}) {
                 })
               }else{
                 showBackendErrors(response)
-                navigation.navigate("CrearServicio",{"servicioForm":route["params"]["servicioForm"]})
+                
               }
             }) 
         })
@@ -185,7 +187,7 @@ export default function CrearTarifa({navigation,route}) {
                     <CheckBoxLugarEntrenamiento 
                     errorMessage={formErrorMessage(errors,"lugaresChecked")}
                     enableCheckbox={true}
-                    onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"lugar":lugar,"tarifaForm":form, "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})} 
+                    onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"lugar":lugar,"tarifaForm":form, "mode":route["params"]["mode"],"servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"],"lugaresChecked":lugaresChecked,"index":route["params"]["index"]})} 
                     lugar={lugar}
                     
                     initialValueCheckbox={lugar["id"] in route["params"]["lugaresChecked"]}
@@ -213,8 +215,8 @@ export default function CrearTarifa({navigation,route}) {
                         }}>{formErrorMessage(errors,"lugaresChecked")}</Text>
                     </Block>
                 }
-                
-                <Button onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"tarifaForm":form, "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})} style={styles.circleButton}>
+                                                                                    
+                <Button onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"tarifaForm":form, "mode":route["params"]["mode"],"servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"],"lugaresChecked":lugaresChecked,"index":route["params"]["index"]})} style={styles.circleButton}>
                             <Icon
                             
                             size={20}

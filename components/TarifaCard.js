@@ -5,7 +5,7 @@ import {  argonTheme } from "../constants";
 import { Icon, Button } from '.';
 import CheckBoxLugarEntrenamiento from './CheckBoxLugarEntrenamiento';
 
-export default function TarifaCard ({tarifa,style,onPressContainer}){
+export default function TarifaCard ({tarifa,style,onPressContainer,deleteFunction}){
    
     return (
       <TouchableWithoutFeedback style={{zIndex:10}} onPress={onPressContainer}>
@@ -56,6 +56,15 @@ export default function TarifaCard ({tarifa,style,onPressContainer}){
            
             
             }
+            {deleteFunction?
+            <Block  marginTop={40} width="100%" center>
+            <Button  onPress={deleteFunction} color="error">
+              <Text bold size={17} color={argonTheme.COLORS.WHITE}>
+                Eliminar
+              </Text>
+            </Button>
+          </Block> 
+            : null}
             <Block marginTop={50}></Block>
           </Block>
           </TouchableWithoutFeedback>

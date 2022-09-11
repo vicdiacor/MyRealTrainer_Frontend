@@ -10,7 +10,7 @@ import { getCookie } from '../temporal_database/SecureStore';
 import call from '../Caller';
 import { delay } from '../components/Delay';
 import validateCrearServicio from './ValidateCrearServicio';
-
+import { showBackendErrors } from '../util/UtilFunctions';
 const { width, height } = Dimensions.get("screen");
 export default function CrearServicio({navigation,route}) {
 
@@ -23,45 +23,46 @@ export default function CrearServicio({navigation,route}) {
         descripcion:"",
         id:"",
     })
-    const[tarifas,setTarifas]= useState([])
-    function editTarifa (tarifa){
-        console.log("TARIFA FORM ANTES ============================");
-        console.log(tarifa);
+
+    const[tarifas,setTarifas]= useState({})
+    function editTarifa (index,tarifa){
+       
         var tarifaForm= {
             titulo:tarifa["titulo"],
             precio:""+tarifa["precio"],
             duracion:""+tarifa["duracion"],
             tipoDuracion:tarifa["tipoDuracion"],
             limitaciones:tarifa["limitaciones"],
+            id:tarifa["id"]
         }
         var lugaresChecked=tarifa["lugares"]
         
         console.log(tarifaForm);
-        navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"tarifaForm":tarifaForm,"lugaresChecked":lugaresChecked})
+        navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"tarifaForm":tarifaForm,"lugaresChecked":lugaresChecked,"index":index})
     }
 
     useEffect(()=>{
         if (route["params"]["servicioForm"]!==undefined && route["params"]["tarifas"]!==undefined ){
             setForm(route["params"]["servicioForm"])
-            console.log("Servicio form desde Crear servicio ============")
-            console.log(route["params"]["servicioForm"]);
-            
             getCookie("emailLogged").then(email => {
                 call('/lugares/'+email,"GET", navigation)
                 .then(response => {
                   if (response.ok){
                     response.json().then(data => {
-    
-                        route["params"]["tarifas"].forEach(tarifa=>{
+                
+                        Object.values(route["params"]["tarifas"]).forEach(tarifa=>{
+                            console.log("TARIFA DENTRO DEL BUCLE:");
+                            console.log(tarifa);
                             Object.keys(tarifa["lugares"]).forEach(lugarId=>{
                                 tarifa["lugares"][lugarId]=data[lugarId]
                             })
                         
                         })
+                    
                     setTarifas(route["params"]["tarifas"])
                     setIsLoadingContent(true)
                     setIsLoadingContent(false) // We need to render 2 times
-
+                   
                     })
                   }else{
                     showBackendErrors(response)
@@ -77,12 +78,13 @@ export default function CrearServicio({navigation,route}) {
     const handleSubmit=  evt => {
        setIsLoading(true)
         // Errors validation
-        var nuevosErrores= validateCrearServicio(form)
+        var nuevosErrores= validateCrearServicio(form,tarifas)
         setErrors(nuevosErrores)
         var numeroErrores = Object.keys(nuevosErrores).length;
         if(numeroErrores===0){
             var tarifasSubmit= []
-            tarifas.forEach( tarifa =>{ // We need an array of lugares, instead of a json
+            
+            Object.values(tarifas).forEach( tarifa =>{ // We need an array of lugares, instead of a json
             
                 var lugaresJSON= tarifa["lugares"]
                 var lugaresArray= []
@@ -99,12 +101,13 @@ export default function CrearServicio({navigation,route}) {
                     descripcion:form.descripcion,
                     tarifas: tarifasSubmit,
                 }
+                
                 if(route["params"]["mode"]==="edit"){ // Edit an existing servicio
                     data["id"]= form.id
                     call('/servicios/'+form.id,"PUT", navigation,data)
                     .then(response => {
                     if (response.ok){
-                        navigation.navigate("ListarMisServicios",{"servicioForm":servicioForm,"tarifas":formattedTarifas})
+                        navigation.navigate("ListarMisServicios",{"servicioForm":form,"tarifas":tarifas})
                         setIsLoading(false)
                     }else{
                         setIsLoading(false)
@@ -116,7 +119,7 @@ export default function CrearServicio({navigation,route}) {
                         call('/servicios/'+email,"POST", navigation,data)
                         .then(response => {
                         if (response.ok){
-                            navigation.navigate("ListarMisServicios",{"servicioForm":servicioForm,"tarifas":formattedTarifas})
+                            navigation.navigate("ListarMisServicios",{"servicioForm":form,"tarifas":tarifas})
                             setIsLoading(false)
                         }else{
                             setIsLoading(false)
@@ -132,7 +135,12 @@ export default function CrearServicio({navigation,route}) {
         }
         
       }
-    
+    function deleteTarifa(index){
+        delete tarifas[index]
+        setTarifas({...tarifas}) // To render after state has finished
+      
+
+    }
 
  return (
 
@@ -191,17 +199,22 @@ export default function CrearServicio({navigation,route}) {
                     Tarifas
                 </Text>
                 
-                   
                 </Block>
-                {!isLoadingContent? <>{tarifas.map(item => 
+                {formErrorMessage(errors,"tarifas")==undefined? null : 
+                <Block flex row center width={width * 0.8} style={{marginTop:20}}>
+                   
+                    <Text style={styles.errorMessageStyle}>{formErrorMessage(errors,"tarifas")}</Text> 
+                    
+                </Block> }
+                {!isLoadingContent? <>{Object.entries(tarifas).map(([index,tarifa]) => 
                         (
-                        <TarifaCard onPressContainer={()=> editTarifa(item)} style={{width:width*0.85,marginBottom:30, alignSelf:"center"}} tarifa={item}/>)
+                        <TarifaCard deleteFunction={()=> deleteTarifa(index)} onPressContainer={()=> editTarifa(index,tarifa)} style={{width:width*0.85,marginBottom:30, alignSelf:"center"}} tarifa={tarifa}/>)
 
                     )}</> :null}
                     
                
                 <Block marginTop={0}></Block>
-                <Button  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"]})} style={styles.circleButton}>
+                <Button  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"lugaresChecked":{}})} style={styles.circleButton}>
                             <Icon
                             
                             size={20}
@@ -261,5 +274,9 @@ const styles = StyleSheet.create({
         width: width * 0.6,
         marginTop:"4%",
         marginBottom: "4%",
+      }, errorMessageStyle:{
+        color: argonTheme.COLORS.MESSAGE_ERROR,
+        left:5,
+        
       }
 })

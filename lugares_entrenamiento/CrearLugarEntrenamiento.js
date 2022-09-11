@@ -77,7 +77,7 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
             call('/lugares/'+email,"POST", navigation,data)
             .then(response => {
               if (response.ok){
-                navigation.navigate("CrearTarifa",{"tarifaForm":route["params"]["tarifaForm"], "servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"]})
+                navigation.navigate("CrearTarifa",{"tarifaForm":route["params"]["tarifaForm"], "servicioForm":route["params"]["servicioForm"],"mode":route["params"]["mode"],"tarifas":route["params"]["tarifas"],"lugaresChecked":route["params"]["lugaresChecked"],"index":route["params"]["index"]})
                 setIsLoading(false)
               }else{
                 setIsLoading(false)
@@ -137,7 +137,9 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
                             onChangeText={text => setForm({...form,["descripcion"]:text})}
                         />
                 </Block>
-                <Block center  marginTop="3%">
+                
+            
+                <Block flex center  marginTop="3%">
                     <SelectPicker 
                                 width={0.85*width}
                                 value={form.tipoLugar}
@@ -154,10 +156,12 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
                                 ]}/>
 
                 </Block>
+                
+                
                 {form.tipoLugar==="Telemático"? null : 
-                (<>
+                <>
 
-<Block style={{marginTop:"5%",marginBottom:"5%"}} flex row  center>
+            <Block style={{marginTop:"5%",marginBottom:"5%"}} flex row  center>
                
                <Text
                    h5
@@ -229,7 +233,7 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
                    
            </Block>
                 
-                </> )
+                </> 
                 }
                 
                

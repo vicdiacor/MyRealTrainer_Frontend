@@ -24,7 +24,8 @@ const [isLoading,setIsLoading]=useState(true)
 function editServicio(servicio){
 
   var tarifas= servicio["tarifas"]
-  var formattedTarifas= []
+  var formattedTarifas= {}
+  var indexTarifa= 0
   tarifas.forEach(tarifa => {
 
     var lugaresChecked={}
@@ -36,15 +37,20 @@ function editServicio(servicio){
     }
    
     tarifa["lugares"]=lugaresChecked
-    formattedTarifas.push(tarifa)
-    var servicioForm={
-      titulo: servicio["titulo"],
-      descripcion: servicio["descripcion"],
-      id:servicio["id"],
-    
-  }
+    formattedTarifas[indexTarifa]=tarifa
+    indexTarifa++
+  
+
+  } )
+  var servicioForm={
+    titulo: servicio["titulo"],
+    descripcion: servicio["descripcion"],
+    id:servicio["id"],
+    }
+  console.log("FORMATTED TARIFAS QUE ENVIAMOS DESDE EL LISTAR ==================================================");
+  console.log(formattedTarifas);
     navigation.navigate('CrearServicio',{"servicioForm":servicioForm,"tarifas":formattedTarifas, "mode":"edit"})
-  })
+ 
 }
 
 useEffect(()=>{
