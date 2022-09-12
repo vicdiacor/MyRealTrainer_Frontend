@@ -218,8 +218,11 @@ export default function Login({navigation}) {
                 
             </KeyboardAvoidingView>
           </Block>
+         
         </ScrollView>
+       
       </SafeAreaView>
+      
     );
   }
 
