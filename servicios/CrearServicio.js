@@ -11,12 +11,14 @@ import call from '../Caller';
 import { delay } from '../components/Delay';
 import validateCrearServicio from './ValidateCrearServicio';
 import { showBackendErrors } from '../util/UtilFunctions';
+import {Alert} from "react-native";
 const { width, height } = Dimensions.get("screen");
 export default function CrearServicio({navigation,route}) {
 
   
     const[errors, setErrors]= useState({})
     const[isLoading,setIsLoading]=useState(false)
+    const[isLoadingEliminar,setIsLoadingEliminar]=useState(false)
     const[isLoadingContent,setIsLoadingContent]=useState(true)
     const[form,setForm]=useState({
         titulo:"",
@@ -25,6 +27,21 @@ export default function CrearServicio({navigation,route}) {
     })
 
     const[tarifas,setTarifas]= useState({})
+    var circleButtonStyle={
+        
+        
+        
+        zIndex:10,
+        borderRadius: 100,
+        width: width*0.13,
+        height: width*0.13,
+        color: argonTheme.COLORS.PRIMARY,
+        backgroundColor: argonTheme.COLORS.PRIMARY,
+        position:"absolute",
+        bottom:form.id? 180:110,
+        right:"5%",
+        
+    }
     function editTarifa (index,tarifa){
        
         var tarifaForm= {
@@ -40,7 +57,21 @@ export default function CrearServicio({navigation,route}) {
         console.log(tarifaForm);
         navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"tarifaForm":tarifaForm,"lugaresChecked":lugaresChecked,"index":index})
     }
-
+    function deleteServicio(id){
+        setIsLoadingEliminar(true)
+        call('/servicios/'+id,"DELETE", navigation)
+                .then(response => {
+                  if (response.ok){
+                    
+                        navigation.navigate("ListarMisServicios")
+                        setIsLoadingEliminar(false)
+                    
+                  }else{
+                    showBackendErrors(response)
+                    setIsLoadingEliminar(false)
+                  }
+                }) 
+    }
     useEffect(()=>{
         if (route["params"]["servicioForm"]!==undefined && route["params"]["tarifas"]!==undefined ){
             setForm(route["params"]["servicioForm"])
@@ -214,7 +245,7 @@ export default function CrearServicio({navigation,route}) {
                     
                
                 <Block marginTop={0}></Block>
-                <Button  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"lugaresChecked":{}})} style={styles.circleButton}>
+                <Button  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"lugaresChecked":{}})} style={circleButtonStyle}>
                             <Icon
                             
                             size={20}
@@ -225,13 +256,32 @@ export default function CrearServicio({navigation,route}) {
                             
                             />
                 </Button>
+                
                 <Block  marginTop={120} center>
-                      <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
+                      <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.button}>
                         <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                           Guardar
                         </Text>
                       </Button>
                 </Block>
+                {form.id?
+                    <Block  disabled={isLoadingEliminar} loading={isLoadingEliminar} marginTop={5}  center >
+                    <Button style={styles.button} onPress={()=> Alert.alert(
+                    "Eliminar servicio","¿Estás seguro de que quieres eliminar el servicio: '" + form.titulo + "' ?",
+                    [
+                        {text:"SÍ",onPress:()=> deleteServicio(form.id)},
+                        {text:"NO"}
+                    ]
+                    )} 
+                    color="error">
+                    <Text bold size={17} color={argonTheme.COLORS.WHITE}>
+                        Eliminar Servicio
+                    </Text>
+                    </Button>
+                </Block> 
+                
+                :null}
+                
             
 
             </KeyboardAvoidingView>
@@ -250,27 +300,7 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: "#F4F5F7",
       justifyContent: 'center',
-    }, circleButton:{
-        
-        
-        
-        zIndex:10,
-        borderRadius: 100,
-        width: width*0.13,
-        height: width*0.13,
-        color: argonTheme.COLORS.PRIMARY,
-        backgroundColor: argonTheme.COLORS.PRIMARY,
-        position:"absolute",
-        bottom: 90,
-        right:"5%",
-        
-    },
-    circleButtonContainer:{
-        
-       
-
-        
-    },createButton: {
+    },button: {
         width: width * 0.6,
         marginTop:"4%",
         marginBottom: "4%",

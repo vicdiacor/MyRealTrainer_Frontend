@@ -4,6 +4,7 @@ import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback } from 'react-n
 import { Block, Text, theme } from 'galio-framework';
 import CheckBoxLugarEntrenamiento from './CheckBoxLugarEntrenamiento';
 import { argonTheme } from '../constants';
+import { Button } from '.';
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
 const { width, height } = Dimensions.get("screen");
 
@@ -132,13 +133,13 @@ export default function ServicioCard({navigation, servicio,horizontal, full, sty
             <Image source={{uri: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?fit=crop&w=840&q=80"}} style={imageStyles} />
           </Block>
         
-          <Block flex space="between" style={styles.cardDescription}>
+          <Block  flex space="between" style={styles.cardDescription}>
             <Text bold size={17} style={styles.cardTitle}>{servicio["titulo"]}</Text>
             <Text bold size={17} style={styles.minimumPricesStyle}>{renderMinimumPrices()}</Text>
             
             <Text  size={14} style={{textAlign: 'justify',marginRight:5,marginLeft:5}}>{descripcion}   {reducedDescription?<Text  onPress={()=> {changeReducedDescriptionMode}} size={14} style={{marginRight:5,zIndex:2,marginLeft:5,marginTop:5,marginBottom:50}} color={argonTheme.COLORS.PRIMARY} bold>{reducedDescription? "...Leer más": "Mostrar menos"}</Text>: null}
             </Text>
-            <Block  marginBottom={10} >
+            <Block  marginBottom={18} marginTop={10}  >
             {Object.entries(lugaresEntrenamiento).map(([key, value]) => 
                 (
               <Block row>
@@ -172,7 +173,7 @@ export default function ServicioCard({navigation, servicio,horizontal, full, sty
             ))
             }
            </Block>
-
+           
             
           </Block>
     
@@ -211,7 +212,8 @@ const styles = StyleSheet.create({
     color: argonTheme.COLORS.PRIMARY
   },
   cardDescription: {
-    padding: theme.SIZES.BASE / 2
+    padding: theme.SIZES.BASE / 2,
+  
   },
   imageContainer: {
     borderRadius: 10,
