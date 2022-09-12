@@ -185,7 +185,7 @@ export default function CrearServicio({navigation,route}) {
                     enabled
                 >
 
-            <Block style={{marginTop:60,marginBottom:"5%"}} flex row  center>
+            <Block style={{marginTop:60,marginBottom:10}} flex row  center>
                
                 <Text
                     h4
