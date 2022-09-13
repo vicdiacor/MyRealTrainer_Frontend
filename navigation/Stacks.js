@@ -17,6 +17,8 @@ import CrearLugarEntrenamiento from '../lugares_entrenamiento/CrearLugarEntrenam
 import ListarMisServicios from '../servicios/ListarMisServicios';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EjercicioForm from '../ejercicios/EjercicioForm';
+import ListadoNoticias from '../plantillas/ListadoNoticias';
+import ListarEjercicios from '../ejercicios/ListarEjercicios';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -85,10 +87,15 @@ const ServiciosStack = ()=>{
 const RestStack = ()=>{
      return (
           <Stack.Navigator>
-
           <Stack.Screen
                name="Login"
                component={Login}
+               options={{ headerShown: false }
+               }
+               />
+          <Stack.Screen
+               name="ListadoNoticias"
+               component={ListadoNoticias}
                options={{ headerShown: false }
                }
                />
@@ -148,7 +155,12 @@ const RestStack = ()=>{
 const RutinasStack = ()=>{
      return (
           <Stack.Navigator>
-
+          <Stack.Screen
+               name="ListarEjercicios"
+               component={ListarEjercicios}
+               options={{ headerShown: false }
+               }
+               />
           <Stack.Screen
                name="EjercicioForm"
                component={EjercicioForm}

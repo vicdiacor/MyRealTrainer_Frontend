@@ -9,8 +9,8 @@ import { useSafeAreaFrame } from 'react-native-safe-area-context';
 const { width, height } = Dimensions.get("screen");
 
 
-export default function ServicioCard({navigation, servicio,horizontal, full, style,onPressContainer,
-  onPressDescription, ctaColor, imageStyle}){
+export default function ServicioCard({navigation, servicio, style,onPressContainer,
+   imageStyle}){
  
     const [minimumPrices,setMinimumPrices]=useState({})
     const [lugaresEntrenamiento,setLugaresEntrenamiento]=useState({})
@@ -114,19 +114,19 @@ export default function ServicioCard({navigation, servicio,horizontal, full, sty
    
    
     const imageStyles = [
-      full ? styles.fullImage : styles.horizontalImage,
+      styles.fullImage,
       imageStyle
     ];
     const cardContainer = [styles.card, styles.shadow, style];
     const imgContainer = [styles.imageContainer,
-      horizontal ? styles.horizontalStyles : styles.verticalStyles,
+     styles.verticalStyles,
       styles.shadow
     ];
 
     return (
       <TouchableWithoutFeedback style={{zIndex:10}} onPress={onPressContainer}>
 
-      <Block row={horizontal} card flex style={cardContainer}>
+      <Block  card flex style={cardContainer}>
        {isLoading? null: <> 
        
           <Block flex style={imgContainer}>
@@ -222,14 +222,6 @@ const styles = StyleSheet.create({
   },
   image: {
     // borderRadius: 3,
-  },
-  horizontalImage: {
-    height: 122,
-    width: 'auto',
-  },
-  horizontalStyles: {
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
   },
   verticalStyles: {
     borderBottomRightRadius: 0,

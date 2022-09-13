@@ -47,7 +47,7 @@ export default function EjercicioForm({navigation,route}) {
               call('/ejercicios/'+email,"POST", navigation,data)
               .then(response => {
                 if (response.ok){
-                  navigation.navigate("Login")
+                  navigation.navigate("ListarEjercicios",{ejercicio:form})
                   setIsLoading(false)
                 }else{
                   setIsLoading(false)
@@ -142,7 +142,7 @@ export default function EjercicioForm({navigation,route}) {
                 <Block flex row center width={width * 0.85} style={{marginTop:10}}>
                         <FloatingLabelInput
                             errorMessage={formErrorMessage(errors,"titulo")}
-                            
+                            maxLength={100}
                             label="Título"
                             value={form.titulo}
                             onChangeText={text => setForm({...form,["titulo"]:text})}
