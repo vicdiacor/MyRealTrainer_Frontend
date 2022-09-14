@@ -7,7 +7,7 @@ import { Block, Text, theme } from 'galio-framework';
 import { argonTheme } from '../constants';
 const { width, height } = Dimensions.get("screen");
 
-export default function EjercicioCard({navigation,ejercicio, style, imageStyle }) {
+export default function EjercicioCard({navigation,ejercicio, onPress, style, imageStyle }) {
 
     
     const imageStyles = [
@@ -20,19 +20,20 @@ export default function EjercicioCard({navigation,ejercicio, style, imageStyle }
       styles.shadow
     ];
 
+
     return (
-      <Block  card flex style={cardContainer}>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('Pro')}>
-          <Block  style={imgContainer}>
-            <Image source={{uri: "https://blogscdn.thehut.net/app/uploads/sites/450/2021/05/shutterstock_541669732opt_hero_1621859509_1622118621.jpg"}} style={imageStyles} />
-          </Block>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('Pro')}>
-          <Block center flex space="between" style={styles.cardDescription}>
-            <Text  size={14} style={styles.cardTitle}>{ejercicio["titulo"]}</Text>
-          </Block>
-        </TouchableWithoutFeedback>
-      </Block>
+      <TouchableWithoutFeedback  onPress={onPress}>
+        <Block  card flex style={cardContainer}>
+            <Block  style={imgContainer}>
+              <Image source={{uri: "https://blogscdn.thehut.net/app/uploads/sites/450/2021/05/shutterstock_541669732opt_hero_1621859509_1622118621.jpg"}} style={imageStyles} />
+            </Block>
+          <TouchableWithoutFeedback onPress={() => navigation.navigate('Pro')}>
+            <Block center flex space="between" style={styles.cardDescription}>
+              <Text  size={14} style={styles.cardTitle}>{ejercicio["titulo"]}</Text>
+            </Block>
+          </TouchableWithoutFeedback>
+        </Block>
+      </TouchableWithoutFeedback >
     );
   }
 

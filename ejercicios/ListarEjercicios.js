@@ -58,6 +58,18 @@ useEffect(()=>{
 })
 },[route["params"]])
 
+function editEjercicio(ejercicio){
+      var form={
+        titulo:ejercicio["titulo"],
+        preparacion:ejercicio["preparacion"],
+        ejecucion:ejercicio["ejecucion"],
+        consejos:ejercicio["consejos"],
+        id: ejercicio["id"]
+    }
+    navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
+}
+
+
  return (
 
     <SafeAreaView style={styles.container}> 
@@ -80,7 +92,7 @@ useEffect(()=>{
                 <Block row>
                   <Block>
                   
-                  <EjercicioCard  ejercicio={value[0]} />
+                  <EjercicioCard onPress={()=>editEjercicio(value[0])} ejercicio={value[0]} />
     
                   </Block>
                   {value[1]===null? 
@@ -97,7 +109,7 @@ useEffect(()=>{
                     <Block marginRight={width*0.0333}/>
                     <Block  >
                     
-                    <EjercicioCard  ejercicio={value[1]} />
+                    <EjercicioCard onPress={()=>editEjercicio(value[1])} ejercicio={value[1]} />
       
                     </Block>
                   </>

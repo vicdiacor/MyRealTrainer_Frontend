@@ -22,6 +22,7 @@ export default function EjercicioForm({navigation,route}) {
     const [isLoadingCamaraVideos,setIsLoadingCamaraVideos]= useState(false)
     const[errors, setErrors]= useState({})
     const[form,setForm]=useState({
+        id:"",
         titulo:"",
         preparacion:"",
         ejecucion:"",
@@ -30,6 +31,13 @@ export default function EjercicioForm({navigation,route}) {
     const [image, setImage] = useState(null);
     const [videos,setVideos]= useState({});
     
+    useEffect(()=>{
+      if (route["params"]["mode"]=="edit"){
+        setForm(route["params"]["form"])
+      }
+      
+    },[route["params"]])
+
     const handleSubmit= evt => {
       setIsLoading(true)
       var nuevosErrores= validateEjercicioForm(form)
@@ -43,7 +51,20 @@ export default function EjercicioForm({navigation,route}) {
               consejos: form.consejos,
               
           }
-          getCookie("emailLogged").then(email => {
+          if(route["params"]["mode"]==="edit"){ // Edit an existing ejercicio
+            data["id"]= form.id
+            call('/ejercicios/'+form.id,"PUT", navigation,data)
+            .then(response => {
+              if (response.ok){
+                navigation.navigate("ListarEjercicios",{ejercicio:form})
+                setIsLoading(false)
+              }else{
+                setIsLoading(false)
+                showBackendErrors(response)
+              }
+            }) 
+          }else{      // Create a new ejercicio
+            getCookie("emailLogged").then(email => {
               call('/ejercicios/'+email,"POST", navigation,data)
               .then(response => {
                 if (response.ok){
@@ -55,6 +76,9 @@ export default function EjercicioForm({navigation,route}) {
                 }
               }) 
           })
+          }
+          
+          
       }else{
           setIsLoading(false)
       }
