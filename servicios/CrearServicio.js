@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react';
-import { View, Dimensions,SafeAreaView,KeyboardAvoidingView, StatusBar,ScrollView,StyleSheet} from 'react-native';
+import { View, Dimensions,SafeAreaView,KeyboardAvoidingView, StatusBar,ScrollView,StyleSheet,Alert} from 'react-native';
 import { Block, Text } from "galio-framework";
 import { argonTheme } from '../constants';
 import FloatingLabelInput from '../components/FloatingLabelInput';
@@ -11,7 +11,6 @@ import call from '../Caller';
 import { delay } from '../components/Delay';
 import validateCrearServicio from './ValidateCrearServicio';
 import { showBackendErrors } from '../util/UtilFunctions';
-import {Alert} from "react-native";
 const { width, height } = Dimensions.get("screen");
 export default function CrearServicio({navigation,route}) {
 
@@ -63,7 +62,7 @@ export default function CrearServicio({navigation,route}) {
                 .then(response => {
                   if (response.ok){
                     
-                        navigation.navigate("ListarMisServicios")
+                        navigation.navigate("ListarMisServicios",{"servicioForm":null})
                         setIsLoadingEliminar(false)
                     
                   }else{

@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react';
-import { View, Dimensions,SafeAreaView,KeyboardAvoidingView,Image, StatusBar,ScrollView,StyleSheet} from 'react-native';
+import { View, Dimensions,SafeAreaView,KeyboardAvoidingView,Image, Alert,StatusBar,ScrollView,StyleSheet} from 'react-native';
 import { Block, Text,Toast} from "galio-framework";
 import { argonTheme } from '../constants';
 import FloatingLabelInput from '../components/FloatingLabelInput';
@@ -20,6 +20,7 @@ export default function EjercicioForm({navigation,route}) {
     const [isLoadingCamara,setIsLoadingCamara]= useState(false)
     const [isLoadingGaleriaVideos,setIsLoadingGaleriaVideos]= useState(false)
     const [isLoadingCamaraVideos,setIsLoadingCamaraVideos]= useState(false)
+    const[isLoadingEliminar,setIsLoadingEliminar]=useState(false)
     const[errors, setErrors]= useState({})
     const[form,setForm]=useState({
         id:"",
@@ -37,6 +38,20 @@ export default function EjercicioForm({navigation,route}) {
       }
       
     },[route["params"]])
+
+    function deleteEjercicio(id){
+      setIsLoadingEliminar(true)
+      call('/ejercicios/'+id,"DELETE", navigation)
+              .then(response => {
+                if (response.ok){
+                      navigation.navigate("ListarEjercicios",{ejercicio:null})
+                      setIsLoadingEliminar(false)
+                }else{
+                  showBackendErrors(response)
+                  setIsLoadingEliminar(false)
+                }
+              }) 
+    }
 
     const handleSubmit= evt => {
       setIsLoading(true)
@@ -293,6 +308,24 @@ export default function EjercicioForm({navigation,route}) {
                         </Text>
                       </Button>
                 </Block>
+
+                {form.id?
+                    <Block  disabled={isLoadingEliminar} loading={isLoadingEliminar} marginTop={5}  center >
+                    <Button style={styles.button} onPress={()=> Alert.alert(
+                    "Eliminar servicio","¿Estás seguro de que quieres eliminar el ejercicio: '" + form.titulo + "' ?",
+                    [
+                        {text:"SÍ",onPress:()=> deleteEjercicio(form.id)},
+                        {text:"NO"}
+                    ]
+                    )} 
+                    color="error">
+                    <Text bold size={17} color={argonTheme.COLORS.WHITE}>
+                        Eliminar ejercicio
+                    </Text>
+                    </Button>
+                </Block> 
+                
+                :null}
             </KeyboardAvoidingView>
             </Block> 
             
@@ -315,5 +348,9 @@ const styles = StyleSheet.create({
        
         width: width * 0.6,
         marginBottom: 20,
+      },button: {
+        width: width * 0.6,
+        marginTop:"4%",
+        marginBottom: "4%",
       }
 })
