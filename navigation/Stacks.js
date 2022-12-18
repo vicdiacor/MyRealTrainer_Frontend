@@ -19,6 +19,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import EjercicioForm from '../ejercicios/EjercicioForm';
 import ListadoNoticias from '../plantillas/ListadoNoticias';
 import ListarEjercicios from '../ejercicios/ListarEjercicios';
+import RutinaForm from '../rutinas/RutinaForm';
+import EntrenamientoForm from '../entrenamientos/EntrenamientoForm';
+import SeriesForm from '../series/SeriesForm';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -28,19 +31,18 @@ const MainStack = () => {
     <NavigationContainer>
      <Tab.Navigator>
           
-          <Tab.Screen  name="Rest"
-              component={RestStack}
+          <Tab.Screen  name="HomeLogin"
+              component={HomeLogin}
               options={{ headerShown: false }
               } />
           
           <Tab.Screen  name="Servicios"
               component={ServiciosStack}
-              options={{ headerShown: false }
-              } />
+              options={{ headerShown: false, unmountOnBlur: true}} />
 
            <Tab.Screen  name="Rutinas"
               component={RutinasStack}
-              options={{ headerShown: false }
+              options={{ headerShown: false, unmountOnBlur: true}
               } />
 
      </Tab.Navigator>
@@ -48,52 +50,35 @@ const MainStack = () => {
     </NavigationContainer>
   );
 };
-
-const ServiciosStack = ()=>{
+const HomeLogin = ()=>{
      return (
      <Stack.Navigator>
-    
-            
-     <Stack.Screen
-            name="ListarMisServicios"
-            component={ListarMisServicios}
-            options={{ headerShown: false }
-            }
-            />
-
-     <Stack.Screen
-            name="CrearServicio"
-            component={CrearServicio}
-            options={{ headerShown: false }
-            }
-            />
-       <Stack.Screen
-            name="CrearTarifa"
-            component={CrearTarifa}
-            options={{ headerShown: false }
-            }
-            />
-      <Stack.Screen
-            name="CrearLugarEntrenamiento"
-            component={CrearLugarEntrenamiento}
-            options={{ headerShown: false }
-            }
-            />            
-        </Stack.Navigator>
-     );
-}
-
-
-const RestStack = ()=>{
-     return (
-          <Stack.Navigator>
           <Stack.Screen
                name="Login"
                component={Login}
                options={{ headerShown: false }
                }
                />
-          <Stack.Screen
+             <Stack.Screen
+            name="Elements"
+            component={Elements}
+            options={{ title: 'Elements' }
+            }
+            />
+            
+             <Stack.Screen
+            name="Registro"
+            component={Registro}
+            options={{ headerShown: false }
+            }
+            />
+               <Stack.Screen
+            name="AfterRegister"
+            component={AfterRegister}
+            options={{ headerShown: false }
+            }
+            />
+            <Stack.Screen
                name="ListadoNoticias"
                component={ListadoNoticias}
                options={{ headerShown: false }
@@ -127,39 +112,77 @@ const RestStack = ()=>{
             component={Home}
             options={{ title: 'Inicio' }
             }
-            />
-         
-          
-          <Stack.Screen
-            name="Registro"
-            component={Registro}
-            options={{ headerShown: false }
-            }
-            />
-               <Stack.Screen
-            name="AfterRegister"
-            component={AfterRegister}
-            options={{ headerShown: false }
-            }
-            />
-             <Stack.Screen
-            name="Elements"
-            component={Elements}
-            options={{ title: 'Elements' }
-            }
-            />
-      </Stack.Navigator>
-      
+            />            
+        </Stack.Navigator>
      );
 }
+const ServiciosStack = ()=>{
+     return (
+     <Stack.Navigator>
+          
+            
+     <Stack.Screen
+            name="ListarMisServicios"
+            component={ListarMisServicios}
+            options={{ headerShown: false}}
+            
+            />
+
+     <Stack.Screen
+            name="CrearServicio"
+            component={CrearServicio}
+            options={{ headerShown: false }
+            }
+            />
+       <Stack.Screen
+            name="CrearTarifa"
+            component={CrearTarifa}
+            options={{ headerShown: false }
+            }
+            />
+      <Stack.Screen
+            name="CrearLugarEntrenamiento"
+            component={CrearLugarEntrenamiento}
+            options={{ headerShown: false }
+            }
+            />
+                 
+        </Stack.Navigator>
+     );
+}
+
+
+
 const RutinasStack = ()=>{
      return (
-          <Stack.Navigator>
+     <Stack.Navigator>
+          <Stack.Screen
+               name="RutinaForm"
+               component={RutinaForm}
+               options={{ headerShown: false }}
+               
+
+               />
+          <Stack.Screen
+               name="EntrenamientoForm"
+               component={EntrenamientoForm}
+               options={{ headerShown: false }}
+               
+
+               />
           <Stack.Screen
                name="ListarEjercicios"
                component={ListarEjercicios}
-               options={{ headerShown: false }
-               }
+               options={{ headerShown: false }}
+               
+
+               />
+          <Stack.Screen
+               name="SeriesForm"
+               component={SeriesForm}
+               options={{ headerShown: false }}
+               
+
                />
           <Stack.Screen
                name="EjercicioForm"

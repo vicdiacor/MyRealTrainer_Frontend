@@ -3,6 +3,7 @@ import { Block,Text, Checkbox} from "galio-framework";
 import { StyleSheet, TouchableWithoutFeedback, Image, View} from 'react-native';
 import {  argonTheme } from "../constants";
 import { Icon, Button } from '.';
+import CircleButton from './CircleButton';
 
 
 export default function CheckBoxLugarEntrenamiento ({lugar,onPress,errorMessage,onChangeCheckbox,enableCheckbox,initialValueCheckbox,reducedMode}){
@@ -53,15 +54,7 @@ export default function CheckBoxLugarEntrenamiento ({lugar,onPress,errorMessage,
               <Block style={{ width:enableCheckbox? "60%":"70%"}}> 
                 <Text style={textStyle} onTextLayout={handleOnTextLayout}  color={argonTheme.COLORS.BLACK} bold size={reducedMode? 15 : 20}>{lugar["titulo"]}</Text>
               </Block>
-               <Button onPress={onPress} style={circleButtonStyle}>
-                            <Icon
-                            size={17}
-                            color={argonTheme.COLORS.WHITE}
-                            name="navigate-next"
-                            family="MaterialIcons"
-                            style={{alignSelf: "center"}}
-                            />
-                </Button>
+               <CircleButton onPress={onPress} style={circleButtonStyle} sizeIcon={17} nameIcon={"navigate-next"} familyIcon={"MaterialIcons"}/>
                 {enableCheckbox ? <Checkbox 
                         onChange={onChangeCheckbox}
                         checkboxStyle={styles.checkbox}

@@ -77,7 +77,7 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
             call('/lugares/'+email,"POST", navigation,data)
             .then(response => {
               if (response.ok){
-                navigation.navigate("CrearTarifa",{"tarifaForm":route["params"]["tarifaForm"], "servicioForm":route["params"]["servicioForm"],"mode":route["params"]["mode"],"tarifas":route["params"]["tarifas"],"lugaresChecked":route["params"]["lugaresChecked"],"index":route["params"]["index"]})
+                navigation.navigate("CrearTarifa",{...route["params"]})
                 setIsLoading(false)
               }else{
                 setIsLoading(false)

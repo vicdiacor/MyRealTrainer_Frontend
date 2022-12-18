@@ -71,6 +71,10 @@ const showBackendErrors= (response) =>{ // Display the backend errors in case of
         }
     })
 }
+// Inserts a text inside another, at a specific index
+function insertIntoString(initialText,index,textToInsert){
+    return initialText.slice(0,index) + textToInsert + initialText.slice(index)
+}
 
-export {frontendFormatLugar,backendFormatLugar,showBackendErrors}
+export {frontendFormatLugar,backendFormatLugar,showBackendErrors,insertIntoString}
 

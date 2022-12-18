@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react';
-import { View, Dimensions,SafeAreaView,KeyboardAvoidingView, StatusBar,ScrollView,StyleSheet} from 'react-native';
+import { View, Dimensions,ActivityIndicator,SafeAreaView,KeyboardAvoidingView, StatusBar,ScrollView,StyleSheet} from 'react-native';
 import { Block, Text ,theme} from "galio-framework";
 import FloatingLabelInput from '../components/FloatingLabelInput';
 import formErrorMessage from '../components/FormErrorMessage';
@@ -12,15 +12,16 @@ import validateCrearServicio from './ValidateCrearServicio';
 import { Card } from "../components/";
 import { Images, argonTheme, articles } from "../constants/";
 import ServicioCard from '../components/ServicioCard';
-import { useFocusEffect } from '@react-navigation/native';
+import { useIsFocused } from "@react-navigation/native";
+import CircleButton from '../components/CircleButton';
 
 const { width, height } = Dimensions.get("screen");
 
 export default function ListarMisServicios({navigation,route}) {
 
-const [servicios,setServicios]= useState()
+const [servicios,setServicios]= useState([])
 const [isLoading,setIsLoading]=useState(true)
-
+const isFocused = useIsFocused();
 function editServicio(servicio){
 
   var tarifas= servicio["tarifas"]
@@ -47,19 +48,19 @@ function editServicio(servicio){
     descripcion: servicio["descripcion"],
     id:servicio["id"],
     }
-  console.log("FORMATTED TARIFAS QUE ENVIAMOS DESDE EL LISTAR ==================================================");
-  console.log(formattedTarifas);
+  
     navigation.navigate('CrearServicio',{"servicioForm":servicioForm,"tarifas":formattedTarifas, "mode":"edit"})
  
 }
 
 useEffect(()=>{
-  console.log("EFFECT LISTAR MIS SERVICIOS ======================================================")
+  setServicios([])
   getCookie("emailLogged").then(email => {
     call('/servicios/'+email,"GET", navigation)
     .then(response => {
       if (response.ok){
         response.json().then(data => {
+            
             setServicios(data)
             setIsLoading(false)
         })
@@ -69,11 +70,12 @@ useEffect(()=>{
       }
     }) 
 })
-},[route["params"]])
+},[isFocused])
 
  return (
 
     <SafeAreaView style={styles.container}> 
+   
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps={true}>
         <Block style={{marginTop:60,marginBottom:20}} flex row  center>
                
@@ -85,9 +87,14 @@ useEffect(()=>{
                >
                    Mis Servicios
                </Text>
+               
             </Block>
             <Block flex safe  > 
-            {isLoading? null: 
+            {isLoading?
+            <Block center marginTop={100}>
+            <ActivityIndicator size="large" color={argonTheme.COLORS.PRIMARY} />
+            </Block>
+            : 
               servicios.map(servicio => (
 
                 <Block style={{ paddingHorizontal: theme.SIZES.BASE}}>
@@ -99,17 +106,13 @@ useEffect(()=>{
               ))
               
             }
-            <Block  marginTop={120} center>
-
-                      <Button  onPress={()=> navigation.navigate("CrearServicio",{"mode":"create"})} color="primary" style={styles.createButton}>
-                        <Text bold size={17} color={argonTheme.COLORS.WHITE}>
-                          Crear Servicio
-                        </Text>
-                      </Button>
-                </Block>
+       
             </Block> 
-            
-        </ScrollView> 
+         
+        </ScrollView>
+        <Block style={{position:"absolute",bottom: 100,alignSelf:"center",right:"5%"}}>
+        <CircleButton onPress={()=> navigation.navigate("CrearServicio",{"mode":"create"})} color="primary" />
+        </Block>
     </SafeAreaView>
 
 
@@ -122,9 +125,5 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: "#F4F5F7",
       justifyContent: 'center',
-    },createButton: {
-      width: width * 0.6,
-      marginTop:"4%",
-      marginBottom: "4%",
-    }
+    },
 })

@@ -1,18 +1,21 @@
 import React, {useEffect,useState} from 'react';
-import { View, Dimensions,SafeAreaView,KeyboardAvoidingView, StatusBar,ScrollView,StyleSheet} from 'react-native';
+import { View, Dimensions,SafeAreaView,ActivityIndicator,KeyboardAvoidingView, StatusBar,ScrollView,StyleSheet} from 'react-native';
 import { Block, Text ,theme} from "galio-framework";
 import { Icon, Button } from '../components';
 import { getCookie } from '../temporal_database/SecureStore';
 import call from '../Caller';
 import { Images, argonTheme, articles } from "../constants";
 import EjercicioCard from '../components/EjercicioCard';
-
+import { useIsFocused } from "@react-navigation/native";
 const { width, height } = Dimensions.get("screen");
+import CircleButton from '../components/CircleButton';
+
 
 export default function ListarEjercicios({navigation,route}) {
 
 const [ejercicios,setEjercicios]= useState()
 const [isLoading,setIsLoading]=useState(true)
+const isFocused = useIsFocused();
 
 function ejerciciosInPairs(){
   var ejerciciosRow= {}
@@ -41,7 +44,7 @@ function ejerciciosInPairs(){
 }
 
 useEffect(()=>{
-  
+  setEjercicios([])
   getCookie("emailLogged").then(email => {
     call('/ejercicios/'+email,"GET", navigation)
     .then(response => {
@@ -56,7 +59,7 @@ useEffect(()=>{
       }
     }) 
 })
-},[route["params"]])
+},[isFocused])
 
 function editEjercicio(ejercicio){
       var form={
@@ -82,17 +85,23 @@ function editEjercicio(ejercicio){
                    
                    color={argonTheme.COLORS.ICON}
                >
-                   Mis Ejercicios
+                   {route["params"] && route["params"]["entrenamiento"]? "Asignar ejercicio" : "Mis Ejercicios"}
                </Text>
             </Block>
             <Block flex safe  > 
             <Block center>
-            {isLoading? null: 
+            {isLoading? 
+            
+              <Block center marginTop={100}>
+              <ActivityIndicator size="large" color={argonTheme.COLORS.PRIMARY} />
+              </Block>
+              
+            : 
               Object.entries(ejerciciosInPairs()).map(([key, value]) => (
                 <Block row>
-                  <Block>
+                  <Block width={0.45*width}>
                   
-                  <EjercicioCard onPress={()=>editEjercicio(value[0])} ejercicio={value[0]} />
+                  <EjercicioCard onPress={route["params"] && route["params"]["entrenamiento"] ? ()=> navigation.navigate("SeriesForm",{...route["params"],"ejercicio":value[0]}) : ()=>editEjercicio(value[0])} ejercicio={value[0]} />
     
                   </Block>
                   {value[1]===null? 
@@ -107,9 +116,9 @@ function editEjercicio(ejercicio){
                   : 
                   <> 
                     <Block marginRight={width*0.0333}/>
-                    <Block  >
+                    <Block width={0.45*width} >
                     
-                    <EjercicioCard onPress={()=>editEjercicio(value[1])} ejercicio={value[1]} />
+                    <EjercicioCard onPress={route["params"] && route["params"]["entrenamiento"] ? ()=> navigation.navigate("SeriesForm",{"rutinaForm":route["params"]["rutinaForm"],"entrenamientos":route["params"]["entrenamientos"],"entrenamiento":route["params"]["entrenamiento"],"ejercicio":value[1]}) : ()=>editEjercicio(value[1])} ejercicio={value[1]} />
       
                     </Block>
                   </>
@@ -123,17 +132,13 @@ function editEjercicio(ejercicio){
               
             }
              </Block>
-            <Block  marginTop={120} center>
-
-                      <Button  onPress={()=> navigation.navigate("EjercicioForm",{"mode":"create"})} color="primary" style={styles.createButton}>
-                        <Text bold size={17} color={argonTheme.COLORS.WHITE}>
-                          Crear Ejercicio
-                        </Text>
-                      </Button>
-                </Block>
+           
             </Block> 
             
-        </ScrollView> 
+        </ScrollView>
+        <Block style={{position:"absolute",bottom: 100,alignSelf:"center",right:"5%"}}>
+        <CircleButton onPress={()=> navigation.navigate("EjercicioForm",route["params"]? {...route["params"],["mode"]:"create"}:{"mode":"create"})}/>
+        </Block>
     </SafeAreaView>
 
 
@@ -146,9 +151,5 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: "#F4F5F7",
       justifyContent: 'center',
-    },createButton: {
-      width: width * 0.6,
-      marginTop:"4%",
-      marginBottom: "4%",
     }
 })

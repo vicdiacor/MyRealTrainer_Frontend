@@ -2,7 +2,7 @@ import React from 'react';
 import * as Font from 'expo-font';
 import { createIconSetFromIcoMoon } from '@expo/vector-icons';
 import { Icon } from 'galio-framework';
-import { MaterialCommunityIcons, Ionicons,FontAwesome,MaterialIcons,Entypo} from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, Ionicons,FontAwesome,MaterialIcons,Entypo,Feather} from '@expo/vector-icons'; 
 import argonConfig from '../assets/config/argon.json';
 const ArgonExtra = require('../assets/font/argon.ttf');
 const IconArgonExtra = createIconSetFromIcoMoon(argonConfig, 'ArgonExtra');
@@ -33,6 +33,8 @@ class IconExtra extends React.Component {
         return <MaterialIcons name={name} family={family} {...rest} />
       }else if(family==='Entypo'){
         return <Entypo name={name} family={family} {...rest} />
+      }else if(family==='Feather'){
+        return <Feather name={name} family={family} {...rest} />
       }
     
       return <Icon name={name} family={family} {...rest} />;

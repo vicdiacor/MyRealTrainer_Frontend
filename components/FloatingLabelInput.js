@@ -7,17 +7,29 @@ import {
 import {  Input } from "./";
 import { argonTheme } from "../constants";
 import formErrorMessage from './FormErrorMessage';
-function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline,initialNumberOfLines,textCounter,maxLength,placeholderFontSize,value,...props}) {
+import { Block } from 'galio-framework';
+function FloatingLabelInput ({label,date,error,fontSize,centerText,fixedLabel, onPress,iconContent,errorMessage,afterEditing,multiline,initialNumberOfLines,textCounter,maxLength,placeholderFontSize,value,...props}) {
   
-
-  
+  const [widthTextInput, setWidthTextInput]= useState(null)
+ 
   const [isFocused,setIsFocused]=useState(false)
   const [haveValue,setHaveValue]=useState(value)
+  const [defaultMarginText,setDefaultMarginText]=useState(20);
 
   const [dynamicHeight, setDynamicHeight]=useState(21)
   const textInputRef = useRef(null);
 
-
+  function calculateWidthText(widthTextInput){   // Tener en cuenta si hay emoji o no
+    if(widthTextInput<101.82){ // Calcular la relación también teniendo en cuenta el left = 10 aqui también
+      return 80
+    }else{
+        // From 3 different configurations, we calculate the parabola or the approximate relationship between the different widths
+    var a = -98150 / 227175389;
+    var b = 65534750 / 227175389;
+    var c = 17725692617 / 454350778;
+    return a * Math.pow(widthTextInput, 2) + b * widthTextInput + c;
+    }
+  }
   const handleFocus = () => {
     setIsFocused(true)
 
@@ -26,47 +38,37 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
   
   const handleEdit= (inputInfo) => 
     {
-    
       setIsFocused(false)
+      afterEditing?afterEditing():null
+      
   }
    
     const labelStyle = {
       position: 'absolute',
-      left: 20,
       top: isFocused || value  ? 15 : 28,
       fontSize: isFocused || value  ? 14 : (placeholderFontSize==undefined? 17: placeholderFontSize),
       color: isFocused || value ?  '#5e72e4': '#aaa',
       zIndex: 4,
-      flex: props.iconContent==undefined? 0.87: 0.72,
-      flexDirection: 'row',      
-      width: props.iconContent==undefined? '87%':'72%',
       fontWeight: isFocused  || value?   "bold": null
       
     };
     const fixedLabelStyle = {
       position: 'absolute',
-      left: 20,
       top:  15,
       fontSize:  14,
       color: '#5e72e4',
-      zIndex: 4,
-      flex: props.iconContent==undefined? 0.87: 0.72,
-      flexDirection: 'row',      
-      width:props.iconContent==undefined? '87%':'72%',
+      zIndex: 4,   
       fontWeight: "bold"
       
     };
     const textInputStyle = { 
       position: 'absolute',
-      left: 20,
-      top: 36,
+      top: label? 36:26,
       zIndex: 5,
       minHeight:21,
-      fontSize: 17,
+      fontSize: fontSize? fontSize:17,
       color: '#000',
-      flex: props.iconContent==undefined? 0.87: 0.72,
-      flexDirection: 'row',      
-      width:props.iconContent==undefined? '87%':'72%',
+      textAlign: centerText? 'center' :  'left'
       
     };
     const errorMessageStyle={
@@ -79,39 +81,51 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
       textAlign: 'right',
       fontWeight:isFocused? "600":"400"
       
-      
     }
-    
 
     return (
       
-      <View style={{flex:1, alignSelf:"baseline"}}>
+      <View style={{flex:1}} onLayout={(event) => {
+        var {x, y, width, height} = event.nativeEvent.layout;
+        setWidthTextInput(width);
+        width < 101.82 ? setDefaultMarginText(10) : setDefaultMarginText(20)
+      }} >
        
-        <TouchableWithoutFeedback onPress={() => {textInputRef.current.focus()}} >
-        <View>
-        <Text
-        style={fixedLabel? fixedLabelStyle: labelStyle} >
-          {label}
-        </Text>
+        <TouchableWithoutFeedback onPress={() => {
+          textInputRef.current.focus()
+          onPress? onPress(): null
         
-        <TextInput
-        
-        ref={textInputRef}
-          value={value}
-          maxLength={maxLength}
-          style={textInputStyle}
-          multiline={multiline}
-          onFocus={handleFocus}
-          onEndEditing={handleEdit}
-          onContentSizeChange={(event) => {
-            setDynamicHeight(event.nativeEvent.contentSize.height)
-          }}
-          {...props}
+        }} >
+        <View >
+          <Block  marginLeft={defaultMarginText} marginRight={iconContent==undefined? defaultMarginText : 65}>
+            <Text
+            style={fixedLabel? fixedLabelStyle: labelStyle} >
+              {label}
+            </Text>
+            <Block center={centerText}>
+
           
-        />
+              <TextInput
+          
+                  ref={textInputRef}
+                    value={value}
+                    maxLength={maxLength}
+                    style={textInputStyle}
+                    multiline={multiline}
+                    onFocus={handleFocus}
+                    onEndEditing={handleEdit}
+                    onContentSizeChange={(event) => {
+                      setDynamicHeight(event.nativeEvent.contentSize.height)
+                    }}
+                   
+                    {...props}
+                    
+                  />
+              </Block>
+          </Block>
           <View  style={{zIndex:1}}>
               <Input
-              
+                haveLabel={label? true:false}
                 dynamicHeight={dynamicHeight}
                 multiline={multiline==undefined? false:true}
                 initialNumberOfLines={initialNumberOfLines}
@@ -120,7 +134,7 @@ function FloatingLabelInput ({label,date,error,fixedLabel,errorMessage,multiline
                 editable={false}
                 right
                   iconContent={
-                    props.iconContent
+                    iconContent
                   }
                   
                 />

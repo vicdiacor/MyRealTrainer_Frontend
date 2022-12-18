@@ -61,8 +61,7 @@ export default function Login({navigation}) {
                         saveCookie("apellidosLogged",""+usuario.apellidos);
                         saveCookie("emailLogged",""+usuario.email);
                         // createDatabaseIfNotExists() Base de datos local 
-
-                        navigation.navigate('Servicios')
+                        navigation.navigate('Servicios', { screen: 'ListarMisServicios'});
                         await delay(1000)
                         setIsLoading(false)
                         

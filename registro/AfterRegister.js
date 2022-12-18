@@ -90,7 +90,8 @@ export default function AfterRegister({navigation,route}) {
                               
                               if (response.ok){
                                 console.log("Entrenador creado")
-                                navigation.navigate('CrearServicio')
+                                navigation.navigate('Servicios', { screen: 'ListarMisServicios' });
+                                
                                 await delay(1000)
                                 setIsLoadingGuardar(false)
                                 
@@ -110,7 +111,8 @@ export default function AfterRegister({navigation,route}) {
                         }
                       }else{
                         // When the image uploader works on Amazon S3, send a request to the backend
-                        navigation.navigate('CrearServicio')
+                        navigation.navigate('Servicios', { screen: 'ListarMisServicios' });
+
                         setIsLoadingGuardar(false)
                       }
                           

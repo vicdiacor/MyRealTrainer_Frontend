@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react';
-import { View, Dimensions,SafeAreaView,KeyboardAvoidingView, StatusBar,ScrollView,StyleSheet,Alert} from 'react-native';
+import { View, Dimensions,ActivityIndicator,SafeAreaView,KeyboardAvoidingView, StatusBar,ScrollView,StyleSheet,Alert} from 'react-native';
 import { Block, Text } from "galio-framework";
 import { argonTheme } from '../constants';
 import FloatingLabelInput from '../components/FloatingLabelInput';
@@ -12,6 +12,11 @@ import { delay } from '../components/Delay';
 import validateCrearServicio from './ValidateCrearServicio';
 import { showBackendErrors } from '../util/UtilFunctions';
 const { width, height } = Dimensions.get("screen");
+import { useIsFocused } from "@react-navigation/native";
+
+
+import CircleButton from '../components/CircleButton';
+
 export default function CrearServicio({navigation,route}) {
 
   
@@ -19,6 +24,7 @@ export default function CrearServicio({navigation,route}) {
     const[isLoading,setIsLoading]=useState(false)
     const[isLoadingEliminar,setIsLoadingEliminar]=useState(false)
     const[isLoadingContent,setIsLoadingContent]=useState(true)
+    const isFocused = useIsFocused();
     const[form,setForm]=useState({
         titulo:"",
         descripcion:"",
@@ -26,21 +32,7 @@ export default function CrearServicio({navigation,route}) {
     })
 
     const[tarifas,setTarifas]= useState({})
-    var circleButtonStyle={
-        
-        
-        
-        zIndex:10,
-        borderRadius: 100,
-        width: width*0.13,
-        height: width*0.13,
-        color: argonTheme.COLORS.PRIMARY,
-        backgroundColor: argonTheme.COLORS.PRIMARY,
-        position:"absolute",
-        bottom:form.id? 180:110,
-        right:"5%",
-        
-    }
+    
     function editTarifa (index,tarifa){
        
         var tarifaForm= {
@@ -62,7 +54,7 @@ export default function CrearServicio({navigation,route}) {
                 .then(response => {
                   if (response.ok){
                     
-                        navigation.navigate("ListarMisServicios",{"servicioForm":null})
+                        navigation.navigate("ListarMisServicios")
                         setIsLoadingEliminar(false)
                     
                   }else{
@@ -92,7 +84,7 @@ export default function CrearServicio({navigation,route}) {
                     setTarifas(route["params"]["tarifas"])
                     setIsLoadingContent(true)
                     setIsLoadingContent(false) // We need to render 2 times
-                   
+                    
                     })
                   }else{
                     showBackendErrors(response)
@@ -102,8 +94,9 @@ export default function CrearServicio({navigation,route}) {
             })
 
         }
+        setIsLoadingContent(false)
 
-    },[route["params"]])
+    },[isFocused])
     
     const handleSubmit=  evt => {
        setIsLoading(true)
@@ -137,7 +130,7 @@ export default function CrearServicio({navigation,route}) {
                     call('/servicios/'+form.id,"PUT", navigation,data)
                     .then(response => {
                     if (response.ok){
-                        navigation.navigate("ListarMisServicios",{"servicioForm":form,"tarifas":tarifas})
+                        navigation.navigate("ListarMisServicios")
                         setIsLoading(false)
                     }else{
                         setIsLoading(false)
@@ -149,7 +142,7 @@ export default function CrearServicio({navigation,route}) {
                         call('/servicios/'+email,"POST", navigation,data)
                         .then(response => {
                         if (response.ok){
-                            navigation.navigate("ListarMisServicios",{"servicioForm":form,"tarifas":tarifas})
+                            navigation.navigate("ListarMisServicios")
                             setIsLoading(false)
                         }else{
                             setIsLoading(false)
@@ -166,9 +159,10 @@ export default function CrearServicio({navigation,route}) {
         
       }
     function deleteTarifa(index){
+        setIsLoadingContent(true)
         delete tarifas[index]
         setTarifas({...tarifas}) // To render after state has finished
-      
+        setIsLoadingContent(false)
 
     }
 
@@ -240,28 +234,25 @@ export default function CrearServicio({navigation,route}) {
                         (
                         <TarifaCard deleteFunction={()=> deleteTarifa(index)} onPressContainer={()=> editTarifa(index,tarifa)} style={{width:width*0.85,marginBottom:30, alignSelf:"center"}} tarifa={tarifa}/>)
 
-                    )}</> :null}
+                    )}</> :
+                    <Block center marginTop={100}>
+                    <ActivityIndicator size="large" color={argonTheme.COLORS.PRIMARY} />
+                    </Block>
+                }
                     
                
                 <Block marginTop={0}></Block>
-                <Button  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"lugaresChecked":{}})} style={circleButtonStyle}>
-                            <Icon
-                            
-                            size={20}
-                            color={argonTheme.COLORS.WHITE}
-                            name="plus"
-                            family="Entypo"
-                            style={{alignSelf: "center"}}
-                            
-                            />
-                </Button>
-                
-                <Block  marginTop={120} center>
+
+
+                <Block  marginTop={100} center>
                       <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.button}>
                         <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                           Guardar
                         </Text>
                       </Button>
+                </Block>
+                <Block style={{position:"absolute",bottom: 100,alignSelf:"center",right:"5%"}}>
+                <CircleButton  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"lugaresChecked":{}})} />
                 </Block>
                 {form.id?
                     <Block  disabled={isLoadingEliminar} loading={isLoadingEliminar} marginTop={5}  center >
@@ -286,7 +277,9 @@ export default function CrearServicio({navigation,route}) {
             </KeyboardAvoidingView>
             </Block> 
             
-        </ScrollView> 
+        </ScrollView>
+        
+        
     </SafeAreaView>
 
 

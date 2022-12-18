@@ -12,17 +12,19 @@ const datePicker= (mode,defaultValue,onChangeFunction) => {
     is24Hour={true}
     onChange={onChangeFunction}
     />
+    
 }
 
-// Shows the date with the format: "dd/mm/yyyy HH:mm" or "dd/mm/yyyy" depending on the "time" value: true or false
-const dateTimeFormat = (fecha,time) => {
+// Shows the date with the format: "dd/mm/yyyy HH:mm" , "dd/mm/yyyy" or "HH:mm" depending on the "haveTime" and 
+// haveDay values (true or false)
+const dateTimeFormat = (fecha,haveTime,haveDay=true) => {
 
-    console.log(fecha)
+   
     let tempDate = new Date(fecha);
-    let fDate= tempDate.getDate() + "/" + (tempDate.getMonth()+1) + "/" + tempDate.getFullYear();
-    let fTime= tempDate.getHours() + ":";
+    let fDate= haveDay? tempDate.getDate() + "/" + (tempDate.getMonth()+1) + "/" + tempDate.getFullYear(): "";
     
-    if(time) {
+    if(haveTime) {
+    let fTime= tempDate.getHours() + ":";
         if(tempDate.getMinutes()<10){
       fTime+="0"
         }

@@ -44,7 +44,7 @@ export default function EjercicioForm({navigation,route}) {
       call('/ejercicios/'+id,"DELETE", navigation)
               .then(response => {
                 if (response.ok){
-                      navigation.navigate("ListarEjercicios",{ejercicio:null})
+                      navigation.navigate("ListarEjercicios")
                       setIsLoadingEliminar(false)
                 }else{
                   showBackendErrors(response)
@@ -71,7 +71,7 @@ export default function EjercicioForm({navigation,route}) {
             call('/ejercicios/'+form.id,"PUT", navigation,data)
             .then(response => {
               if (response.ok){
-                navigation.navigate("ListarEjercicios",{ejercicio:form})
+                navigation.navigate("ListarEjercicios",route["params"]? route["params"]:{})
                 setIsLoading(false)
               }else{
                 setIsLoading(false)
@@ -83,7 +83,7 @@ export default function EjercicioForm({navigation,route}) {
               call('/ejercicios/'+email,"POST", navigation,data)
               .then(response => {
                 if (response.ok){
-                  navigation.navigate("ListarEjercicios",{ejercicio:form})
+                  navigation.navigate("ListarEjercicios",route["params"]? route["params"]:{})
                   setIsLoading(false)
                 }else{
                   setIsLoading(false)
@@ -224,6 +224,12 @@ export default function EjercicioForm({navigation,route}) {
                         />
                 </Block>
            
+            
+            <Block middle> 
+            
+            <Image source={image? { uri: image}: require("../assets/imgs/ejercicio.jpg" )} style={{ width: 0.85*width, height:0.65*width, borderRadius:10, marginTop:20, marginBottom:10, resizeMode:"contain" }} />
+
+            </Block>
             <Block flex row center style={{marginTop:10}}>
              
                     <Button disabled={isLoadingGaleria} loading={isLoadingGaleria} onPress={()=>pickImage(false)} color="primary" style={{width: width * 0.5}}>
@@ -253,11 +259,6 @@ export default function EjercicioForm({navigation,route}) {
                     />
                     </Button>
                
-            </Block>
-            <Block middle> 
-            
-            <Image source={image? { uri: image}: require("../assets/imgs/avatar_default.png" )} style={{ width: 0.65*width, height:0.65*width, borderRadius:1000, marginTop:20, marginBottom:10, resizeMode:"contain" }} />
-
             </Block>
             <Block flex row center style={{marginTop:10}}>
              

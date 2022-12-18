@@ -13,7 +13,7 @@ import call from '../Caller';
 import {getCookie} from "../temporal_database/SecureStore"
 import { showBackendErrors } from '../util/UtilFunctions';
 import validateCrearTarifa from './ValidateCrearTarifa';
-
+import CircleButton from '../components/CircleButton';
 
 
 const { width, height } = Dimensions.get("screen");
@@ -107,7 +107,7 @@ export default function CrearTarifa({navigation,route}) {
                 </Text>
              </Block>
              
-                <Block flex row center width={width * 0.85}>
+                <Block flex row center  width={width * 0.91}>
                         <FloatingLabelInput
                             errorMessage={formErrorMessage(errors,"titulo")}
                             maxLength={80}
@@ -116,11 +116,12 @@ export default function CrearTarifa({navigation,route}) {
                             onChangeText={text => setForm({...form,["titulo"]:text})}
                         />
                 </Block>
-                <Block center flex row style={{left:"1.5%",alignSelf:"baseline", marginTop:10}}>
-                    <Block style={{alignSelf:"baseline"}} flex={0.25} row width="25%">
+                <Block center flex row style={{ marginTop:10}}>
+                    <Block  flex={0.25} row width="25%">
                             <FloatingLabelInput
                                 placeholderFontSize={15}
                                 keyboardType="numeric"
+                                maxLength={8}
                                 errorMessage={formErrorMessage(errors,"precio")}
                                 label="Precio(€)"
                                 value={form.precio}
@@ -128,8 +129,9 @@ export default function CrearTarifa({navigation,route}) {
                             />
                             
                     </Block>
-                    <Block  style={{marginLeft:"1%",alignSelf:"baseline"}} flex={0.25} row width="25%">
+                    <Block   style={{marginLeft:"1%"}} flex={0.25} row width="25%">
                             <FloatingLabelInput
+                                maxLength={3}
                                 placeholderFontSize={15}
                                 keyboardType="numeric"
                                 errorMessage={formErrorMessage(errors,"duracion")}
@@ -139,7 +141,7 @@ export default function CrearTarifa({navigation,route}) {
                             />
                             
                     </Block>
-                    <Block style={{marginLeft:"1%",alignSelf:"baseline",top:7.7}} flex={0.4} width="40%" row>
+                    <Block style={{marginLeft:"1%"}} flex={0.4} width="40%" row>
                         <SelectPicker 
                             errorMessage={formErrorMessage(errors,"tipoDuracion")}
                             width="100%"
@@ -147,17 +149,18 @@ export default function CrearTarifa({navigation,route}) {
                             value={form.tipoDuracion}
                             onValueChange={(value) => setForm({...form,["tipoDuracion"]:value})}
                             items={[
-                                { color:argonTheme.COLORS.BLACK ,label: "  Mes/es", value: "MES" },
-                                { color:argonTheme.COLORS.BLACK,label: "  Año/s", value: "SEMANA" },
-                                { color:argonTheme.COLORS.BLACK, label: "  Hora/s", value: "HORA" },
                                 { color:argonTheme.COLORS.BLACK, label: "  Año/s", value: "AÑO" },
+                                { color:argonTheme.COLORS.BLACK ,label: "  Mes/es", value: "MES" },
+                                { color:argonTheme.COLORS.BLACK,label: "  Semana/s", value: "SEMANA" },
+                                { color:argonTheme.COLORS.BLACK, label: "  Día/s", value: "DIA" },
+                                { color:argonTheme.COLORS.BLACK, label: "  Hora/s", value: "HORA" },
                              
                             ]}
                         />
                     </Block>
                      
                 </Block>
-                <Block flex row center width={width * 0.85} style={{marginTop:10}}>
+                <Block flex row center width={width * 0.91} style={{marginTop:10}}>
                         <FloatingLabelInput
                             maxLength={500}
                             textCounter={form.limitaciones}
@@ -187,7 +190,7 @@ export default function CrearTarifa({navigation,route}) {
                     <CheckBoxLugarEntrenamiento 
                     errorMessage={formErrorMessage(errors,"lugaresChecked")}
                     enableCheckbox={true}
-                    onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"lugar":lugar,"tarifaForm":form, "mode":route["params"]["mode"],"servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"],"lugaresChecked":lugaresChecked,"index":route["params"]["index"]})} 
+                    onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{...route["params"],"lugar":lugar,"tarifaForm":form,"lugaresChecked":lugaresChecked})} 
                     lugar={lugar}
                     
                     initialValueCheckbox={lugar["id"] in route["params"]["lugaresChecked"]}
@@ -215,18 +218,10 @@ export default function CrearTarifa({navigation,route}) {
                         }}>{formErrorMessage(errors,"lugaresChecked")}</Text>
                     </Block>
                 }
-                                                                                    
-                <Button onPress={()=> navigation.navigate("CrearLugarEntrenamiento",{"tarifaForm":form, "mode":route["params"]["mode"],"servicioForm":route["params"]["servicioForm"],"tarifas":route["params"]["tarifas"],"lugaresChecked":lugaresChecked,"index":route["params"]["index"]})} style={styles.circleButton}>
-                            <Icon
-                            
-                            size={20}
-                            color={argonTheme.COLORS.WHITE}
-                            name="plus"
-                            family="Entypo"
-                            style={{alignSelf: "center"}}
-                            
-                            />
-                </Button>
+                <Block style={{position:"absolute",bottom: 100,alignSelf:"center",right:"5%"}}>
+                    <CircleButton  onPress={ ()=> navigation.navigate("CrearLugarEntrenamiento",{...route["params"],"tarifaForm":form,"lugaresChecked":lugaresChecked})} />
+                </Block>                                                        
+              
                  
                 <Block  marginTop="30%" center>
                       <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>

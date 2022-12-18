@@ -31,8 +31,8 @@ export default function validateCrearTarifa(form,lugaresChecked){
         errors.duracion= "La duración es un campo obligatorio" 
     } else if(isNaN(+form.duracion)){
         errors.duracion= "La duración debe ser un número"
-    } else if (+form.duracion > 1000){
-        errors.duracion= "La duración no puede ser mayor a 1000"
+    } else if (+form.duracion > 100){
+        errors.duracion= "La duración no puede ser mayor a 100"
     } else if (+form.duracion < 0){
         errors.duracion= "La duración no puede ser un número negativo"
     } else {
@@ -50,8 +50,8 @@ export default function validateCrearTarifa(form,lugaresChecked){
 
     // Validation tipo de duración
     
-    if(form.tipoDuracion== null || (form.tipoDuracion!=="MES" && form.tipoDuracion!=="SEMANA" && form.tipoDuracion!=="HORA" && form.tipoDuracion!=="AÑO")){
-        errors.tipoDuracion="El tipo de duración solo puede ser 'meses', 'semanas', 'horas' o 'años' "
+    if(form.tipoDuracion== null || (form.tipoDuracion!=="MES" && form.tipoDuracion!=="SEMANA" && form.tipoDuracion!=="HORA" && form.tipoDuracion!=="AÑO" && form.tipoDuracion!=="DIA")){
+        errors.tipoDuracion="El tipo de duración solo puede ser 'años','meses', 'semanas','dias' u 'horas'"
     }
 
     // Validation training places

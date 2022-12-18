@@ -190,6 +190,7 @@ export default function Registro({navigation}) {
                     
                     <Block  row center width={width * 0.8}>
                     <FloatingLabelInput
+                     onPress={() => setShow(true)}
                       errorMessage={formErrorMessage(errors,"fechaNacimiento")}
                       fixedLabel={fixedLabelDate}
                       label="Fecha de nacimiento"
@@ -199,7 +200,7 @@ export default function Registro({navigation}) {
                         <Icon
                        
                           onPress={() => setShow(true)}
-                          size={22}
+                          size={24}
                           color={argonTheme.COLORS.ICON}
                           name="calendar-edit"
                           family="MaterialCommunityIcons"
