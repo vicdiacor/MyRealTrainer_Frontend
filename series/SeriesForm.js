@@ -107,23 +107,17 @@ export default function SeriesForm({navigation,route}) {
     
   }
 
-  const onChangeNumRepeticiones = (text,index) => {
-    let series= form.series
-    let serie= series[index]
-    series[index]={...serie,["numRepeticiones"]:text.replace(/\s|,|\./,"")}
-    setForm({...form,["series"]:series})
-  }
 
-  const afterEditingNumRepeticiones = (index) => {
+  const afterEditingNumRepeticiones = (text,index) => {
    
     let series = form.series
     let serie= series[index]
 
    
-      if( !/^\d\d?\d?$/.test(serie.numRepeticiones)){
+      if( !/^\d\d?\d?$/.test(text)){
           series[index]={...serie,["numRepeticiones"]:'1'}
       }else{
-          let numero= Number(serie.numRepeticiones)
+          let numero= Number(text)
           numero >=1 ? series[index]={...serie,["numRepeticiones"]: '' + numero} :  series[index]={...serie,["numRepeticiones"]: '1'} 
           
       }
@@ -133,23 +127,19 @@ export default function SeriesForm({navigation,route}) {
   
   }
 
-  const onChangePeso = (text,index) =>{
-    let series= form.series
-    series[index]={...series[index],["peso"]:text.replace(",",".").replace(" ","").replace(/\..*\./,"")}
-    setForm({...form,["series"]:series})
-  }
+ 
 
-  const afterEditingPeso = (index) =>{
+  const afterEditingPeso = (text,index) =>{
     let series= form.series
    
-    if( !/^(\d|\.\d)/.test(series[index]["peso"])){
+    if( !/^(\d|\.\d)/.test(text)){
       series[index]= {...series[index],["peso"]:'0.00'}
-  }else if(Number(series[index]["peso"])>999){
+  }else if(Number(text)>999){
       series[index]={...series[index],["peso"]:'999.00'}
-  }else if(Number(series[index]["peso"])<0){
+  }else if(Number(text)<0){
       series[index]({...series[index],["peso"]:'0.00'})
   }else{
-      series[index]={...series[index],["peso"]:'' + Number(series[index]["peso"]).toFixed(2)}
+      series[index]={...series[index],["peso"]:'' + Number(text).toFixed(2)}
   }
     setForm({...form,["series"]:series})
   }
@@ -377,9 +367,9 @@ navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
 
                           <Block row center marginTop={10} width={width*0.9}>
                             <SerieCard serie={serie} numSerie={index+1} onConfirmTiempo={onConfirmTiempoSerie}
-                                      onChangeNumRepeticiones={onChangeNumRepeticiones}
+                                    
                                       afterEditingNumRepeticiones={afterEditingNumRepeticiones}
-                                      onChangePeso={onChangePeso} 
+                                     
                                       afterEditingPeso={afterEditingPeso} />
                           </Block>
 

@@ -7,8 +7,7 @@ import FloatingLabelInput from './FloatingLabelInput';
 const { width, height } = Dimensions.get("screen");
 
 
-export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,onChangeNumRepeticiones,afterEditingNumRepeticiones,
-    onChangePeso,afterEditingPeso}) {
+export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,afterEditingNumRepeticiones,afterEditingPeso}) {
     
     const [visiblePickerTiempo,setVisiblePickerTiempo] = useState(false);
     const segmentedPickerTiempo= useRef(null)
@@ -16,6 +15,32 @@ export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,
         onConfirmTiempo(selections,numSerie-1)
         setVisiblePickerTiempo(false)
       }
+  
+    const [form,setForm] = useState({
+        numRepeticiones:"1",
+        peso:"0.00",
+        horas: "00",
+        minutos:"00",
+        segundos:"00"
+    })
+
+    useEffect(()=>{
+      setForm(serie)
+      console.log(serie)
+    },[serie])
+    
+  const onChangeNumRepeticiones = (text) => {
+
+    setForm({...form,["numRepeticiones"]:text.replace(/\s|,|\./,"")})
+
+  }
+
+  const onChangePeso = (text) =>{
+ 
+    setForm({...form,["peso"]:text.replace(",",".").replace(" ","").replace(/\..*\./,"")})
+  }
+
+
     return (
         <Block  minHeight={110} flex  row style={styles.card}>
 
@@ -27,17 +52,17 @@ export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,
 
             <Block  center width={"20%"} height={50} marginLeft={12}>
                 <Block flex row center>
-                <FloatingLabelInput maxLength={3} keyboardType="numeric" centerText value={serie.numRepeticiones}
-                    onChangeText={text=> onChangeNumRepeticiones(text,numSerie-1)}
-                    afterEditing={()=>afterEditingNumRepeticiones(numSerie-1)}/>
+                <FloatingLabelInput maxLength={3} keyboardType="numeric" centerText value={form.numRepeticiones}
+                    onChangeText={text=> onChangeNumRepeticiones(text)}
+                    afterEditing={(text)=>afterEditingNumRepeticiones(text,numSerie-1)}/>
                 </Block>
             </Block>
 
             <Block  center width={"20%"} height={50} marginLeft={10}>
                 <Block flex row center>
-                <FloatingLabelInput maxLength={6} keyboardType="numeric" centerText  value={serie.peso}
-                    onChangeText={text=> onChangePeso(text,numSerie-1)}
-                    afterEditing={()=>afterEditingPeso(numSerie-1)}
+                <FloatingLabelInput maxLength={6} keyboardType="numeric" centerText  value={form.peso}
+                    onChangeText={text=> onChangePeso(text)}
+                    afterEditing={(text)=>afterEditingPeso(text,numSerie-1)}
                     />
                     
                 </Block>

@@ -36,10 +36,11 @@ function FloatingLabelInput ({label,date,error,fontSize,centerText,fixedLabel, o
   }
   
   
-  const handleEdit= (inputInfo) => 
+  const handleEdit= (inputInfo) => // After editing a field
     {
+     
       setIsFocused(false)
-      afterEditing?afterEditing():null
+      afterEditing?afterEditing(inputInfo.nativeEvent.text):null
       
   }
    
