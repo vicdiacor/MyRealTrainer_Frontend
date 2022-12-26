@@ -1,4 +1,3 @@
-import {calculateAge } from '../components/Dates';
 export default function validateAfterRegister(trainerForm){
 
     let errors = {}

@@ -19,7 +19,7 @@ export default function CheckBoxLugarEntrenamiento ({lugar,onPress,errorMessage,
       shadowOpacity: 0.1,
       elevation: 2,
       borderWidth:1,
-      borderRadius: 4,
+      borderRadius: 8,
       alignSelf:"baseline",
       borderColor: errorMessage==undefined? argonTheme.COLORS.BORDER: "#FC7370"
     }
@@ -82,5 +82,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     width:35,
     height:35,
+    borderRadius:4,
 }
   });

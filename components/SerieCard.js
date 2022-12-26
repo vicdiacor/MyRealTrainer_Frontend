@@ -5,9 +5,10 @@ import SegmentedPicker from 'react-native-segmented-picker';
 import { Block, Text} from "galio-framework";
 import FloatingLabelInput from './FloatingLabelInput';
 const { width, height } = Dimensions.get("screen");
+import formErrorMessage from '../components/FormErrorMessage';
+import {generateNumberSelectors } from '../util/UtilFunctions';
 
-
-export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,afterEditingNumRepeticiones,afterEditingPeso}) {
+export default function SerieCard ({navigation,numSerie=1,serie,errores,onConfirmTiempo,afterEditingNumRepeticiones,afterEditingPeso}) {
     
     const [visiblePickerTiempo,setVisiblePickerTiempo] = useState(false);
     const segmentedPickerTiempo= useRef(null)
@@ -15,10 +16,11 @@ export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,
         onConfirmTiempo(selections,numSerie-1)
         setVisiblePickerTiempo(false)
       }
-  
+    const[errors, setErrors]= useState({})
+
     const [form,setForm] = useState({
-        numRepeticiones:"1",
-        peso:"0.00",
+        numRepeticiones:"",
+        peso:"",
         horas: "00",
         minutos:"00",
         segundos:"00"
@@ -26,8 +28,11 @@ export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,
 
     useEffect(()=>{
       setForm(serie)
-      console.log(serie)
     },[serie])
+
+    useEffect(()=>{
+      errores ? setErrors(errores) : null
+    },[errores])
     
   const onChangeNumRepeticiones = (text) => {
 
@@ -40,29 +45,33 @@ export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,
     setForm({...form,["peso"]:text.replace(",",".").replace(" ","").replace(/\..*\./,"")})
   }
 
+  
 
     return (
         <Block  minHeight={110} flex  row style={styles.card}>
 
-            <Block marginLeft={15} center style={styles.numSerieCircle}>
+            <Block marginLeft={14} center style={styles.numSerieCircle}>
                 <Block flex row center>
-                    <Text   size={24} color='#FFFF'>{numSerie}</Text>
+                    <Text   size={22} color='#FFFF'>{numSerie}</Text>
                 </Block>
             </Block>
 
-            <Block  center width={"20%"} height={50} marginLeft={12}>
+            <Block  center width={"22%"} height={50} marginLeft={10}>
                 <Block flex row center>
                 <FloatingLabelInput maxLength={3} keyboardType="numeric" centerText value={form.numRepeticiones}
                     onChangeText={text=> onChangeNumRepeticiones(text)}
-                    afterEditing={(text)=>afterEditingNumRepeticiones(text,numSerie-1)}/>
+                    afterEditing={(text)=>afterEditingNumRepeticiones(text,numSerie-1)}
+                    errorMessage={formErrorMessage(errors,"numRepeticiones")!=null? "":null}
+                    />
                 </Block>
             </Block>
 
-            <Block  center width={"20%"} height={50} marginLeft={10}>
+            <Block  center width={"22%"} height={50} marginLeft={10}>
                 <Block flex row center>
                 <FloatingLabelInput maxLength={6} keyboardType="numeric" centerText  value={form.peso}
                     onChangeText={text=> onChangePeso(text)}
                     afterEditing={(text)=>afterEditingPeso(text,numSerie-1)}
+                    errorMessage={formErrorMessage(errors,"peso")!=null? "":null}
                     />
                     
                 </Block>
@@ -87,14 +96,7 @@ export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,
                     options={[
                         {
                             key: 'horas',
-                            items: [
-                              { label: '00', value: '00' },
-                              { label: '01', value: '01' },
-                              { label: '02', value: '02' },
-                              { label: '03', value: '03' },
-                              { label: '04', value: '04' },
-                              { label: '05', value: '05' },
-                            ],
+                            items: generateNumberSelectors(0,4,true),
                         },
                         {
                             key: 'separador',
@@ -104,29 +106,7 @@ export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,
                           },
                       {
                         key: 'minutos',
-                        items: [
-                          { label: '00', value: '00' },
-                          { label: '01', value: '01' },
-                          { label: '02', value: '02' },
-                          { label: '03', value: '03' },
-                          { label: '04', value: '04' },
-                          { label: '05', value: '05' },
-                          { label: '06', value: '06' },
-                          { label: '07', value: '07' },
-                          { label: '08', value: '08' },
-                          { label: '09', value: '09' },
-                          { label: '10', value: '10' },
-                          { label: '11', value: '11' },
-                          { label: '12', value: '12' },
-                          { label: '13', value: '13' },
-                          { label: '14', value: '14' },
-                          { label: '15', value: '15' },
-                          { label: '16', value: '16' },
-                          { label: '17', value: '17' },
-                          { label: '18', value: '18' },
-                          { label: '19', value: '19' },
-                          { label: '20', value: '20' }
-                        ],
+                        items: generateNumberSelectors(0,59,true)
                       },
                       {
                         key: 'separador',
@@ -135,29 +115,7 @@ export default function SerieCard ({navigation,numSerie=1,serie,onConfirmTiempo,
                         ],
                       },{
                         key: 'segundos',
-                        items: [
-                          { label: '00', value: '00' },
-                          { label: '01', value: '01' },
-                          { label: '02', value: '02' },
-                          { label: '03', value: '03' },
-                          { label: '04', value: '04' },
-                          { label: '05', value: '05' },
-                          { label: '06', value: '06' },
-                          { label: '07', value: '07' },
-                          { label: '08', value: '08' },
-                          { label: '09', value: '09' },
-                          { label: '10', value: '10' },
-                          { label: '11', value: '11' },
-                          { label: '12', value: '12' },
-                          { label: '13', value: '13' },
-                          { label: '14', value: '14' },
-                          { label: '15', value: '15' },
-                          { label: '16', value: '16' },
-                          { label: '17', value: '17' },
-                          { label: '18', value: '18' },
-                          { label: '19', value: '19' },
-                          { label: '20', value: '20' }
-                        ],
+                        items: generateNumberSelectors(0,59,true)
                       }
                     ]}
                 />
@@ -169,7 +127,7 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: '#FFFFFF',
         borderWidth:1,
-        borderRadius: 4,
+        borderRadius: 8,
         borderColor: argonTheme.COLORS.BORDER,
         shadowColor: argonTheme.COLORS.BLACK,
         shadowOffset: { width: 0, height: 1 },
@@ -180,8 +138,8 @@ const styles = StyleSheet.create({
     numSerieCircle:{
         zIndex:1,
         borderRadius: 100,
-        width: width*0.11,
-        height: width*0.11,
+        width: width*0.09,
+        height: width*0.09,
         backgroundColor: argonTheme.COLORS.PRIMARY,
          shadowColor: argonTheme.COLORS.BLACK,
         shadowOffset: { width: 0, height: 1 },

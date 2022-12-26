@@ -22,12 +22,12 @@ export default function EjercicioCard({navigation,ejercicio, onPress, style,imag
 
 
     return (
-      <TouchableWithoutFeedback  onPress={onPress}>
+      <TouchableWithoutFeedback  onPress={onPress? onPress : null}>
         <Block  row={imageOnLeft} card flex style={cardContainer}>
             <Block  style={imgContainer}>
               <Image source={{uri: "https://blogscdn.thehut.net/app/uploads/sites/450/2021/05/shutterstock_541669732opt_hero_1621859509_1622118621.jpg"}} style={imageStyles} />
             </Block>
-          <TouchableWithoutFeedback onPress={onPress}>
+          <TouchableWithoutFeedback onPress={onPress ? onPress : null}>
             <Block center flex space="between" style={styles.cardDescription}>
               <Text  size={textSize? textSize:14} style={styles.cardTitle}>{ejercicio["titulo"]}</Text>
             </Block>
@@ -42,7 +42,6 @@ const styles = StyleSheet.create({
     backgroundColor: theme.COLORS.WHITE,
     borderWidth: 0,
     minHeight: 100,
-    marginBottom: 16,
     borderRadius:10,
     
 

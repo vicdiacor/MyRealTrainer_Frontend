@@ -15,6 +15,7 @@ class ArButton extends React.Component {
       small && styles.smallButton,
       color && { backgroundColor: colorStyle },
       !shadowless && styles.shadow,
+      {borderRadius:8},
       {...style}
     ];
 

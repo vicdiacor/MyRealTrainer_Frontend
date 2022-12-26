@@ -99,7 +99,7 @@ function editEjercicio(ejercicio){
             : 
               Object.entries(ejerciciosInPairs()).map(([key, value]) => (
                 <Block row>
-                  <Block width={0.45*width}>
+                  <Block marginBottom={16} width={0.45*width}>
                   
                   <EjercicioCard onPress={route["params"] && route["params"]["entrenamiento"] ? ()=> navigation.navigate("SeriesForm",{...route["params"],"ejercicio":value[0]}) : ()=>editEjercicio(value[0])} ejercicio={value[0]} />
     
@@ -116,9 +116,9 @@ function editEjercicio(ejercicio){
                   : 
                   <> 
                     <Block marginRight={width*0.0333}/>
-                    <Block width={0.45*width} >
+                    <Block marginBottom={16} width={0.45*width} >
                     
-                    <EjercicioCard onPress={route["params"] && route["params"]["entrenamiento"] ? ()=> navigation.navigate("SeriesForm",{"rutinaForm":route["params"]["rutinaForm"],"entrenamientos":route["params"]["entrenamientos"],"entrenamiento":route["params"]["entrenamiento"],"ejercicio":value[1]}) : ()=>editEjercicio(value[1])} ejercicio={value[1]} />
+                    <EjercicioCard onPress={route["params"] && route["params"]["entrenamiento"] ? ()=> navigation.navigate("SeriesForm",{...route["params"],"ejercicio":value[1]}) : ()=>editEjercicio(value[1])} ejercicio={value[1]} />
       
                     </Block>
                   </>

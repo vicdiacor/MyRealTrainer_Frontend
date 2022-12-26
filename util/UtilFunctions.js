@@ -1,3 +1,5 @@
+import { useState } from "react";
+import { Keyboard } from "react-native";
 import {Alert} from "react-native";
 
 const backendFormatLugar=(tipoLugar)=>{
@@ -76,5 +78,37 @@ function insertIntoString(initialText,index,textToInsert){
     return initialText.slice(0,index) + textToInsert + initialText.slice(index)
 }
 
-export {frontendFormatLugar,backendFormatLugar,showBackendErrors,insertIntoString}
+// Generates a list of "label:value" pairs,  from "initialNumber" to "lastNumber" to use in the "SegmentedPicker" component
+function generateNumberSelectors(initialNumber,lastNumber,formatUnder10Numbers){
+    let itemsArray= []
+    for(let i=initialNumber;i<=lastNumber;i++){
+      let selection={}
+      if (formatUnder10Numbers && i<10){
+        selection = {label: "0" + i, value: "0" + i}
+      }else{
+        selection = {label: "" + i, value: "" + i}
+      }
+      itemsArray.push(selection)
+
+    }
+    return itemsArray
+  }
+
+  // Dimiss the keyboard and then executes a function. Warning: This only works when Keyboard is opened previously
+  function keyboardDimissAndExecuteFunction(funcion){
+   
+     
+     const onDismissFunction = (event) => {
+                Keyboard.removeListener('keyboardDidHide', onDismissFunction);
+                funcion()
+    }
+    Keyboard.addListener('keyboardDidHide', onDismissFunction);
+    Keyboard.dismiss();
+    
+  }
+  
+
+
+
+export {frontendFormatLugar,backendFormatLugar,showBackendErrors,insertIntoString,generateNumberSelectors,keyboardDimissAndExecuteFunction}
 

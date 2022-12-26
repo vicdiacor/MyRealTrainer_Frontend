@@ -1,25 +1,18 @@
 import React, {useEffect,useState} from 'react';
-import { View, Dimensions,SafeAreaView,KeyboardAvoidingView, StatusBar,ScrollView,StyleSheet} from 'react-native';
-import { Block, Text,Toast} from "galio-framework";
+import { View, Dimensions,SafeAreaView,KeyboardAvoidingView, TextInput,StatusBar,ScrollView,StyleSheet} from 'react-native';
+import { Block, Text} from "galio-framework";
 import { argonTheme } from '../constants';
 import FloatingLabelInput from '../components/FloatingLabelInput';
 import formErrorMessage from '../components/FormErrorMessage';
-import { Icon, Button, Select, Switch} from '../components';
-import RNPickerSelect from "react-native-picker-select";
-import CheckBoxLugarEntrenamiento from '../components/CheckBoxLugarEntrenamiento';
+import { Button} from '../components';
 import SelectPicker from '../components/SelectPicker';
-import { delay } from '../components/Delay';
 import call from '../Caller';
 import {getCookie} from "../temporal_database/SecureStore"
 import { showBackendErrors } from '../util/UtilFunctions';
 import validateEntrenamientoForm from './ValidateEntrenamientoForm';
 import { useIsFocused } from "@react-navigation/native";
 import CircleButton from '../components/CircleButton';
-import { colors } from 'react-native-elements';
-
-
-
-
+import BloqueSeriesCard from '../components/BloqueSeriesCard';
 
 const { width, height } = Dimensions.get("screen");
 export default function EntrenamientoForm({navigation,route}) {
@@ -62,16 +55,14 @@ export default function EntrenamientoForm({navigation,route}) {
         if(route["params"] && route["params"]["entrenamiento"]){ // Editing an existing entrenamiento from rutina
             setForm(route["params"]["entrenamiento"])
         }
-        if(form.bloques.length>0){ // Load ejercicios info from backend
+        if(form.bloques.length>0){ // Load ejercicios from backend
             getCookie("emailLogged").then(email => {
                 call('/ejercicios/'+email+"/listId","GET", navigation,form.bloques.map(bloque => bloque["ejercicio"]["id"]))
                 .then(response => {
                 if (response.ok){
                     response.json().then(data => {
 
-                        console.log('======EJERCICIOS INFO============');
-                        console.log(data);
-                        console.log('====================================');
+                     
                         
                     })
                 }else{
@@ -106,7 +97,7 @@ export default function EntrenamientoForm({navigation,route}) {
                 </Text>
              </Block>
              
-                <Block flex row center width={width * 0.85}>
+                <Block flex row center width={width * 0.9}>
                         <FloatingLabelInput
                             errorMessage={formErrorMessage(errors,"titulo")}
                             maxLength={80}
@@ -115,7 +106,7 @@ export default function EntrenamientoForm({navigation,route}) {
                             onChangeText={text => setForm({...form,["titulo"]:text})}
                         />
                 </Block>
-                <Block flex row center width="85%">
+                <Block flex row center width="90%">
                         <SelectPicker
                             title="Día de la semana"
                             errorMessage={formErrorMessage(errors,"diaSemana")}
@@ -148,14 +139,12 @@ export default function EntrenamientoForm({navigation,route}) {
                             Series de ejercicios
                         </Text>
                 </Block>
-               
-                {form.bloques.map( bloqueSeries => (
               
-              <Block flex row center style={{width:"80%",marginTop:12}}>
-                    <p> Número orden: {bloqueSeries["numOrden"]}</p> 
-                    <p> Número ejercicio: {bloqueSeries["ejercicio"]["id"]}</p>
-            </Block>
-
+               
+                {form.bloques.map( (bloqueSeries,index) => (
+                    <Block marginBottom={16} center row width={width*0.9}>
+                        <BloqueSeriesCard  bloque={bloqueSeries} onPress={()=> navigation.navigate("SeriesForm",{...route["params"],["entrenamiento"]:form,["bloque"]:{...bloqueSeries,["numOrden"]:""+index}})}/>
+                    </Block>
                 ))}
                 {formErrorMessage(errors,"bloquesSeries")==undefined? null : 
                     <Block flex row center style={{width:"80%",marginTop:8,left:5}}> 
@@ -173,7 +162,7 @@ export default function EntrenamientoForm({navigation,route}) {
                         </Text>
                       </Button>
                 </Block>
-                <Block style={{position:"absolute",bottom: 150,alignSelf:"center",right:"5%"}}>
+                <Block style={{position:"absolute",bottom: 120,alignSelf:"center",right:"5%"}}>
 
                 <CircleButton onPress={()=> navigation.navigate("ListarEjercicios",{...route["params"],["entrenamiento"]:form})}/>
                 </Block>

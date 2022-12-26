@@ -1,5 +1,5 @@
 import React, {useEffect,useRef,useState} from 'react';
-import { View, Dimensions,TouchableWithoutFeedback,ActivityIndicator,SafeAreaView,KeyboardAvoidingView,Image, Alert,StatusBar,ScrollView,StyleSheet} from 'react-native';
+import { View, Dimensions,Keyboard,TextInput, TouchableWithoutFeedback,ActivityIndicator,SafeAreaView,KeyboardAvoidingView,Image, Alert,StatusBar,ScrollView,StyleSheet} from 'react-native';
 import { Block, Text,Toast} from "galio-framework";
 import { argonTheme } from '../constants';
 import FloatingLabelInput from '../components/FloatingLabelInput';
@@ -7,11 +7,12 @@ import formErrorMessage from '../components/FormErrorMessage';
 import { useIsFocused } from "@react-navigation/native";
 import EjercicioCard from '../components/EjercicioCard';
 import CircleButton from '../components/CircleButton';
-import { insertIntoString } from '../util/UtilFunctions';
-import {Icon} from "../components";
+import { generateNumberSelectors,keyboardDimissAndExecuteFunction } from '../util/UtilFunctions';
+import {Icon, Button, Input} from "../components";
 import SegmentedPicker from 'react-native-segmented-picker';
 import SerieCard from '../components/SerieCard';
-
+import validateSeriesForm from './ValidateSeriesForm';
+import { InteractionManager } from 'react-native';
 
 const { width, height } = Dimensions.get("screen");
 
@@ -23,7 +24,10 @@ export default function SeriesForm({navigation,route}) {
   const [isLoading, setIsLoading]= useState(true);
   const [isLoadingSeries, setIsLoadingSeries]= useState(false);
   const segmentedPickerTiempo= useRef(null)
+  const saveButtonRef= useRef(null);
   const segmentedPickerNumSeries= useRef(null)
+  const [isLoadingButton,setIsLoadingButton] = useState(false) 
+  const emptyInputRef= useRef(null)
 
   const [form,setForm]= useState({
     numSeries:"1",
@@ -32,8 +36,8 @@ export default function SeriesForm({navigation,route}) {
     minutosDescanso:"00",
     segundosDescanso:"00",
     series:[{
-      numRepeticiones:"1",
-      peso:"0.00",
+      numRepeticiones:"",
+      peso:"",
       horas: "00",
       minutos:"00",
       segundos:"00"
@@ -41,23 +45,32 @@ export default function SeriesForm({navigation,route}) {
     ejercicio:null
   });
   const[errors, setErrors]= useState({})
+  const[isKeyboardOpened,setIsKeyboardOpened]=useState(false)
 
   useEffect(()=>{
     if(route["params"]["bloque"]){
-      setForm(bloque)
-    }
-
-    if(route["params"]["ejercicio"]){
+      setForm(route["params"]["bloque"])
+    }else{
       setForm({...form,["ejercicio"]:route["params"]["ejercicio"]})
     }
-    
+    console.log("FORMULARIO CARGADO TRAS USEEFFECT")
+    console.log(form)
     setIsLoading(false)
+
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setIsKeyboardOpened(true)
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setIsKeyboardOpened(false)
+    });
+
 
   },[isFocused])
    
   
   function onConfirmNumSeries(selections){
     // Save numSeries in the form
+    
     setIsLoadingSeries(true)
     const numeroSeries= Number.parseInt(selections["numSeries"])
 
@@ -81,8 +94,8 @@ export default function SeriesForm({navigation,route}) {
     while(series.length < numeroSeries){
       
       let nuevaSerie= {
-        numRepeticiones:"1",
-        peso:"0.00",
+        numRepeticiones:"",
+        peso:"",
         horas: "00",
         minutos:"00",
         segundos:"00"
@@ -95,12 +108,14 @@ export default function SeriesForm({navigation,route}) {
   }
 
   const onConfirmTiempoDescanso = (selections)=> {
+    
     setForm({...form,["minutosDescanso"]:""+selections["minutos"],["segundosDescanso"]:""+selections["segundos"]})
     setVisiblePickerTiempo(false)
   }
 
 
   const onConfirmTiempoSerie = (selections,index)=> {
+    
     let series= form.series
     series[index]={...series[index],["horas"]:""+selections["horas"],["minutos"]:""+selections["minutos"],["segundos"]:""+selections["segundos"]}
     setForm({...form,["series"]:series});
@@ -109,43 +124,51 @@ export default function SeriesForm({navigation,route}) {
 
 
   const afterEditingNumRepeticiones = (text,index) => {
-   
+    
     let series = form.series
     let serie= series[index]
 
    
       if( !/^\d\d?\d?$/.test(text)){
-          series[index]={...serie,["numRepeticiones"]:'1'}
+          series[index]={...serie,["numRepeticiones"]:''}
       }else{
           let numero= Number(text)
           numero >=1 ? series[index]={...serie,["numRepeticiones"]: '' + numero} :  series[index]={...serie,["numRepeticiones"]: '1'} 
           
-      }
+     } 
       setForm({...form,["series"]:series})
     
   
   
   }
 
+
+  
  
 
   const afterEditingPeso = (text,index) =>{
     let series= form.series
    
     if( !/^(\d|\.\d)/.test(text)){
-      series[index]= {...series[index],["peso"]:'0.00'}
+      series[index]= {...series[index],["peso"]:''}
   }else if(Number(text)>999){
-      series[index]={...series[index],["peso"]:'999.00'}
+      series[index]={...series[index],["peso"]:'999'}
   }else if(Number(text)<0){
-      series[index]({...series[index],["peso"]:'0.00'})
+      series[index]({...series[index],["peso"]:'0'})
   }else{
-      series[index]={...series[index],["peso"]:'' + Number(text).toFixed(2)}
+      let approximatedPeso = "" + Number(text).toFixed(2)
+      if(/.00$/.test(approximatedPeso)){
+        approximatedPeso = approximatedPeso.split(".")[0]
+        console.log("app")
+        console.log(approximatedPeso)
+      }
+      series[index]={...series[index],["peso"]:approximatedPeso}
   }
     setForm({...form,["series"]:series})
   }
   
 function editEjercicio(ejercicio){
-  var form={
+  let form={
     titulo:ejercicio["titulo"],
     preparacion:ejercicio["preparacion"],
     ejecucion:ejercicio["ejecucion"],
@@ -154,7 +177,52 @@ function editEjercicio(ejercicio){
 }
 navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
 }
+
+// Open  the keyboard in order to dismiss it (later) to refresh the text inputs
+function reloadKeyboardAndExecuteFunction(funcion){
+
+   
+  const onOpenKeyboardListener = (event) => {
+    Keyboard.removeListener('keyboardDidShow', onOpenKeyboardListener);
+    funcion()
+}
+
+  Keyboard.addListener('keyboardDidShow', onOpenKeyboardListener);
+  emptyInputRef.current.focus()
+
+}
+
+function handleSubmit(){
+
+  setIsLoadingButton(true)
+
+  let nuevosErrores= validateSeriesForm(form)
+  setErrors(nuevosErrores)
+  let numeroErrores = Object.keys(nuevosErrores).length;
+  if(numeroErrores===0){
+    console.log("FORM")
+    console.log(form)
+    let entrenamiento = route["params"]["entrenamiento"]
+    if (form.numOrden!==""){
+      console.log("EXISTE YA")
+      entrenamiento["bloques"][form.numOrden] = form
+    }else{
+      let numOrden = entrenamiento["bloques"].length
+      setForm({...form,["numOrden"]:""+numOrden})
+      entrenamiento["bloques"].push(form)
+
+    }
+    navigation.navigate("EntrenamientoForm",{...route["params"],["entrenamiento"]:entrenamiento})
+    setIsLoadingButton(false)
+    
+  }else{
+    setIsLoadingButton(false)
+  }
+
+}
   
+
+
  return (
 
     <SafeAreaView style={styles.container}> 
@@ -181,20 +249,17 @@ navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
                   :
                   <>
                 <Block width={width*0.9} center marginBottom={20}>
-                <EjercicioCard textSize={14.5} imageOnLeft={true} onPress={()=>editEjercicio(form["ejercicio"])} ejercicio={form["ejercicio"]} />
+                  <EjercicioCard textSize={14.5} imageOnLeft={true} onPress={()=>editEjercicio(form["ejercicio"])} ejercicio={form["ejercicio"]} />
                 </Block>
-                
-              
-                  
                       
                 <Block  row  center width={width * 0.9}>
                       
                         <FloatingLabelInput
                          onPress={()=>setVisiblePickerTiempo(true)}
-                        errorMessage={formErrorMessage(errors,"tiempoEntreSeries")}
-                        
-                        label="Descanso entre series (min:s)"
+                        errorMessage={formErrorMessage(errors,"descansoEntreSeries")}
                         editable={false}
+                        label="Descanso entre series (min:s)"
+                      
                         value={form["minutosDescanso"] + ":" + form["segundosDescanso"]}
                         iconContent={
                           <Icon
@@ -212,33 +277,34 @@ navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
                       
                         />
                 </Block>
-
-               
-                
-               
                 <Block  row  center width={width * 0.9}>
-                <FloatingLabelInput
-                        onPress={()=>setVisiblePickerNumSeries(true)}
-                        errorMessage={formErrorMessage(errors,"numSeries")}
-                        label="Número de series"
-                        editable={false}
-                        value={form.numSeries}
-                        iconContent={
-                          <Icon
-                        
-                            onPress={()=>setVisiblePickerNumSeries(true)}
-                            size={25}
-                            color={argonTheme.COLORS.ICON}
-                            name="edit"
-                            family="Feather"
-                            style={{marginRight:"3%"}}
-
+                    <FloatingLabelInput
+                            onPress={()=> isKeyboardOpened? keyboardDimissAndExecuteFunction(()=>setVisiblePickerNumSeries(true)): reloadKeyboardAndExecuteFunction(()=>keyboardDimissAndExecuteFunction(()=>setVisiblePickerNumSeries(true)))}
+                            errorMessage={formErrorMessage(errors,"numSeries")}
+                            label="Número de series"
+                            editable={false}
                             
-                          />
-                        }
-                      
-                        />
-                </Block>
+                            value={form.numSeries}
+                           
+                            iconContent={
+                              <Icon
+                                onPress={()=> isKeyboardOpened ?  keyboardDimissAndExecuteFunction(()=>setVisiblePickerNumSeries(true)) : reloadKeyboardAndExecuteFunction(()=>keyboardDimissAndExecuteFunction(()=>setVisiblePickerNumSeries(true))) }
+                              
+
+                                size={25}
+                                color={argonTheme.COLORS.ICON}
+                                name="edit"
+                                family="Feather"
+                                style={{marginRight:"3%"}}
+
+                                
+                              />
+                            }
+                          
+                            />
+                    </Block>
+                 
+               
                 <Block>
                 <SegmentedPicker
                     ref={segmentedPickerTiempo}
@@ -250,29 +316,7 @@ navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
                     options={[
                       {
                         key: 'minutos',
-                        items: [
-                          { label: '00', value: '00' },
-                          { label: '01', value: '01' },
-                          { label: '02', value: '02' },
-                          { label: '03', value: '03' },
-                          { label: '04', value: '04' },
-                          { label: '05', value: '05' },
-                          { label: '06', value: '06' },
-                          { label: '07', value: '07' },
-                          { label: '08', value: '08' },
-                          { label: '09', value: '09' },
-                          { label: '10', value: '10' },
-                          { label: '11', value: '11' },
-                          { label: '12', value: '12' },
-                          { label: '13', value: '13' },
-                          { label: '14', value: '14' },
-                          { label: '15', value: '15' },
-                          { label: '16', value: '16' },
-                          { label: '17', value: '17' },
-                          { label: '18', value: '18' },
-                          { label: '19', value: '19' },
-                          { label: '20', value: '20' }
-                        ],
+                        items: generateNumberSelectors(0,29,true)
                       },
                       {
                         key: 'separador',
@@ -281,29 +325,7 @@ navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
                         ],
                       },{
                         key: 'segundos',
-                        items: [
-                          { label: '00', value: '00' },
-                          { label: '01', value: '01' },
-                          { label: '02', value: '02' },
-                          { label: '03', value: '03' },
-                          { label: '04', value: '04' },
-                          { label: '05', value: '05' },
-                          { label: '06', value: '06' },
-                          { label: '07', value: '07' },
-                          { label: '08', value: '08' },
-                          { label: '09', value: '09' },
-                          { label: '10', value: '10' },
-                          { label: '11', value: '11' },
-                          { label: '12', value: '12' },
-                          { label: '13', value: '13' },
-                          { label: '14', value: '14' },
-                          { label: '15', value: '15' },
-                          { label: '16', value: '16' },
-                          { label: '17', value: '17' },
-                          { label: '18', value: '18' },
-                          { label: '19', value: '19' },
-                          { label: '20', value: '20' }
-                        ],
+                        items: generateNumberSelectors(0,59,true)
                       }
                     ]}
                 />
@@ -319,28 +341,7 @@ navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
                     options={[
                       {
                         key: 'numSeries',
-                        items: [
-                          { label: '1', value: '1' },
-                          { label: '2', value: '2' },
-                          { label: '3', value: '3' },
-                          { label: '4', value: '4' },
-                          { label: '5', value: '5' },
-                          { label: '6', value: '6' },
-                          { label: '7', value: '7' },
-                          { label: '8', value: '8' },
-                          { label: '9', value: '9' },
-                          { label: '10', value: '10' },
-                          { label: '11', value: '11' },
-                          { label: '12', value: '12' },
-                          { label: '13', value: '13' },
-                          { label: '14', value: '14' },
-                          { label: '15', value: '15' },
-                          { label: '16', value: '16' },
-                          { label: '17', value: '17' },
-                          { label: '18', value: '18' },
-                          { label: '19', value: '19' },
-                          { label: '20', value: '20' }
-                        ],
+                        items: generateNumberSelectors(1,20,false)
                       }
                     ]}
                 />
@@ -363,23 +364,52 @@ navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
                   </Block>
                   :
                   <>
-                     {form.series.map((serie,index)=>(
+                  <Block style={styles.card} flex row center width={width*0.92}>
+                   
+                    <Block marginLeft={"12.5%"}   width={width*0.27}>
+                      <Text size={16} bold color={argonTheme.COLORS.ICON}> Repeticiones </Text>
+                    </Block>
+                    <Block  marginLeft={"4%"}  width={width*0.13}>
+                      <Text  size={16} bold color={argonTheme.COLORS.ICON}> Peso </Text>
+                    </Block>
+                    <Block  marginLeft={"11%"}   width={width*0.2}>
+                      <Text size={16} bold color={argonTheme.COLORS.ICON}> Tiempo </Text>
+                    </Block>
 
-                          <Block row center marginTop={10} width={width*0.9}>
+                  </Block>
+                     {form.series.map((serie,index)=>(
+                        <Block>
+                          <Block row center marginTop={10} width={width*0.92}>
                             <SerieCard serie={serie} numSerie={index+1} onConfirmTiempo={onConfirmTiempoSerie}
-                                    
+
                                       afterEditingNumRepeticiones={afterEditingNumRepeticiones}
-                                     
+                                      errores={errors.index}
                                       afterEditingPeso={afterEditingPeso} />
+                           
+
                           </Block>
 
+                          {formErrorMessage(errors.index,"numRepeticiones") != null ?<Text row style={styles.errorMessageStyle}>{formErrorMessage(errors.index,"numRepeticiones")}</Text> : null }
+                          {formErrorMessage(errors.index,"peso") != null ? <Text row style={styles.errorMessageStyle}>{formErrorMessage(errors.index,"peso")}</Text> : null}
+                          {formErrorMessage(errors.index,"duracion") != null  ?  <Text row style={styles.errorMessageStyle}>{formErrorMessage(errors.index,"duracion")}</Text>: null}
+
+                        </Block>
                       ))}
+                <Block  marginTop={20} marginBottom={10} middle>
+                    <Button  disabled={isLoadingButton} loading={isLoadingButton} onPress={()=> isKeyboardOpened ? keyboardDimissAndExecuteFunction(()=>handleSubmit()) : reloadKeyboardAndExecuteFunction(()=>keyboardDimissAndExecuteFunction(()=>handleSubmit())) } color="primary" style={styles.createButton}>
+                      <Text bold size={17} color={argonTheme.COLORS.WHITE}>
+                        Guardar
+                      </Text>
+                    </Button>
+                </Block>
+                <TextInput ref={emptyInputRef}></TextInput>
                   </>
                 }
+               
             
                 </>
                 }
-            
+           
             </KeyboardAvoidingView>
             </Block> 
             
@@ -407,5 +437,23 @@ const styles = StyleSheet.create({
         width: width * 0.6,
         marginTop:"4%",
         marginBottom: "4%",
-      }
+      },
+       errorMessageStyle:{
+        color: argonTheme.COLORS.MESSAGE_ERROR,
+        marginTop:8,
+        marginLeft:"5.5%",
+        width:width*0.9
+        
+      },card: {
+        backgroundColor: '#FFFFFF',
+        borderWidth:1,
+        borderRadius: 8,
+        borderColor: argonTheme.COLORS.BORDER,
+        shadowColor: argonTheme.COLORS.BLACK,
+        shadowOffset: { width: 0, height: 1 },
+        shadowRadius: 2,
+        shadowOpacity: 0.1,
+        elevation: 2,
+        height:50
+    }
 })

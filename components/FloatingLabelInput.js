@@ -93,8 +93,9 @@ function FloatingLabelInput ({label,date,error,fontSize,centerText,fixedLabel, o
       }} >
        
         <TouchableWithoutFeedback onPress={() => {
+           onPress? onPress(): null
           textInputRef.current.focus()
-          onPress? onPress(): null
+         
         
         }} >
         <View >
@@ -145,7 +146,7 @@ function FloatingLabelInput ({label,date,error,fontSize,centerText,fixedLabel, o
           
             {textCounter!=undefined?
             <Text  style={textCounterStyle}>{textCounter.length}{maxLength!=undefined?"/"+maxLength:null}</Text> : null}
-            {errorMessage==undefined? null : 
+            {errorMessage==undefined  || errorMessage=="" ? null : 
             <Text style={errorMessageStyle}>{errorMessage}</Text> 
             }
 

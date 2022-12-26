@@ -12,12 +12,13 @@ export default function SelectPicker ({title,onValueChange,value,errorMessage,it
         backgroundColor:"#FFFF",
         shadowColor: argonTheme.COLORS.BLACK,
         shadowOffset: { width: 0, height: 1 },
-        shadowRadius: 2,
         shadowOpacity: 0.1,
         elevation: 2,
         borderWidth:1,
+        borderRadius:8,
         borderColor: errorMessage==undefined? argonTheme.COLORS.BORDER :"#FC7370",
-        borderRadius: 4,
+        shadowRadius: 4,
+        
         
         
     }
