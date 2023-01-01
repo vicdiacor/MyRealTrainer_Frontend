@@ -4,9 +4,17 @@ import { StyleSheet, TouchableWithoutFeedback, Image, View} from 'react-native';
 import {  argonTheme } from "../constants";
 import { Icon, Button } from '.';
 import CheckBoxLugarEntrenamiento from './CheckBoxLugarEntrenamiento';
+import { yesOrNotAlertMessage } from '../util/UtilFunctions';
 
 export default function TarifaCard ({tarifa,style,onPressContainer,deleteFunction}){
    
+  // Returns only the duration type if it´s duration is "1" and returns the duration and it´s type in plural otherwise  
+  function formatDuration(duracion,tipoDuracion){
+    let message = ""
+    let plurals = {"AÑO":"AÑOS","MES":"MESES","SEMANA":"SEMANAS","DIA":"DÍAS","HORA":"HORAS"}
+    Number(duracion)> 1 ? message+= duracion + " " + plurals[tipoDuracion] : message += tipoDuracion
+    return message
+  }
     return (
       <TouchableWithoutFeedback style={{zIndex:10}} onPress={onPressContainer}>
 
@@ -21,7 +29,7 @@ export default function TarifaCard ({tarifa,style,onPressContainer,deleteFunctio
             </Block>
             <Block marginTop={20} center flex row> 
             
-              <Text h5 bold color={argonTheme.COLORS.PRIMARY}>{tarifa["precio"]}€ | {tarifa["tipoDuracion"]}</Text>
+              <Text h5 bold color={argonTheme.COLORS.PRIMARY}>{tarifa["precio"]}€ | {formatDuration(tarifa["duracion"],tarifa["tipoDuracion"])}</Text>
 
             </Block>
             <Block marginTop={20} center flex row> 
@@ -58,7 +66,10 @@ export default function TarifaCard ({tarifa,style,onPressContainer,deleteFunctio
             }
             {deleteFunction?
             <Block  marginTop={40} width="100%" center>
-            <Button  onPress={deleteFunction} color="error">
+
+              
+            <Button  onPress={yesOrNotAlertMessage("Eliminar tarifa","¿Estás seguro de eliminar la tarifa '"
+             + tarifa["titulo"] + "' ?",deleteFunction)} color="DELETE_BUTTON">
               <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                 Eliminar
               </Text>

@@ -1,4 +1,4 @@
-export default function validateRutinaForm(form){
+export default function validateRutinaForm(form,entrenamientos){
 
     let errors = {}
     
@@ -14,6 +14,14 @@ export default function validateRutinaForm(form){
     if(form.descripcion.length>300){
         errors.descripcion= "La descripción no puede tener más de 300 caracteres" 
     }
+
+    // Entrenamientos Validation
+    if(entrenamientos.length<1){
+        errors.entrenamientos = "Debes agregar al menos un entrenamiento"
+    }
+    console.log("ENTRENAMIENTOS LIST: ")
+    console.log(entrenamientos)
+
 
     return errors
 }

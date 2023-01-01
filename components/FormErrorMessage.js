@@ -4,7 +4,7 @@ import ErrorMessage from './ErrorMessage';
 
 export default function formErrorMessage(jsonErrors,errorName){
     // Muestra el mensaje del error sólo si existe dentro de la colección de errores
-    console.log(jsonErrors)
+    
     if(jsonErrors==undefined){
         return null
     }else{

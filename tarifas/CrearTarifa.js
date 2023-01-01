@@ -14,6 +14,7 @@ import {getCookie} from "../temporal_database/SecureStore"
 import { showBackendErrors } from '../util/UtilFunctions';
 import validateCrearTarifa from './ValidateCrearTarifa';
 import CircleButton from '../components/CircleButton';
+import { round2Decimals } from '../util/UtilFunctions';
 
 
 const { width, height } = Dimensions.get("screen");
@@ -32,6 +33,36 @@ export default function CrearTarifa({navigation,route}) {
     
     const[lugares,setLugares]=useState([])
     const[lugaresChecked,setLugaresChecked]=useState({})
+        
+    const afterEditingPrecio = (text) =>{
+       
+        if( !/^(\d|\.\d)/.test(text)){
+            setForm({...form,["precio"]:""})
+        }else if(Number(text)>10000){
+            setForm({...form,["precio"]:"10000"})
+        }else if(Number(text)<0){
+            setForm({...form,["precio"]:"0"})
+        }else{
+            let approximatedPrecio = round2Decimals(text)
+            setForm({...form,["precio"]:""+approximatedPrecio})
+
+        }
+           
+    }
+
+    const onChangeDuracion = (text) => {
+        
+
+        setForm({...form,["duracion"]:text.replace(/\s|,|\./,"")})
+        
+          
+    }
+
+    const onChangePrecio = (text) =>{
+ 
+        setForm({...form,["precio"]:text.replace(",",".").replace(" ","").replace(/\..*\./,"")})
+      }
+    
 
     const handleSubmit=  evt => {
         setIsLoading(true)
@@ -125,7 +156,8 @@ export default function CrearTarifa({navigation,route}) {
                                 errorMessage={formErrorMessage(errors,"precio")}
                                 label="Precio(€)"
                                 value={form.precio}
-                                onChangeText={text => setForm({...form,["precio"]:text})}
+                                afterEditing={(text)=>afterEditingPrecio(text)}
+                                onChangeText={text => onChangePrecio(text)}
                             />
                             
                     </Block>
@@ -137,7 +169,7 @@ export default function CrearTarifa({navigation,route}) {
                                 errorMessage={formErrorMessage(errors,"duracion")}
                                 label="Duración"
                                 value={form.duracion}
-                                onChangeText={text => setForm({...form,["duracion"]:text})}
+                                onChangeText={text => onChangeDuracion(text)}
                             />
                             
                     </Block>

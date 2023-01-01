@@ -1,6 +1,8 @@
 export default function validateCrearTarifa(form,lugaresChecked){
 
     let errors = {}
+
+    // Meter validaciones de no asignar más de X años, más de X meses...
   
     // Validacion titulo
     if(!form.titulo.trim()){
@@ -33,10 +35,10 @@ export default function validateCrearTarifa(form,lugaresChecked){
         errors.duracion= "La duración debe ser un número"
     } else if (+form.duracion > 100){
         errors.duracion= "La duración no puede ser mayor a 100"
-    } else if (+form.duracion < 0){
-        errors.duracion= "La duración no puede ser un número negativo"
+    } else if (+form.duracion <= 0){
+        errors.duracion= "La duración no puede ser menor o igual que 0"
     } else {
-        if(Number.isInteger(form.duracion)){
+        if(/[^\d]/.test(form.duracion)){
             errors.duracion= "La duración debe ser un número entero"
         }
     }

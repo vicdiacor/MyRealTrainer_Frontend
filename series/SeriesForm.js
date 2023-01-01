@@ -7,7 +7,7 @@ import formErrorMessage from '../components/FormErrorMessage';
 import { useIsFocused } from "@react-navigation/native";
 import EjercicioCard from '../components/EjercicioCard';
 import CircleButton from '../components/CircleButton';
-import { generateNumberSelectors,keyboardDimissAndExecuteFunction } from '../util/UtilFunctions';
+import { generateNumberSelectors,keyboardDimissAndExecuteFunction, round2Decimals } from '../util/UtilFunctions';
 import {Icon, Button, Input} from "../components";
 import SegmentedPicker from 'react-native-segmented-picker';
 import SerieCard from '../components/SerieCard';
@@ -35,6 +35,7 @@ export default function SeriesForm({navigation,route}) {
     numOrden:"",
     minutosDescanso:"00",
     segundosDescanso:"00",
+    tipoSeries:"repeticiones",
     series:[{
       numRepeticiones:"",
       peso:"",
@@ -53,8 +54,7 @@ export default function SeriesForm({navigation,route}) {
     }else{
       setForm({...form,["ejercicio"]:route["params"]["ejercicio"]})
     }
-    console.log("FORMULARIO CARGADO TRAS USEEFFECT")
-    console.log(form)
+    
     setIsLoading(false)
 
     const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
@@ -90,6 +90,7 @@ export default function SeriesForm({navigation,route}) {
     // Shows the different "series-card" taking into account "numSeries" from the form
     
     let series= form.series.slice(0,numeroSeries)
+    
     
     while(series.length < numeroSeries){
       
@@ -156,13 +157,8 @@ export default function SeriesForm({navigation,route}) {
   }else if(Number(text)<0){
       series[index]({...series[index],["peso"]:'0'})
   }else{
-      let approximatedPeso = "" + Number(text).toFixed(2)
-      if(/.00$/.test(approximatedPeso)){
-        approximatedPeso = approximatedPeso.split(".")[0]
-        console.log("app")
-        console.log(approximatedPeso)
-      }
-      series[index]={...series[index],["peso"]:approximatedPeso}
+      let approximatedPeso = round2Decimals(text)
+      series[index]={...series[index],["peso"]:""+approximatedPeso}
   }
     setForm({...form,["series"]:series})
   }
@@ -175,7 +171,7 @@ function editEjercicio(ejercicio){
     consejos:ejercicio["consejos"],
     id: ejercicio["id"]
 }
-navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
+navigation.navigate('EjercicioForm',{...route["params"],["form"]:form,["mode"]:"edit"})
 }
 
 // Open  the keyboard in order to dismiss it (later) to refresh the text inputs
@@ -194,24 +190,30 @@ function reloadKeyboardAndExecuteFunction(funcion){
 
 function handleSubmit(){
 
-  setIsLoadingButton(true)
+  
 
   let nuevosErrores= validateSeriesForm(form)
   setErrors(nuevosErrores)
   let numeroErrores = Object.keys(nuevosErrores).length;
   if(numeroErrores===0){
-    console.log("FORM")
-    console.log(form)
+   
     let entrenamiento = route["params"]["entrenamiento"]
     if (form.numOrden!==""){
-      console.log("EXISTE YA")
+      
       entrenamiento["bloques"][form.numOrden] = form
     }else{
+      
       let numOrden = entrenamiento["bloques"].length
       setForm({...form,["numOrden"]:""+numOrden})
       entrenamiento["bloques"].push(form)
 
     }
+    console.log("SERIES:")
+    console.log(form["series"])
+    console.log("EJERCICIO")
+    console.log(form["ejercicio"])
+    delete route['params']["bloque"]
+    delete route["params"]["ejercicio"]
     navigation.navigate("EntrenamientoForm",{...route["params"],["entrenamiento"]:entrenamiento})
     setIsLoadingButton(false)
     
@@ -364,39 +366,94 @@ function handleSubmit(){
                   </Block>
                   :
                   <>
-                  <Block style={styles.card} flex row center width={width*0.92}>
-                   
-                    <Block marginLeft={"12.5%"}   width={width*0.27}>
-                      <Text size={16} bold color={argonTheme.COLORS.ICON}> Repeticiones </Text>
-                    </Block>
-                    <Block  marginLeft={"4%"}  width={width*0.13}>
-                      <Text  size={16} bold color={argonTheme.COLORS.ICON}> Peso </Text>
-                    </Block>
-                    <Block  marginLeft={"11%"}   width={width*0.2}>
-                      <Text size={16} bold color={argonTheme.COLORS.ICON}> Tiempo </Text>
-                    </Block>
+              <Block flex row center marginBottom={10} width={width*0.92}>
+                <TouchableWithoutFeedback onPress={() => {
+                  setForm({...form,["tipoSeries"]:"repeticiones"})
+                }}>
+                  <Block  style={[styles.card,form.tipoSeries !== "tiempo" && styles.selectedTipoSerie]} flex row marginRight={5} middle  width={width*0.4}>
+                    
+                      <Text size={16} bold color={form.tipoSeries !== "tiempo" ? argonTheme.COLORS.WHITE : argonTheme.COLORS.ICON}>Repeticiones</Text>
 
                   </Block>
+                 </TouchableWithoutFeedback>
+                 <TouchableWithoutFeedback onPress={() => {
+                  setForm({...form,["tipoSeries"]:"tiempo"})
+                }}>
+                 <Block style={[styles.card,form.tipoSeries == "tiempo" && styles.selectedTipoSerie]} flex row middle  width={width*0.4}>
+                   
+                  
+                   <Text size={16} bold color={form.tipoSeries == "tiempo"? argonTheme.COLORS.WHITE :  argonTheme.COLORS.ICON}>Tiempo</Text>
+                  </Block>
+                </TouchableWithoutFeedback>
+               </Block>
+
+                <Block style={styles.card} flex row center width={width*0.92}>
+                   {form.tipoSeries !== "tiempo" ?  
+                   <>
+                   <Block flex={0.35}  center>
+                    <Text size={16} bold color={argonTheme.COLORS.ICON}>Nº</Text>
+                   </Block>
+
+                  <Block flex row center>
+                   
+                    <Block flex={0.4} center>
+                      <Text size={16} bold color={argonTheme.COLORS.ICON}>Repeticiones</Text>
+                    </Block>
+                    <Block flex={0.6} center>
+                      <Text  size={16} bold color={argonTheme.COLORS.ICON}>Peso</Text>
+                    </Block>
+                  </Block>
+                   
+                   </>
+                   :
+                   <>
+                    <Block flex={0.18} right>
+                    <Text size={16} bold color={argonTheme.COLORS.ICON}>Nº</Text>
+                   </Block>
+                   
+                   <Block flex center>
+                   <Text size={16} bold color={argonTheme.COLORS.ICON}>Tiempo</Text>
+                   </Block>
+                  </> 
+                   }
+                   
+                  
+
+                </Block>
+
                      {form.series.map((serie,index)=>(
                         <Block>
                           <Block row center marginTop={10} width={width*0.92}>
                             <SerieCard serie={serie} numSerie={index+1} onConfirmTiempo={onConfirmTiempoSerie}
-
+                                      tipo={form.tipoSeries}
                                       afterEditingNumRepeticiones={afterEditingNumRepeticiones}
-                                      errores={errors.index}
+                                      errores={errors[""+index]}
                                       afterEditingPeso={afterEditingPeso} />
                            
 
                           </Block>
-
-                          {formErrorMessage(errors.index,"numRepeticiones") != null ?<Text row style={styles.errorMessageStyle}>{formErrorMessage(errors.index,"numRepeticiones")}</Text> : null }
-                          {formErrorMessage(errors.index,"peso") != null ? <Text row style={styles.errorMessageStyle}>{formErrorMessage(errors.index,"peso")}</Text> : null}
-                          {formErrorMessage(errors.index,"duracion") != null  ?  <Text row style={styles.errorMessageStyle}>{formErrorMessage(errors.index,"duracion")}</Text>: null}
+                          
+                          {form.tipoSeries == "tiempo" ? 
+                            <>
+                              {formErrorMessage(errors[""+index],"duracion") != null  ?  
+                                    <Text row style={styles.errorMessageStyle}>{formErrorMessage(errors[""+index],"duracion")}</Text>:null}
+                            </>
+                            : 
+                            <> 
+                              {formErrorMessage(errors[""+index],"numRepeticiones") != null ?<Text row style={styles.errorMessageStyle}>{formErrorMessage(errors[""+index],"numRepeticiones")}</Text> : null }
+                              {formErrorMessage(errors[""+index],"peso") != null ? <Text row style={styles.errorMessageStyle}>{formErrorMessage(errors[""+index],"peso")}</Text> : null}
+                            
+                            </>
+                                            
+                          }
 
                         </Block>
                       ))}
                 <Block  marginTop={20} marginBottom={10} middle>
-                    <Button  disabled={isLoadingButton} loading={isLoadingButton} onPress={()=> isKeyboardOpened ? keyboardDimissAndExecuteFunction(()=>handleSubmit()) : reloadKeyboardAndExecuteFunction(()=>keyboardDimissAndExecuteFunction(()=>handleSubmit())) } color="primary" style={styles.createButton}>
+                    <Button  disabled={isLoadingButton} loading={isLoadingButton} onPress={()=> {
+                      setIsLoadingButton(true)
+                      isKeyboardOpened ? keyboardDimissAndExecuteFunction(()=>handleSubmit()) : reloadKeyboardAndExecuteFunction(()=>keyboardDimissAndExecuteFunction(()=>handleSubmit())) 
+                    }} color="primary" style={styles.createButton}>
                       <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                         Guardar
                       </Text>
@@ -455,5 +512,8 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         elevation: 2,
         height:50
+    },
+    selectedTipoSerie : {
+      backgroundColor: argonTheme.COLORS.ICON,
     }
 })

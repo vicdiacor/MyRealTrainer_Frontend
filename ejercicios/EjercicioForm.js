@@ -174,7 +174,7 @@ export default function EjercicioForm({navigation,route}) {
                         
                         color={argonTheme.COLORS.ICON}
                     >
-                        Crear ejercicio
+                       {route["params"]["mode"]=="edit"? "Editar ejercicio" : "Crear ejercicio"}
                     </Text>
                 </Block>
 

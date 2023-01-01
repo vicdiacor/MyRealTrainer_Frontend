@@ -8,7 +8,7 @@ const { width, height } = Dimensions.get("screen");
 import formErrorMessage from '../components/FormErrorMessage';
 import {generateNumberSelectors } from '../util/UtilFunctions';
 
-export default function SerieCard ({navigation,numSerie=1,serie,errores,onConfirmTiempo,afterEditingNumRepeticiones,afterEditingPeso}) {
+export default function SerieCard ({navigation,numSerie=1,tipo,serie,errores,onConfirmTiempo,afterEditingNumRepeticiones,afterEditingPeso}) {
     
     const [visiblePickerTiempo,setVisiblePickerTiempo] = useState(false);
     const segmentedPickerTiempo= useRef(null)
@@ -50,13 +50,16 @@ export default function SerieCard ({navigation,numSerie=1,serie,errores,onConfir
     return (
         <Block  minHeight={110} flex  row style={styles.card}>
 
-            <Block marginLeft={14} center style={styles.numSerieCircle}>
+            <Block marginLeft={"6%"} center style={styles.numSerieCircle}>
                 <Block flex row center>
                     <Text   size={22} color='#FFFF'>{numSerie}</Text>
                 </Block>
             </Block>
 
-            <Block  center width={"22%"} height={50} marginLeft={10}>
+           
+            {tipo == "repeticiones" ? 
+            <>
+            <Block  center flex height={50} marginLeft={"6%"}>
                 <Block flex row center>
                 <FloatingLabelInput maxLength={3} keyboardType="numeric" centerText value={form.numRepeticiones}
                     onChangeText={text=> onChangeNumRepeticiones(text)}
@@ -65,8 +68,7 @@ export default function SerieCard ({navigation,numSerie=1,serie,errores,onConfir
                     />
                 </Block>
             </Block>
-
-            <Block  center width={"22%"} height={50} marginLeft={10}>
+            <Block  center flex  height={50} marginLeft={"6%"} marginRight={"6%"}>
                 <Block flex row center>
                 <FloatingLabelInput maxLength={6} keyboardType="numeric" centerText  value={form.peso}
                     onChangeText={text=> onChangePeso(text)}
@@ -77,14 +79,15 @@ export default function SerieCard ({navigation,numSerie=1,serie,errores,onConfir
                 </Block>
             </Block>
 
-           
-               
-                <Block  center width={"30%"} height={50} marginLeft={10}>
+            </>
+            :
+            <>
+                <Block  center flex  height={50} marginLeft={"6%"} marginRight={"6%"}>
                     <Block flex row center>
                         <FloatingLabelInput onPress={()=> setVisiblePickerTiempo(true)} centerText value={serie.horas + ":" + serie.minutos + ":" + serie.segundos} editable={false}
                             />
                     </Block>
-                </Block>
+              </Block>
             
             <SegmentedPicker
                     ref={segmentedPickerTiempo}
@@ -119,6 +122,13 @@ export default function SerieCard ({navigation,numSerie=1,serie,errores,onConfir
                       }
                     ]}
                 />
+            </>
+            }
+            
+
+           
+               
+              
         </Block>
     );
 }
@@ -138,10 +148,10 @@ const styles = StyleSheet.create({
     numSerieCircle:{
         zIndex:1,
         borderRadius: 100,
-        width: width*0.09,
-        height: width*0.09,
+        width: width*0.1,
+        height: width*0.1,
         backgroundColor: argonTheme.COLORS.PRIMARY,
-         shadowColor: argonTheme.COLORS.BLACK,
+        shadowColor: argonTheme.COLORS.BLACK,
         shadowOffset: { width: 0, height: 1 },
         shadowRadius: 2,
         shadowOpacity: 0.1,

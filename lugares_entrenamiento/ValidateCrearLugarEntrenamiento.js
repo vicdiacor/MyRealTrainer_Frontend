@@ -45,8 +45,7 @@ export default function validateCrearLugarEntrenammiento(form){
     if(form.provincia.length>100){
     errors.provincia= "La provincia no puede tener más de 100 caracteres"
     }
-    console.log("TIPO LUGAR")
-    console.log(form.tipoLugar)
+    
     // Validacion tipoLugar
     if( form.tipoLugar!=="Mi gimnasio" && form.tipoLugar!=="Mi domicilio" && form.tipoLugar!=="Otro" 
     && form.tipoLugar!=="Aire libre" && form.tipoLugar!=="Telemático"){

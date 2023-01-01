@@ -29,43 +29,46 @@ export default function validateSeriesForm(form){
 
     // Serie validations
     form.series.forEach((serie,index) => {
-      console.log("SERIE " + index + ": " + serie.numRepeticiones) 
       let errorsSerie= {}
 
-      // Numero repeticiones validation
-      if(!serie.numRepeticiones.trim()){
-        errorsSerie.numRepeticiones= "El número de repeticiones es un campo obligatorio" 
-    } else if( !/^\d\d?\d?$/.test(serie.numRepeticiones)){
-        
-        errorsSerie.numRepeticiones = "El número de repeticiones debe ser un número entero de máximo 3 cifras"
-      }else if(+serie.numRepeticiones<1){
-        errorsSerie.numRepeticiones = "El número de repeticiones debe ser mayor o igual que 1"
+       // Tiempo-Series validation
+      if (form.tipoSeries == "tiempo"){
+         
+        let duracion= serie.horas + ":" + serie.minutos + ":" + serie.segundos
+        if(!/^\d\d:\d\d:\d\d$/.test(duracion)){
+          errorsSerie.duracion= "La duración de la serie debe tener el formato HH:mm:ss" 
+        } else if(+serie.horas > 4){
+          errorsSerie.duracion= "No puedes insertar más de 04:59:59 horas de descanso" 
+        } else if(+serie.minutos > 59){
+          errorsSerie.duracion = "La sección de 'minutos' no puede ser mayor a 59" 
+        }else if(+serie.segundos > 59){
+          errorsSerie.duracion = "La sección de 'segundos' no puede ser mayor a 59" 
+        }else if(/^00:00:00$/.test(duracion)){
+          errorsSerie.duracion = "La duración de una serie debe ser mayor a 00:00:00"
       }
-
-      // Peso validation
-      if(!/^\d?\d?\d?.?\d?\d?/.test(serie.peso)){
-        errorsSerie.peso = "El peso debe ser un número que tenga como máximo 3 cifras enteras y 2 decimales"
-      }else if(+serie.peso > 999){
-        errorsSerie.peso = "El peso no puede ser mayor a 999 kg"
-      }else if(+serie.peso < 0 ){
-        errorsSerie.peso = "El peso no puede ser un número negativo"
-      }
-
-      // Duracion validation
-      let duracion= serie.horas + ":" + serie.minutos + ":" + serie.segundos
-      if(!/^\d\d:\d\d:\d\d$/.test(duracion)){
-        errorsSerie.duracion= "La duración de la serie debe tener el formato HH:mm:ss" 
-      } else if(+serie.horas > 4){
-        errorsSerie.duracion= "No puedes insertar más de 04:59:59 horas de descanso" 
-      } else if(+serie.minutos > 59){
-        errorsSerie.duracion = "La sección de 'minutos' no puede ser mayor a 59" 
-      }else if(+serie.segundos > 59){
-        errorsSerie.duracion = "La sección de 'segundos' no puede ser mayor a 59" 
+      }else { // Repeticiones-Series validation
+        if(!serie.numRepeticiones.trim()){
+          errorsSerie.numRepeticiones= "El número de repeticiones es un campo obligatorio" 
+        } else if( !/^\d\d?\d?$/.test(serie.numRepeticiones)){
+          
+          errorsSerie.numRepeticiones = "El número de repeticiones debe ser un número entero de máximo 3 cifras"
+        }else if(+serie.numRepeticiones<1){
+          errorsSerie.numRepeticiones = "El número de repeticiones debe ser mayor o igual que 1"
+        }
+  
+          // Peso validation
+        if(!/^\d?\d?\d?.?\d?\d?/.test(serie.peso)){
+          errorsSerie.peso = "El peso debe ser un número que tenga como máximo 3 cifras enteras y 2 decimales"
+        }else if(+serie.peso > 999){
+          errorsSerie.peso = "El peso no puede ser mayor a 999 kg"
+        }else if(+serie.peso < 0 ){
+          errorsSerie.peso = "El peso no puede ser un número negativo"
+        }
       }
       
       if(Object.keys(errorsSerie).length >0){
       
-        errors.index=errorsSerie
+        errors[""+index]=errorsSerie
       }
 
     })
@@ -76,8 +79,7 @@ export default function validateSeriesForm(form){
       errors.ejercicio = "El ejercicio asociado no existe en el sistema"
      }
     
-     console.log("ERRORES: ============")
-     console.log(errors)
+   
     
     return errors
 }

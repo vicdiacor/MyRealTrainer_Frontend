@@ -54,8 +54,7 @@ export default function Login({navigation}) {
                    
                     if(response !== undefined && response.ok){
                         const usuario = await response.json()
-                        console.log("GUARDANDO EN SECURE STORE")
-                        console.log(usuario.apellidos)
+                     
                         saveCookie("idLogged",""+usuario.id);
                         saveCookie("nameLogged",""+usuario.name);
                         saveCookie("apellidosLogged",""+usuario.apellidos);

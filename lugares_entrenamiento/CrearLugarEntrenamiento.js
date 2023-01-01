@@ -30,9 +30,9 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
 
    /* useEffect(()=>{ //Esto es para el editar
         if(route["params"]!=null){
-            console.log("LUGAR DEL BACKEND")
+           
             var lugar = route["params"]["lugar"]
-            console.log(lugar)
+         
             var calle=""
             var numero=""
             var piso=""
@@ -49,8 +49,7 @@ export default function CrearLugarEntrenamiento({navigation,route}) {
             }
             setForm({...lugar,["calle"]:calle,["numero"]:numero,["piso"]:piso,["tipoLugar"]:frontendFormatLugar(lugar["tipoLugar"])})
             delete form['direccion'];
-            console.log("FORMULARIO FINAL")
-            console.log(form)
+           
         }
 
     },[route["params"]]) */

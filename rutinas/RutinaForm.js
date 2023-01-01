@@ -1,5 +1,5 @@
 import React, {useEffect,useState} from 'react';
-import { View, Dimensions,SafeAreaView,KeyboardAvoidingView,Image, Alert,StatusBar,ScrollView,StyleSheet} from 'react-native';
+import { View, Dimensions,SafeAreaView,KeyboardAvoidingView,ActivityIndicator,Image, Alert,StatusBar,ScrollView,StyleSheet} from 'react-native';
 import { Block, Text,Toast} from "galio-framework";
 import { argonTheme } from '../constants';
 import FloatingLabelInput from '../components/FloatingLabelInput';
@@ -11,6 +11,8 @@ import validateRutinaForm from './ValidateRutinaForm';
 import { getCookie } from '../temporal_database/SecureStore';
 import call from '../Caller';
 import CircleButton from '../components/CircleButton';
+import EntrenamientoCard from '../components/EntrenamientoCard';
+import { useIsFocused } from "@react-navigation/native";
 const { width, height } = Dimensions.get("screen");
 
 export default function RutinaForm({navigation,route}) {
@@ -19,39 +21,30 @@ export default function RutinaForm({navigation,route}) {
     const [isLoadingGaleria,setIsLoadingGaleria]= useState(false)
     const [isLoadingCamara,setIsLoadingCamara]= useState(false)
     const[isLoadingEliminar,setIsLoadingEliminar]=useState(false)
+    const [isLoadingContent,setIsLoadingContent] = useState(true)
+    const isFocused = useIsFocused();
     const[errors, setErrors]= useState({})
-    const[entrenamientos,setEntrenamientos]= useState([])
     const[form,setForm]=useState({
         id:"",
         titulo:"",
         descripcion:"",
         
     })
+    const [entrenamientos,setEntrenamientos] = useState([])
 
-    var circleButtonStyle={
-        
-        
-        
-      zIndex:10,
-      borderRadius: 100,
-      width: width*0.13,
-      height: width*0.13,
-      color: argonTheme.COLORS.PRIMARY,
-      backgroundColor: argonTheme.COLORS.PRIMARY,
-      position:"absolute",
-      bottom:form.id? 180:110,
-      right:"5%",
-      
-  }
     const [image, setImage] = useState(null);
     
     
     useEffect(()=>{
+
+      setIsLoadingContent(true)
       
-      route["params"] && route["params"]["rutinaForm"] ? setForm(route["params"]["rutinaForm"]):null;
-      route["params"] && route["params"]["entrenamientos"] ? setEntrenamientos(route["params"]["entrenamientos"]):null;
-      
-    },[route["params"]])
+      route["params"] && route["params"]["rutinaForm"] ? setForm(route["params"]["rutinaForm"]):null
+      route["params"] && route["params"]["entrenamientos"] ? setEntrenamientos(route["params"]["entrenamientos"]):null
+
+      setIsLoadingContent(false)
+
+    },[isFocused])
 
     function deleteRutina(id){
       setIsLoadingEliminar(true)
@@ -69,17 +62,20 @@ export default function RutinaForm({navigation,route}) {
 
     const handleSubmit= evt => {
       setIsLoading(true)
-      var nuevosErrores= validateRutinaForm(form)
+      var nuevosErrores= validateRutinaForm(form,entrenamientos)
       setErrors(nuevosErrores)
       var numeroErrores = Object.keys(nuevosErrores).length;
       if(numeroErrores===0){
           var data={
               titulo:form.titulo,
               descripcion: form.descripcion,
-              
+              entrenamientos: entrenamientos
           }
           if(form.id!=undefined && form.id!==""){ // Edit an existing rutina
             data["id"]= form.id
+            console.log("RUTINA: ")
+            console.log(data)
+            /*
             call('/rutinas/'+form.id,"PUT", navigation,data)
             .then(response => {
               if (response.ok){
@@ -89,8 +85,11 @@ export default function RutinaForm({navigation,route}) {
                 setIsLoading(false)
                 showBackendErrors(response)
               }
-            }) 
-          }else{      // Create a new rutina
+            }) */
+          }else{
+            console.log("RUTINA: ")
+            console.log(data)
+            /*      // Create a new rutina
             getCookie("emailLogged").then(email => {
               call('/rutinas/'+email,"POST", navigation,data)
               .then(response => {
@@ -102,7 +101,7 @@ export default function RutinaForm({navigation,route}) {
                   showBackendErrors(response)
                 }
               }) 
-          })
+          })*/
           }
           
           
@@ -166,6 +165,13 @@ export default function RutinaForm({navigation,route}) {
 
                     enabled
                 >
+                {isLoadingContent ? 
+                 
+                 <Block center marginTop={100}>
+                  <ActivityIndicator size="large" color={argonTheme.COLORS.PRIMARY} />
+                 </Block>
+                 :
+                <>
 
                 <Block style={{marginTop:60,marginBottom:20}} flex row  center>
                 
@@ -238,7 +244,7 @@ export default function RutinaForm({navigation,route}) {
                
             </Block>
             
-            <Block style={{marginTop:30,marginBottom:100}} flex row  center>
+            <Block style={{marginTop:30,marginBottom:30}} flex row  center>
 
                 <Text
                     h4
@@ -250,22 +256,48 @@ export default function RutinaForm({navigation,route}) {
                 </Text>
                 
             </Block>
-          
 
-            <Block marginTop={20} marginBottom={10} middle>
+            {entrenamientos.map((entrenamiento,index) => (
+                    <Block marginBottom={16} center row width={width*0.9}>
+                        <EntrenamientoCard  entrenamiento={entrenamiento} 
+                        deleteFunction={() => {
+                            setIsLoadingContent(true)
+                            let entrenamientosAux = entrenamientos
+                            entrenamientosAux.splice(index,1)
+                            setEntrenamientos(entrenamientosAux)
+                            setIsLoadingContent(false)
+                        }}
+                        onPress={()=> {
+                          setErrors({})
+                          navigation.navigate("EntrenamientoForm",{...route["params"],["rutinaForm"]:form,["entrenamientos"]:entrenamientos,["entrenamiento"]:{...entrenamiento,["numOrden"]:""+index}})}}/>
+                    </Block>
+                ))}
+             {formErrorMessage(errors,"entrenamientos")==undefined? null : 
+                    <Block flex row center style={{width:"80%",marginTop:8,left:5}}> 
+                    <Text style={{
+                        color: argonTheme.COLORS.MESSAGE_ERROR,
+                        
+                        }}>{formErrorMessage(errors,"entrenamientos")}</Text>
+                    </Block>
+                }
+
+            <Block marginBottom={10} marginTop={entrenamientos.length> 0 ? 100 : 200} middle>
                   <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.createButton}>
                     <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                       Guardar
                     </Text>
                   </Button>
             </Block>
+            
             <Block style={{position:"absolute",bottom: 100,alignSelf:"center",right:"5%"}}>
-            <CircleButton onPress={ ()=> navigation.navigate('EntrenamientoForm',{"rutinaForm":form,"entrenamientos":entrenamientos})} />
+              <CircleButton onPress={ ()=> {
+                setErrors({})
+                navigation.navigate('EntrenamientoForm',{"rutinaForm":form,"entrenamientos":entrenamientos})}} />
             </Block>
             {form.id?
                 <Block  disabled={isLoadingEliminar} loading={isLoadingEliminar} marginTop={5}  center >
                 <Button style={styles.button} onPress={()=> Alert.alert(
-                "Eliminar servicio","¿Estás seguro de que quieres eliminar la rutina: '" + form.titulo + "' ?",
+                "Eliminar rutina","¿Estás seguro de que quieres eliminar la rutina: '" + form.titulo + "' ?",
                 [
                     {text:"SÍ",onPress:()=> deleteRutina(form.id)},
                     {text:"NO"}
@@ -279,6 +311,7 @@ export default function RutinaForm({navigation,route}) {
             </Block> 
             
             :null}
+            </>}
             </KeyboardAvoidingView>
             </Block> 
             

@@ -106,9 +106,55 @@ function generateNumberSelectors(initialNumber,lastNumber,formatUnder10Numbers){
     Keyboard.dismiss();
     
   }
-  
+  // Rounds a number to 2 decimals places. If the nummber ends in ".00", then transform it into an integer 
+  function round2Decimals(number){
+    let approximatedNumber = "" + Number(number).toFixed(2)
+    if(/.00$/.test(approximatedNumber)){
+        approximatedNumber = approximatedNumber.split(".")[0]
+      
+    }
+    return Number(approximatedNumber)
+  }
+
+  function yesOrNotAlertMessage(title,message,onClickYes){
+    return (()=> Alert.alert(
+        title,message,
+        [
+            {text:"SÍ",onPress:()=> onClickYes()},
+            {text:"NO"}
+        ]
+        ))
+  }
+
+  const shortDayOfWeek=(dayOfWeek)=>{
+    var res=""
+    switch(dayOfWeek){
+        case "LUNES":
+            res="LUN"
+            break
+        case "MARTES":
+            res="MAR"
+            break
+        case "MIERCOLES":
+            res="MIE"
+            break
+        case "JUEVES":
+            res="JUE"
+            break
+        case "VIERNES":
+            res="VIE"
+            break
+        case "SABADO":
+            res="SAB"
+            break
+        case "DOMINGO":
+            res="DOM"
+            break
+    }
+    return res
+}
 
 
-
-export {frontendFormatLugar,backendFormatLugar,showBackendErrors,insertIntoString,generateNumberSelectors,keyboardDimissAndExecuteFunction}
+export {round2Decimals,frontendFormatLugar,backendFormatLugar,showBackendErrors,insertIntoString,
+    generateNumberSelectors,keyboardDimissAndExecuteFunction,yesOrNotAlertMessage,shortDayOfWeek}
 

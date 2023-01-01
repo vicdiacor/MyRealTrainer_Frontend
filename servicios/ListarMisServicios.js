@@ -99,7 +99,7 @@ useEffect(()=>{
 
                 <Block style={{ paddingHorizontal: theme.SIZES.BASE}}>
                 
-                <ServicioCard deleteFunction={()=> console.log("DELETE")} onPressContainer={()=>editServicio(servicio)} servicio={servicio} />
+                <ServicioCard  onPressContainer={()=>editServicio(servicio)} servicio={servicio} />
   
                 </Block>
 

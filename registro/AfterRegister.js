@@ -70,10 +70,8 @@ export default function AfterRegister({navigation,route}) {
                       saveCookie("emailLogged",""+usuario.email);
                       // createDatabaseIfNotExists() Base de datos local 
                       setLogged(true)
-                      console.log("LOGEADO")
                       
                       if(trainerSelected){
-                        console.log("Creating entrenador...")
                         var nuevosErrores= validateAfterRegister(trainerForm)
                         setErrors(nuevosErrores)
                         var numeroErrores = Object.keys(nuevosErrores).length;
@@ -89,7 +87,6 @@ export default function AfterRegister({navigation,route}) {
                             .then(async response => {
                               
                               if (response.ok){
-                                console.log("Entrenador creado")
                                 navigation.navigate('Servicios', { screen: 'ListarMisServicios' });
                                 
                                 await delay(1000)

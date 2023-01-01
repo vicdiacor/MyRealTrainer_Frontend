@@ -4,23 +4,94 @@ import { Block, Text, theme } from 'galio-framework';
 import EjercicioCard from './EjercicioCard';
 import { argonTheme } from '../constants';
 const { width, height } = Dimensions.get("screen");
+import { Button } from '.';
+import { yesOrNotAlertMessage } from '../util/UtilFunctions';
 
-export default function BloqueSeriesCard ({navigation,onPress,bloque}) {
+
+export default function BloqueSeriesCard ({onPress,bloque,deleteFunction}) {
+  
+  var formattedTiempoDescanso = ""
+
+  if(bloque["minutosDescanso"] !== "00"){
+    formattedTiempoDescanso += bloque["minutosDescanso"].replace(/^0*/,"") + " min"
     
+  }
+  
+  if(bloque["segundosDescanso"] !== "00"){
+    if(formattedTiempoDescanso !== ""){
+      formattedTiempoDescanso += " y "
+    }
+    formattedTiempoDescanso += bloque["segundosDescanso"].replace(/^0*/,"") + " s"
 
-  function renderSerie(numRepeticiones,peso){
+  }
+
+  function renderSerie(numRepeticiones,peso,horas,minutos,segundos){
+    if(bloque["tipoSeries"] == "tiempo"){
+      var formattedHoras= horas.replace(/^0*/,"")
+      var formattedMinutos= minutos.replace(/^0*/,"")
+      var formattedSegundos= segundos.replace(/^0*/,"")
+    }
     return (
      <Block flex center  style={styles.repeticionesPesoCard}>
-       {peso!==""? 
-       <>
-        <Text  size={15}>{numRepeticiones} x</Text>
-        <Text  size={15}>{peso} kg</Text>
-       </>
-       : 
-       <Block flex row center>
-       <Text  size={15}>{numRepeticiones}</Text>
-       </Block>
-       }    
+      {bloque["tipoSeries"] == "tiempo" ? 
+      
+      <>
+        {horas !== "00" ?
+            <>
+            {minutos!== "00" ? 
+              <>
+                <Text  size={15}>{formattedHoras} h</Text>
+                <Text  size={15}>y {formattedMinutos} min</Text>
+              </>
+              :
+              <>
+              <Block flex row center>
+                <Text  size={15}>{formattedHoras} h</Text>
+              </Block>
+              </>
+                }
+                       
+            </> 
+            : 
+            <>
+            {minutos!== "00" ? 
+              <>
+              {segundos!=="00" ? 
+              <>
+                <Text  size={15}>{formattedMinutos} min</Text>
+                <Text  size={15}>y {formattedSegundos} s</Text>
+              </>  
+              :
+              <Block flex row center>
+                <Text  size={15}>{formattedMinutos} min</Text>
+              </Block>
+            } 
+            </>
+            :
+            <>
+              <Block flex row center>
+                <Text  size={15}>{segundos} s</Text>
+              </Block>
+            </>
+                }
+            </>
+      }
+      </>
+      :
+      <>
+          {peso!==""? 
+        <>
+          <Text  size={15}>{numRepeticiones} x</Text>
+          <Text  size={15}>{peso} kg</Text>
+        </>
+        : 
+        <Block flex row center>
+        <Text  size={15}>{numRepeticiones}</Text>
+        </Block>
+        }    
+      </>}
+
+      
              
       </Block>
       )
@@ -33,10 +104,10 @@ export default function BloqueSeriesCard ({navigation,onPress,bloque}) {
       let seriesActualRow= []
   
       if(i+3>seriesLength.length){
-        seriesActualRow= bloque["series"].slice(i,seriesLength).map(serie => renderSerie(serie["numRepeticiones"],serie["peso"]))
+        seriesActualRow= bloque["series"].slice(i,seriesLength).map(serie => renderSerie(serie["numRepeticiones"],serie["peso"],serie["horas"],serie["minutos"],serie["segundos"]))
 
       }else{
-        seriesActualRow= bloque["series"].slice(i,i+4).map(serie => renderSerie(serie["numRepeticiones"],serie["peso"]))
+        seriesActualRow= bloque["series"].slice(i,i+4).map(serie => renderSerie(serie["numRepeticiones"],serie["peso"],serie["horas"],serie["minutos"],serie["segundos"]))
 
       }
 
@@ -63,14 +134,27 @@ export default function BloqueSeriesCard ({navigation,onPress,bloque}) {
                 <Block marginBottom={5}>
                   <Text  size={17}>{bloque["ejercicio"]["titulo"]}</Text>
                 </Block>
-                <Block>
-                  <Text color='#7B6F72' size={15}>Series - 4 min y 50 s</Text>
-                </Block>
+                {formattedTiempoDescanso !== "" ? 
+                  <Block>
+                      <Text color='#7B6F72' size={15}>Descansos de {formattedTiempoDescanso}</Text>
+                  </Block>
+                : null}
+               
               </Block>
             </Block>
           </Block>
          
           {render4SeriesPerRow()}
+          {deleteFunction?
+          <Block flex row width={width*0.88} center marginTop={10} marginBottom={10}>
+            <Button  style={{flex:1}} onPress={yesOrNotAlertMessage("Eliminar bloque de series","¿Estás seguro de eliminar las series del ejercicio '"
+             + bloque["ejercicio"]["titulo"] + "' ?",deleteFunction)} color="DELETE_BUTTON">
+              <Text bold size={17} color={argonTheme.COLORS.WHITE}>
+                Eliminar
+              </Text>
+            </Button>
+          </Block> 
+            : null}
           
         </Block>
       </TouchableWithoutFeedback >

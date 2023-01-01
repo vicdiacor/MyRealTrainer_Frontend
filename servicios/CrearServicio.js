@@ -10,7 +10,7 @@ import { getCookie } from '../temporal_database/SecureStore';
 import call from '../Caller';
 import { delay } from '../components/Delay';
 import validateCrearServicio from './ValidateCrearServicio';
-import { showBackendErrors } from '../util/UtilFunctions';
+import { showBackendErrors, yesOrNotAlertMessage } from '../util/UtilFunctions';
 const { width, height } = Dimensions.get("screen");
 import { useIsFocused } from "@react-navigation/native";
 
@@ -45,7 +45,6 @@ export default function CrearServicio({navigation,route}) {
         }
         var lugaresChecked=tarifa["lugares"]
         
-        console.log(tarifaForm);
         navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"tarifaForm":tarifaForm,"lugaresChecked":lugaresChecked,"index":index})
     }
     function deleteServicio(id){
@@ -73,8 +72,7 @@ export default function CrearServicio({navigation,route}) {
                     response.json().then(data => {
                 
                         Object.values(route["params"]["tarifas"]).forEach(tarifa=>{
-                            console.log("TARIFA DENTRO DEL BUCLE:");
-                            console.log(tarifa);
+                         
                             Object.keys(tarifa["lugares"]).forEach(lugarId=>{
                                 tarifa["lugares"][lugarId]=data[lugarId]
                             })
@@ -244,26 +242,22 @@ export default function CrearServicio({navigation,route}) {
                 <Block marginTop={0}></Block>
 
 
-                <Block  marginTop={100} center>
+                <Block marginBottom={10} marginTop={tarifas.length> 0 ? 50 : 100} middle>
                       <Button disabled={isLoading} loading={isLoading} onPress={handleSubmit} color="primary" style={styles.button}>
                         <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                           Guardar
                         </Text>
                       </Button>
                 </Block>
-                <Block style={{position:"absolute",bottom: 100,alignSelf:"center",right:"5%"}}>
+                <Block style={{position:"absolute",bottom: form.id? 200: 100,alignSelf:"center",right:"5%"}}>
                 <CircleButton  onPress={ ()=> navigation.navigate('CrearTarifa',{"servicioForm":form,tarifas:tarifas,"mode":route["params"]["mode"],"lugaresChecked":{}})} />
                 </Block>
                 {form.id?
                     <Block  disabled={isLoadingEliminar} loading={isLoadingEliminar} marginTop={5}  center >
-                    <Button style={styles.button} onPress={()=> Alert.alert(
-                    "Eliminar servicio","¿Estás seguro de que quieres eliminar el servicio: '" + form.titulo + "' ?",
-                    [
-                        {text:"SÍ",onPress:()=> deleteServicio(form.id)},
-                        {text:"NO"}
-                    ]
-                    )} 
-                    color="error">
+                    <Button style={styles.button} 
+
+                    onPress={yesOrNotAlertMessage("Eliminar servicio","¿Estás seguro de que quieres eliminar el servicio: '" + form.titulo + "' ?",()=> deleteServicio(form.id))}
+                    color="DELETE_BUTTON">
                     <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                         Eliminar Servicio
                     </Text>

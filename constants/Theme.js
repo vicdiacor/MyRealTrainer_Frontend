@@ -29,5 +29,6 @@ export default {
     WHITE: '#FFFFFF',
     BLACK: '#000000',
     MESSAGE_ERROR: '#E82825',
+    DELETE_BUTTON:"#D92929"
   }
 };
