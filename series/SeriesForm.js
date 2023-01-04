@@ -35,8 +35,9 @@ export default function SeriesForm({navigation,route}) {
     numOrden:"",
     minutosDescanso:"00",
     segundosDescanso:"00",
-    tipoSeries:"repeticiones",
+    tipoBloque:"REPETICIONES",
     series:[{
+      numOrden:"0",
       numRepeticiones:"",
       peso:"",
       horas: "00",
@@ -50,9 +51,23 @@ export default function SeriesForm({navigation,route}) {
 
   useEffect(()=>{
     if(route["params"]["bloque"]){
-      setForm(route["params"]["bloque"])
+      let bloque = route["params"]["bloque"]
+      let tiempoEntreSeriesSplit = bloque["tiempoEntreSeries"].split(":")
+      bloque["minutosDescanso"] = tiempoEntreSeriesSplit[0]
+      bloque["segundosDescanso"] = tiempoEntreSeriesSplit[1]
+      delete bloque["tiempoEntreSeries"]
+      bloque.series.forEach(serie => {
+        let tiempoSplit = serie.tiempo.split(":")
+        serie["horas"] = tiempoSplit[0]
+        serie["minutos"] = tiempoSplit[1]
+        serie["segundos"] = tiempoSplit[2]
+        delete serie["tiempo"]
+      })
+
+      setForm(bloque)
     }else{
       setForm({...form,["ejercicio"]:route["params"]["ejercicio"]})
+
     }
     
     setIsLoading(false)
@@ -92,9 +107,10 @@ export default function SeriesForm({navigation,route}) {
     let series= form.series.slice(0,numeroSeries)
     
     
-    while(series.length < numeroSeries){
+    for(let i = series.length ; i < numeroSeries ; i++){
       
       let nuevaSerie= {
+        numOrden:"" + i,
         numRepeticiones:"",
         peso:"",
         horas: "00",
@@ -196,22 +212,33 @@ function handleSubmit(){
   setErrors(nuevosErrores)
   let numeroErrores = Object.keys(nuevosErrores).length;
   if(numeroErrores===0){
-   
-    let entrenamiento = route["params"]["entrenamiento"]
-    if (form.numOrden!==""){
-      
-      entrenamiento["bloques"][form.numOrden] = form
-    }else{
-      
-      let numOrden = entrenamiento["bloques"].length
-      setForm({...form,["numOrden"]:""+numOrden})
-      entrenamiento["bloques"].push(form)
+    let formulario = form
+    formulario["tiempoEntreSeries"] = "" + formulario.minutosDescanso + ":" + formulario.segundosDescanso
+    delete formulario["minutosDescanso"]
+    delete formulario["segundosDescanso"]
+    
+    let series = formulario.series
+    series.forEach(serie => {
+      serie["tiempo"] = serie.horas + ":" + serie.minutos + ":" + serie.segundos
+      delete serie["horas"]
+      delete serie["minutos"]
+      delete serie["segundos"]
 
+    })
+    formulario["series"] = series
+
+    let entrenamiento = route["params"]["entrenamiento"]
+
+    if (formulario.numOrden!==""){
+      
+      entrenamiento["bloques"][formulario.numOrden] = formulario
+    }else{
+      formulario["numOrden"] = "" + entrenamiento["bloques"].length
+      entrenamiento["bloques"].push(formulario)
     }
-    console.log("SERIES:")
-    console.log(form["series"])
-    console.log("EJERCICIO")
-    console.log(form["ejercicio"])
+    
+    console.log("BLOQUE TRAS SUBMIT ===============")
+    console.log(formulario)
     delete route['params']["bloque"]
     delete route["params"]["ejercicio"]
     navigation.navigate("EntrenamientoForm",{...route["params"],["entrenamiento"]:entrenamiento})
@@ -368,27 +395,27 @@ function handleSubmit(){
                   <>
               <Block flex row center marginBottom={10} width={width*0.92}>
                 <TouchableWithoutFeedback onPress={() => {
-                  setForm({...form,["tipoSeries"]:"repeticiones"})
+                  setForm({...form,["tipoBloque"]:"REPETICIONES"})
                 }}>
-                  <Block  style={[styles.card,form.tipoSeries !== "tiempo" && styles.selectedTipoSerie]} flex row marginRight={5} middle  width={width*0.4}>
+                  <Block  style={[styles.card,form.tipoBloque !== "TIEMPO" && styles.selectedTipoSerie]} flex row marginRight={5} middle  width={width*0.4}>
                     
-                      <Text size={16} bold color={form.tipoSeries !== "tiempo" ? argonTheme.COLORS.WHITE : argonTheme.COLORS.ICON}>Repeticiones</Text>
+                      <Text size={16} bold color={form.tipoBloque !== "TIEMPO" ? argonTheme.COLORS.WHITE : argonTheme.COLORS.ICON}>Repeticiones</Text>
 
                   </Block>
                  </TouchableWithoutFeedback>
                  <TouchableWithoutFeedback onPress={() => {
-                  setForm({...form,["tipoSeries"]:"tiempo"})
+                  setForm({...form,["tipoBloque"]:"TIEMPO"})
                 }}>
-                 <Block style={[styles.card,form.tipoSeries == "tiempo" && styles.selectedTipoSerie]} flex row middle  width={width*0.4}>
+                 <Block style={[styles.card,form.tipoBloque == "TIEMPO" && styles.selectedTipoSerie]} flex row middle  width={width*0.4}>
                    
                   
-                   <Text size={16} bold color={form.tipoSeries == "tiempo"? argonTheme.COLORS.WHITE :  argonTheme.COLORS.ICON}>Tiempo</Text>
+                   <Text size={16} bold color={form.tipoBloque == "TIEMPO"? argonTheme.COLORS.WHITE :  argonTheme.COLORS.ICON}>Tiempo</Text>
                   </Block>
                 </TouchableWithoutFeedback>
                </Block>
 
                 <Block style={styles.card} flex row center width={width*0.92}>
-                   {form.tipoSeries !== "tiempo" ?  
+                   {form.tipoBloque !== "TIEMPO" ?  
                    <>
                    <Block flex={0.35}  center>
                     <Text size={16} bold color={argonTheme.COLORS.ICON}>Nº</Text>
@@ -425,7 +452,7 @@ function handleSubmit(){
                         <Block>
                           <Block row center marginTop={10} width={width*0.92}>
                             <SerieCard serie={serie} numSerie={index+1} onConfirmTiempo={onConfirmTiempoSerie}
-                                      tipo={form.tipoSeries}
+                                      tipo={form.tipoBloque}
                                       afterEditingNumRepeticiones={afterEditingNumRepeticiones}
                                       errores={errors[""+index]}
                                       afterEditingPeso={afterEditingPeso} />
@@ -433,7 +460,7 @@ function handleSubmit(){
 
                           </Block>
                           
-                          {form.tipoSeries == "tiempo" ? 
+                          {form.tipoBloque == "TIEMPO" ? 
                             <>
                               {formErrorMessage(errors[""+index],"duracion") != null  ?  
                                     <Text row style={styles.errorMessageStyle}>{formErrorMessage(errors[""+index],"duracion")}</Text>:null}

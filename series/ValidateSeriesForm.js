@@ -32,7 +32,7 @@ export default function validateSeriesForm(form){
       let errorsSerie= {}
 
        // Tiempo-Series validation
-      if (form.tipoSeries == "tiempo"){
+      if (form.tipoBloque == "TIEMPO"){
          
         let duracion= serie.horas + ":" + serie.minutos + ":" + serie.segundos
         if(!/^\d\d:\d\d:\d\d$/.test(duracion)){

@@ -4,7 +4,7 @@ import { Block, Text } from "galio-framework";
 import { argonTheme } from '../constants';
 import FloatingLabelInput from '../components/FloatingLabelInput';
 import formErrorMessage from '../components/FormErrorMessage';
-import { Icon, Button } from '../components';
+import { Icon, Button,Switch} from '../components';
 import TarifaCard from '../components/TarifaCard';
 import { getCookie } from '../temporal_database/SecureStore';
 import call from '../Caller';
@@ -29,9 +29,16 @@ export default function CrearServicio({navigation,route}) {
         titulo:"",
         descripcion:"",
         id:"",
+        esPublico: true,
     })
 
     const[tarifas,setTarifas]= useState({})
+
+    const toggleSwitch = () => {
+   
+        setForm({...form,["esPublico"]:!form["esPublico"]})
+      };
+    
     
     function editTarifa (index,tarifa){
        
@@ -121,10 +128,12 @@ export default function CrearServicio({navigation,route}) {
                     titulo:form.titulo,
                     descripcion:form.descripcion,
                     tarifas: tarifasSubmit,
+                    esPublico:form.esPublico
                 }
                 
                 if(route["params"]["mode"]==="edit"){ // Edit an existing servicio
                     data["id"]= form.id
+                   
                     call('/servicios/'+form.id,"PUT", navigation,data)
                     .then(response => {
                     if (response.ok){
@@ -137,6 +146,7 @@ export default function CrearServicio({navigation,route}) {
                     }) 
                 }else{ // Create Servicio
                     getCookie("emailLogged").then(email => {
+                        
                         call('/servicios/'+email,"POST", navigation,data)
                         .then(response => {
                         if (response.ok){
@@ -184,7 +194,7 @@ export default function CrearServicio({navigation,route}) {
                     
                     color={argonTheme.COLORS.ICON}
                 >
-                    Publicar Servicio
+                    Crear Servicio
                 </Text>
              </Block>
                 <Block flex row center width={width * 0.8} style={{marginTop:20}}>
@@ -209,7 +219,22 @@ export default function CrearServicio({navigation,route}) {
                             onChangeText={text => setForm({...form,["descripcion"]:text})}
                         />
                 </Block>
-
+                <Block  row center>
+                    <Text 
+                            h6
+                            style={{marginRight:"4%"}}
+                            bold
+                
+                            color={argonTheme.COLORS.DEFAULT}> Mostrar públicamente
+                    </Text>
+                    <Switch
+                    style={{ transform: [{ scaleX: 1.2 }, { scaleY: 1.2}] }}
+                    
+                    color={argonTheme.COLORS.PRIMARY}
+                    value={form["esPublico"]}
+                    onValueChange={() => toggleSwitch()}
+                    />
+            </Block>
                 <Block style={{marginTop:30,marginBottom:32}} flex row  center>
 
                 <Text

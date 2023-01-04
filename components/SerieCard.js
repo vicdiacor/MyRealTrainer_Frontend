@@ -19,6 +19,7 @@ export default function SerieCard ({navigation,numSerie=1,tipo,serie,errores,onC
     const[errors, setErrors]= useState({})
 
     const [form,setForm] = useState({
+        numOrden:"0",
         numRepeticiones:"",
         peso:"",
         horas: "00",
@@ -28,6 +29,7 @@ export default function SerieCard ({navigation,numSerie=1,tipo,serie,errores,onC
 
     useEffect(()=>{
       setForm(serie)
+      
     },[serie])
 
     useEffect(()=>{
@@ -57,7 +59,7 @@ export default function SerieCard ({navigation,numSerie=1,tipo,serie,errores,onC
             </Block>
 
            
-            {tipo == "repeticiones" ? 
+            {tipo == "REPETICIONES" ? 
             <>
             <Block  center flex height={50} marginLeft={"6%"}>
                 <Block flex row center>

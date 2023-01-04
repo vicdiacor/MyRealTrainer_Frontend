@@ -73,35 +73,35 @@ export default function RutinaForm({navigation,route}) {
           }
           if(form.id!=undefined && form.id!==""){ // Edit an existing rutina
             data["id"]= form.id
-            console.log("RUTINA: ")
+            console.log("RUTINA UPDATE PRE CALL ============ ")
             console.log(data)
-            /*
+          
             call('/rutinas/'+form.id,"PUT", navigation,data)
             .then(response => {
               if (response.ok){
-                navigation.navigate("ListarRutinas")
+                //navigation.navigate("ListarRutinas")
                 setIsLoading(false)
               }else{
                 setIsLoading(false)
                 showBackendErrors(response)
               }
-            }) */
+            }) 
           }else{
-            console.log("RUTINA: ")
+            console.log("RUTINA CREATE PRE CALL ================ ")
             console.log(data)
-            /*      // Create a new rutina
+            // Create a new rutina
             getCookie("emailLogged").then(email => {
               call('/rutinas/'+email,"POST", navigation,data)
               .then(response => {
                 if (response.ok){
-                  navigation.navigate("ListarRutinas")
+                 // navigation.navigate("ListarRutinas")
                   setIsLoading(false)
                 }else{
                   setIsLoading(false)
                   showBackendErrors(response)
                 }
               }) 
-          })*/
+          })
           }
           
           

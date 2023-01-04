@@ -37,19 +37,15 @@ export default function EntrenamientoForm({navigation,route}) {
         if(numeroErrores===0){
            
             var entrenamientos= route["params"]["entrenamientos"]
-            console.log("FORMULARIO PRE_SUBMIT:")
-            console.log(form)
+          
             if(form.numOrden!=="" && form.numOrden!==undefined){ // Editing an existent entrenamiento in the array
                 entrenamientos[form.numOrden]=form
             }else{ // Add a new entrenamiento to the array
                 setForm({...form, ["numOrden"]:entrenamientos.length})
-                entrenamientos.push(form)
+                entrenamientos.push({...form,["numOrden"]:entrenamientos.length})
             }
             delete route["params"]["entrenamiento"]
-            console.log("ENTRENAMIENTOS")
-            console.log(entrenamientos)
-            console.log("ESTE ENTRENAMIENTO")
-            console.log(form)
+           
             navigation.navigate('RutinaForm',{...route["params"],["entrenamientos"]:entrenamientos})
             setIsLoading(false)
         }else{

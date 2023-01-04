@@ -9,31 +9,52 @@ import { yesOrNotAlertMessage } from '../util/UtilFunctions';
 
 
 export default function BloqueSeriesCard ({onPress,bloque,deleteFunction}) {
-  
+  console.log("BLOQUE DENTRO DE BloqueSeriesCard ===============")
+  console.log(bloque)
   var formattedTiempoDescanso = ""
+  var tiempoEntreSeriesSplit = bloque["tiempoEntreSeries"].split(":")
+  var minutosDescanso = tiempoEntreSeriesSplit[0]
+  var segundosDescanso = tiempoEntreSeriesSplit[1]
 
-  if(bloque["minutosDescanso"] !== "00"){
-    formattedTiempoDescanso += bloque["minutosDescanso"].replace(/^0*/,"") + " min"
+  console.log("MINUTOS DESCANSO")
+  console.log(minutosDescanso)
+
+  
+  console.log("SEGUNDOS DESCANSO")
+  console.log(segundosDescanso)
+
+  if(minutosDescanso !== "00"){
+    formattedTiempoDescanso += minutosDescanso.replace(/^0*/,"") + " min"
     
   }
   
-  if(bloque["segundosDescanso"] !== "00"){
+  if(segundosDescanso !== "00"){
     if(formattedTiempoDescanso !== ""){
       formattedTiempoDescanso += " y "
     }
-    formattedTiempoDescanso += bloque["segundosDescanso"].replace(/^0*/,"") + " s"
+    formattedTiempoDescanso += segundosDescanso.replace(/^0*/,"") + " s"
 
   }
 
   function renderSerie(numRepeticiones,peso,horas,minutos,segundos){
-    if(bloque["tipoSeries"] == "tiempo"){
+    console.log("NUM REPETICIONES")
+    console.log(numRepeticiones)
+    console.log("PESO")
+    console.log(peso)
+    console.log("HORAS")
+    console.log(horas)
+    console.log("MINUTOS")
+    console.log(minutos)
+    console.log("SEGUNDOS")
+    console.log(segundos)
+    if(bloque["tipoBloque"] == "TIEMPO"){
       var formattedHoras= horas.replace(/^0*/,"")
       var formattedMinutos= minutos.replace(/^0*/,"")
       var formattedSegundos= segundos.replace(/^0*/,"")
     }
     return (
      <Block flex center  style={styles.repeticionesPesoCard}>
-      {bloque["tipoSeries"] == "tiempo" ? 
+      {bloque["tipoBloque"] == "TIEMPO" ? 
       
       <>
         {horas !== "00" ?
@@ -104,10 +125,17 @@ export default function BloqueSeriesCard ({onPress,bloque,deleteFunction}) {
       let seriesActualRow= []
   
       if(i+3>seriesLength.length){
-        seriesActualRow= bloque["series"].slice(i,seriesLength).map(serie => renderSerie(serie["numRepeticiones"],serie["peso"],serie["horas"],serie["minutos"],serie["segundos"]))
+        seriesActualRow= bloque["series"].slice(i,seriesLength).map(serie => {
+          let tiempoSplit = serie["tiempo"].split(":")
+
+          renderSerie(serie["numRepeticiones"],serie["peso"],tiempoSplit[0],tiempoSplit[1],tiempoSplit[2])
+        })
 
       }else{
-        seriesActualRow= bloque["series"].slice(i,i+4).map(serie => renderSerie(serie["numRepeticiones"],serie["peso"],serie["horas"],serie["minutos"],serie["segundos"]))
+        seriesActualRow= bloque["series"].slice(i,i+4).map(serie => {
+          let tiempoSplit = serie["tiempo"].split(":")
+          renderSerie(serie["numRepeticiones"],serie["peso"],tiempoSplit[0],tiempoSplit[1],tiempoSplit[2])
+        })
 
       }
 

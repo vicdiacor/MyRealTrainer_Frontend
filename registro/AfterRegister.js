@@ -27,8 +27,6 @@ export default function AfterRegister({navigation,route}) {
     "formacion": "",
     "experiencia":"",
     "descripcion":"",
-    "publico":true
-
   })
 
   const [isLoadingGuardar,setIsLoadingGuardar]= useState(false)
@@ -77,7 +75,7 @@ export default function AfterRegister({navigation,route}) {
                         var numeroErrores = Object.keys(nuevosErrores).length;
                         if(numeroErrores===0){ // Create Entrenador Profile
                           const data= {
-                            "esPublico":trainerForm.publico,
+                            
                             "formacion": trainerForm.formacion,
                             "descripcionSobreMi":trainerForm.descripcion,
                             "descripcionExperiencia": trainerForm.experiencia,
@@ -162,9 +160,6 @@ export default function AfterRegister({navigation,route}) {
     }
   };
 
-  const toggleSwitch = () => {
-   
-    setTrainerForm({...trainerForm,["publico"]:!trainerForm["publico"]})};
 
 
   
@@ -254,22 +249,6 @@ export default function AfterRegister({navigation,route}) {
                       label="Descripción sobre mí"
                       onChangeText={text => setTrainerForm({...trainerForm,["descripcion"]:text})}
                     />
-            </Block>
-            
-            <Block  row center>
-            <Text 
-                    h6
-                    style={{marginRight:"4%"}}
-                    bold
-          
-                    color={argonTheme.COLORS.DEFAULT}>Perfil Público</Text>
-            <Switch
-              style={{ transform: [{ scaleX: 1.2 }, { scaleY: 1.2}] }}
-              
-              color={argonTheme.COLORS.PRIMARY}
-              value={trainerForm["publico"]}
-              onValueChange={() => toggleSwitch()}
-            />
             </Block>
                 
                 </>

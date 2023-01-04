@@ -47,6 +47,7 @@ function editServicio(servicio){
     titulo: servicio["titulo"],
     descripcion: servicio["descripcion"],
     id:servicio["id"],
+    esPublico:servicio["esPublico"]
     }
   
     navigation.navigate('CrearServicio',{"servicioForm":servicioForm,"tarifas":formattedTarifas, "mode":"edit"})
@@ -58,9 +59,12 @@ useEffect(()=>{
   getCookie("emailLogged").then(email => {
     call('/servicios/'+email,"GET", navigation)
     .then(response => {
+      console.log("RESPONSE")
+      console.log(response)
       if (response.ok){
         response.json().then(data => {
-            
+            console.log("SERVICIOS")
+            console.log(data)
             setServicios(data)
             setIsLoading(false)
         })
