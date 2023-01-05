@@ -9,20 +9,12 @@ import { yesOrNotAlertMessage } from '../util/UtilFunctions';
 
 
 export default function BloqueSeriesCard ({onPress,bloque,deleteFunction}) {
-  console.log("BLOQUE DENTRO DE BloqueSeriesCard ===============")
-  console.log(bloque)
+  
   var formattedTiempoDescanso = ""
   var tiempoEntreSeriesSplit = bloque["tiempoEntreSeries"].split(":")
-  var minutosDescanso = tiempoEntreSeriesSplit[0]
-  var segundosDescanso = tiempoEntreSeriesSplit[1]
-
-  console.log("MINUTOS DESCANSO")
-  console.log(minutosDescanso)
-
+  var minutosDescanso = ""+tiempoEntreSeriesSplit[0]
+  var segundosDescanso = ""+tiempoEntreSeriesSplit[1]
   
-  console.log("SEGUNDOS DESCANSO")
-  console.log(segundosDescanso)
-
   if(minutosDescanso !== "00"){
     formattedTiempoDescanso += minutosDescanso.replace(/^0*/,"") + " min"
     
@@ -37,16 +29,7 @@ export default function BloqueSeriesCard ({onPress,bloque,deleteFunction}) {
   }
 
   function renderSerie(numRepeticiones,peso,horas,minutos,segundos){
-    console.log("NUM REPETICIONES")
-    console.log(numRepeticiones)
-    console.log("PESO")
-    console.log(peso)
-    console.log("HORAS")
-    console.log(horas)
-    console.log("MINUTOS")
-    console.log(minutos)
-    console.log("SEGUNDOS")
-    console.log(segundos)
+   
     if(bloque["tipoBloque"] == "TIEMPO"){
       var formattedHoras= horas.replace(/^0*/,"")
       var formattedMinutos= minutos.replace(/^0*/,"")
@@ -128,13 +111,13 @@ export default function BloqueSeriesCard ({onPress,bloque,deleteFunction}) {
         seriesActualRow= bloque["series"].slice(i,seriesLength).map(serie => {
           let tiempoSplit = serie["tiempo"].split(":")
 
-          renderSerie(serie["numRepeticiones"],serie["peso"],tiempoSplit[0],tiempoSplit[1],tiempoSplit[2])
+          return renderSerie(serie["numRepeticiones"],serie["peso"],tiempoSplit[0],tiempoSplit[1],tiempoSplit[2])
         })
 
       }else{
         seriesActualRow= bloque["series"].slice(i,i+4).map(serie => {
           let tiempoSplit = serie["tiempo"].split(":")
-          renderSerie(serie["numRepeticiones"],serie["peso"],tiempoSplit[0],tiempoSplit[1],tiempoSplit[2])
+          return renderSerie(serie["numRepeticiones"],serie["peso"],tiempoSplit[0],tiempoSplit[1],tiempoSplit[2])
         })
 
       }

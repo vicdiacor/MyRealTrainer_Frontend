@@ -33,16 +33,13 @@ export default function SeriesForm({navigation,route}) {
     numSeries:"1",
     id:"",
     numOrden:"",
-    minutosDescanso:"00",
-    segundosDescanso:"00",
+    tiempoEntreSeries:"00:00",
     tipoBloque:"REPETICIONES",
     series:[{
       numOrden:"0",
       numRepeticiones:"",
       peso:"",
-      horas: "00",
-      minutos:"00",
-      segundos:"00"
+      tiempo:"00:00:00"
     }],
     ejercicio:null
   });
@@ -51,20 +48,7 @@ export default function SeriesForm({navigation,route}) {
 
   useEffect(()=>{
     if(route["params"]["bloque"]){
-      let bloque = route["params"]["bloque"]
-      let tiempoEntreSeriesSplit = bloque["tiempoEntreSeries"].split(":")
-      bloque["minutosDescanso"] = tiempoEntreSeriesSplit[0]
-      bloque["segundosDescanso"] = tiempoEntreSeriesSplit[1]
-      delete bloque["tiempoEntreSeries"]
-      bloque.series.forEach(serie => {
-        let tiempoSplit = serie.tiempo.split(":")
-        serie["horas"] = tiempoSplit[0]
-        serie["minutos"] = tiempoSplit[1]
-        serie["segundos"] = tiempoSplit[2]
-        delete serie["tiempo"]
-      })
-
-      setForm(bloque)
+      setForm(route["params"]["bloque"])
     }else{
       setForm({...form,["ejercicio"]:route["params"]["ejercicio"]})
 
@@ -113,9 +97,7 @@ export default function SeriesForm({navigation,route}) {
         numOrden:"" + i,
         numRepeticiones:"",
         peso:"",
-        horas: "00",
-        minutos:"00",
-        segundos:"00"
+        tiempo: "00:00:00"
       }
       series.push(nuevaSerie)
 
@@ -126,7 +108,7 @@ export default function SeriesForm({navigation,route}) {
 
   const onConfirmTiempoDescanso = (selections)=> {
     
-    setForm({...form,["minutosDescanso"]:""+selections["minutos"],["segundosDescanso"]:""+selections["segundos"]})
+    setForm({...form,["tiempoEntreSeries"]:""+selections["minutos"] + ":" + selections["segundos"]})
     setVisiblePickerTiempo(false)
   }
 
@@ -134,7 +116,7 @@ export default function SeriesForm({navigation,route}) {
   const onConfirmTiempoSerie = (selections,index)=> {
     
     let series= form.series
-    series[index]={...series[index],["horas"]:""+selections["horas"],["minutos"]:""+selections["minutos"],["segundos"]:""+selections["segundos"]}
+    series[index]={...series[index],["tiempo"]:""+selections["horas"] + ":" + selections["minutos"] + ":" +selections["segundos"]}
     setForm({...form,["series"]:series});
     
   }
@@ -213,20 +195,6 @@ function handleSubmit(){
   let numeroErrores = Object.keys(nuevosErrores).length;
   if(numeroErrores===0){
     let formulario = form
-    formulario["tiempoEntreSeries"] = "" + formulario.minutosDescanso + ":" + formulario.segundosDescanso
-    delete formulario["minutosDescanso"]
-    delete formulario["segundosDescanso"]
-    
-    let series = formulario.series
-    series.forEach(serie => {
-      serie["tiempo"] = serie.horas + ":" + serie.minutos + ":" + serie.segundos
-      delete serie["horas"]
-      delete serie["minutos"]
-      delete serie["segundos"]
-
-    })
-    formulario["series"] = series
-
     let entrenamiento = route["params"]["entrenamiento"]
 
     if (formulario.numOrden!==""){
@@ -285,11 +253,11 @@ function handleSubmit(){
                       
                         <FloatingLabelInput
                          onPress={()=>setVisiblePickerTiempo(true)}
-                        errorMessage={formErrorMessage(errors,"descansoEntreSeries")}
+                        errorMessage={formErrorMessage(errors,"tiempoEntreSeries")}
                         editable={false}
                         label="Descanso entre series (min:s)"
                       
-                        value={form["minutosDescanso"] + ":" + form["segundosDescanso"]}
+                        value={form["tiempoEntreSeries"]}
                         iconContent={
                           <Icon
                         
@@ -340,7 +308,7 @@ function handleSubmit(){
                     onConfirm={onConfirmTiempoDescanso}
                     onCancel={()=> setVisiblePickerTiempo(false)}
                     confirmText="Aceptar"
-                    defaultSelections={{["minutos"]: form.minutosDescanso,["segundos"]:form.segundosDescanso}}
+                    defaultSelections={{["minutos"]: form.tiempoEntreSeries.split(":")[0],["segundos"]: form.tiempoEntreSeries.split(":")[1]}}
                     visible={visiblePickerTiempo}
                     options={[
                       {
@@ -462,8 +430,8 @@ function handleSubmit(){
                           
                           {form.tipoBloque == "TIEMPO" ? 
                             <>
-                              {formErrorMessage(errors[""+index],"duracion") != null  ?  
-                                    <Text row style={styles.errorMessageStyle}>{formErrorMessage(errors[""+index],"duracion")}</Text>:null}
+                              {formErrorMessage(errors[""+index],"tiempo") != null  ?  
+                                    <Text row style={styles.errorMessageStyle}>{formErrorMessage(errors[""+index],"tiempo")}</Text>:null}
                             </>
                             : 
                             <> 

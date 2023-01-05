@@ -19,8 +19,7 @@ export default function validateRutinaForm(form,entrenamientos){
     if(entrenamientos.length<1){
         errors.entrenamientos = "Debes agregar al menos un entrenamiento"
     }
-    console.log("ENTRENAMIENTOS LIST: ")
-    console.log(entrenamientos)
+   
 
 
     return errors

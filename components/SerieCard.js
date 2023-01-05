@@ -22,11 +22,10 @@ export default function SerieCard ({navigation,numSerie=1,tipo,serie,errores,onC
         numOrden:"0",
         numRepeticiones:"",
         peso:"",
-        horas: "00",
-        minutos:"00",
-        segundos:"00"
+        tiempo:"00:00:00"
     })
 
+    var [horas,minutos,segundos] =  serie.tiempo.split(":")
     useEffect(()=>{
       setForm(serie)
       
@@ -86,7 +85,7 @@ export default function SerieCard ({navigation,numSerie=1,tipo,serie,errores,onC
             <>
                 <Block  center flex  height={50} marginLeft={"6%"} marginRight={"6%"}>
                     <Block flex row center>
-                        <FloatingLabelInput onPress={()=> setVisiblePickerTiempo(true)} centerText value={serie.horas + ":" + serie.minutos + ":" + serie.segundos} editable={false}
+                        <FloatingLabelInput onPress={()=> setVisiblePickerTiempo(true)} centerText value={serie.tiempo} editable={false}
                             />
                     </Block>
               </Block>
@@ -96,7 +95,7 @@ export default function SerieCard ({navigation,numSerie=1,tipo,serie,errores,onC
                     onConfirm={onConfirmTiempo2}
                     onCancel={()=> setVisiblePickerTiempo(false)}
                     confirmText="Aceptar"
-                    defaultSelections={{["horas"]: serie.horas,["minutos"]: serie.minutos,["segundos"]:serie.segundos}}
+                    defaultSelections={{["horas"]: horas,["minutos"]: minutos,["segundos"]:segundos}}
                     visible={visiblePickerTiempo}
                     options={[
                         {

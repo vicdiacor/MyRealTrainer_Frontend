@@ -18,13 +18,9 @@ export default function validateSeriesForm(form){
   }
 
     // Descanso entre series Validation
-    let descansoEntreSeries= form.minutosDescanso + ":" + form.segundosDescanso
-    if(!/^\d\d:\d\d$/.test(descansoEntreSeries)){
-      errors.descansoEntreSeries= "El descanso entre series debe tener el formato mm:ss" 
-    } else if(+form.minutosDescanso > 29){
-      errors.descansoEntreSeries= "No puedes insertar más de 29:59 min de descanso" 
-    } else if(+form.segundosDescanso > 59){
-      errors.descansoEntreSeries= "La sección de 'segundos' no puede ser mayor a 59" 
+    
+    if(!/^[0-2]\d:[0-5]\d/.test(form.tiempoEntreSeries)){
+      errors.tiempoEntreSeries= "El tiempo de descanso entre series debe ser un valor entre 00:00 y 29:59" 
     }
 
     // Serie validations
@@ -34,18 +30,13 @@ export default function validateSeriesForm(form){
        // Tiempo-Series validation
       if (form.tipoBloque == "TIEMPO"){
          
-        let duracion= serie.horas + ":" + serie.minutos + ":" + serie.segundos
-        if(!/^\d\d:\d\d:\d\d$/.test(duracion)){
-          errorsSerie.duracion= "La duración de la serie debe tener el formato HH:mm:ss" 
-        } else if(+serie.horas > 4){
-          errorsSerie.duracion= "No puedes insertar más de 04:59:59 horas de descanso" 
-        } else if(+serie.minutos > 59){
-          errorsSerie.duracion = "La sección de 'minutos' no puede ser mayor a 59" 
-        }else if(+serie.segundos > 59){
-          errorsSerie.duracion = "La sección de 'segundos' no puede ser mayor a 59" 
-        }else if(/^00:00:00$/.test(duracion)){
-          errorsSerie.duracion = "La duración de una serie debe ser mayor a 00:00:00"
-      }
+        if(!/^\d\d:\d\d:\d\d$/.test(serie.tiempo)){
+          errorsSerie.tiempo= "La duración de la serie debe tener el formato HH:mm:ss" 
+        } else if(!/^0[0-4]:[0-5]\d:[0-5]\d$/.test(serie.tiempo)){
+          errorsSerie.tiempo= "No puedes insertar más de 04:59:59 horas de descanso" 
+        }else if(/^00:00:00$/.test(serie.tiempo)){
+          errorsSerie.tiempo = "La duración de una serie debe ser mayor a 00:00:00"
+        }
       }else { // Repeticiones-Series validation
         if(!serie.numRepeticiones.trim()){
           errorsSerie.numRepeticiones= "El número de repeticiones es un campo obligatorio" 
