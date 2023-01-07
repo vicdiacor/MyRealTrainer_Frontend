@@ -305,7 +305,7 @@ export default function RutinaForm({navigation,route}) {
                     {text:"NO"}
                 ]
                 )} 
-                color="error">
+                color="DELETE_BUTTON">
                 <Text bold size={17} color={argonTheme.COLORS.WHITE}>
                     Eliminar rutina
                 </Text>
