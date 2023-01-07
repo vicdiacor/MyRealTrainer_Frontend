@@ -22,6 +22,7 @@ import ListarEjercicios from '../ejercicios/ListarEjercicios';
 import RutinaForm from '../rutinas/RutinaForm';
 import EntrenamientoForm from '../entrenamientos/EntrenamientoForm';
 import SeriesForm from '../series/SeriesForm';
+import ListarRutinas from '../rutinas/ListarRutinas';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -156,6 +157,13 @@ const ServiciosStack = ()=>{
 const RutinasStack = ()=>{
      return (
      <Stack.Navigator>
+          <Stack.Screen
+               name="ListarRutinas"
+               component={ListarRutinas}
+               options={{ headerShown: false }}
+               
+
+               />
           <Stack.Screen
                name="RutinaForm"
                component={RutinaForm}

@@ -19,6 +19,7 @@ export default function SerieCard ({navigation,numSerie=1,tipo,serie,errores,onC
     const[errors, setErrors]= useState({})
 
     const [form,setForm] = useState({
+        id: "",
         numOrden:"0",
         numRepeticiones:"",
         peso:"",
@@ -27,6 +28,13 @@ export default function SerieCard ({navigation,numSerie=1,tipo,serie,errores,onC
 
     var [horas,minutos,segundos] =  serie.tiempo.split(":")
     useEffect(()=>{
+      if (serie["id"]){
+        serie["id"] = "" + serie["id"]
+      } 
+      serie["numOrden"] = "" + serie["numOrden"]
+      serie["numRepeticiones"] = serie["numRepeticiones"]!==null ? "" + serie["numRepeticiones"] : ""
+      serie["peso"] = serie["peso"]!== null? "" + serie["peso"] : ""
+      
       setForm(serie)
       
     },[serie])

@@ -147,7 +147,9 @@ export default function EntrenamientoForm({navigation,route}) {
                         }}
                         onPress={()=> {
                             setErrors({})
-                            navigation.navigate("SeriesForm",{...route["params"],["entrenamiento"]:form,["bloque"]:{...bloqueSeries,["numOrden"]:""+index}})}}/>
+                            
+                            console.log(bloqueSeries)
+                            navigation.navigate("SeriesForm",{...route["params"],["entrenamiento"]:form,["bloque"]:{...bloqueSeries,["numOrden"]:""+index,["numSeries"]:""+bloqueSeries.series.length}})}}/>
                     </Block>
                 ))}
                 {formErrorMessage(errors,"bloques")==undefined? null : 

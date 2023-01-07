@@ -7,7 +7,7 @@ import { Block, Text, theme } from 'galio-framework';
 import { argonTheme } from '../constants';
 const { width, height } = Dimensions.get("screen");
 
-export default function EjercicioCard({navigation,ejercicio, onPress, style,imageOnLeft, textSize}) {
+export default function SimpleImageCard({navigation,element, onPress,title,style,imageOnLeft, textSize}) {
 
     
     const imageStyles = [
@@ -29,7 +29,7 @@ export default function EjercicioCard({navigation,ejercicio, onPress, style,imag
             </Block>
           <TouchableWithoutFeedback onPress={onPress ? onPress : null}>
             <Block center flex space="between" style={styles.cardDescription}>
-              <Text  size={textSize? textSize:14} style={styles.cardTitle}>{ejercicio["titulo"]}</Text>
+              <Text  size={textSize? textSize:14} style={styles.cardTitle}>{title}</Text>
             </Block>
           </TouchableWithoutFeedback>
         </Block>

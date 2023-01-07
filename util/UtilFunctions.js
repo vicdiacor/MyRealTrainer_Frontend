@@ -155,6 +155,34 @@ function generateNumberSelectors(initialNumber,lastNumber,formatUnder10Numbers){
 }
 
 
+function pairRowsElements(elements){
+    var elementsRow= {}
+     var numElements= elements.length
+     var i =0
+     var numRow=0
+     while(i<numElements){
+         if(numElements % 2==0 ){ // even ejercicios list
+            elementsRow[numRow]=[elements[i],elements[i+1]]
+           i+=2
+           numRow+=1
+         }else{ // odd ejercicios list
+           if(i<numElements-1){
+            elementsRow[numRow]=[elements[i],elements[i+1]]
+             i+=2
+             numRow+=1
+           }else{
+            elementsRow[numRow]=[elements[i],null]
+             i+=1
+             numRow+=1
+           }
+         }
+  
+     }
+     return elementsRow
+  }
+
+
 export {round2Decimals,frontendFormatLugar,backendFormatLugar,showBackendErrors,insertIntoString,
-    generateNumberSelectors,keyboardDimissAndExecuteFunction,yesOrNotAlertMessage,shortDayOfWeek}
+    generateNumberSelectors,keyboardDimissAndExecuteFunction,yesOrNotAlertMessage,shortDayOfWeek,
+    pairRowsElements}
 

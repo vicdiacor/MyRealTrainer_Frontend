@@ -5,7 +5,7 @@ import { argonTheme } from '../constants';
 import FloatingLabelInput from '../components/FloatingLabelInput';
 import formErrorMessage from '../components/FormErrorMessage';
 import { useIsFocused } from "@react-navigation/native";
-import EjercicioCard from '../components/EjercicioCard';
+import SimpleImageCard from '../components/SimpleImageCard';
 import CircleButton from '../components/CircleButton';
 import { generateNumberSelectors,keyboardDimissAndExecuteFunction, round2Decimals } from '../util/UtilFunctions';
 import {Icon, Button, Input} from "../components";
@@ -36,6 +36,7 @@ export default function SeriesForm({navigation,route}) {
     tiempoEntreSeries:"00:00",
     tipoBloque:"REPETICIONES",
     series:[{
+      id:"",
       numOrden:"0",
       numRepeticiones:"",
       peso:"",
@@ -94,6 +95,7 @@ export default function SeriesForm({navigation,route}) {
     for(let i = series.length ; i < numeroSeries ; i++){
       
       let nuevaSerie= {
+        id:"",
         numOrden:"" + i,
         numRepeticiones:"",
         peso:"",
@@ -246,7 +248,7 @@ function handleSubmit(){
                   :
                   <>
                 <Block width={width*0.9} center marginBottom={20}>
-                  <EjercicioCard textSize={14.5} imageOnLeft={true} onPress={()=>editEjercicio(form["ejercicio"])} ejercicio={form["ejercicio"]} />
+                  <SimpleImageCard textSize={14.5} imageOnLeft={true} onPress={()=>editEjercicio(form["ejercicio"])} element={form["ejercicio"]} title={form["ejercicio"]["titulo"]} />
                 </Block>
                       
                 <Block  row  center width={width * 0.9}>

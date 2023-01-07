@@ -1,7 +1,6 @@
 import React, {useEffect,useRef,useState} from 'react';
 import { StyleSheet, Dimensions, Image, TouchableWithoutFeedback } from 'react-native';
 import { Block, Text, theme } from 'galio-framework';
-import EjercicioCard from './EjercicioCard';
 import { argonTheme } from '../constants';
 const { width, height } = Dimensions.get("screen");
 import { Button } from '.';

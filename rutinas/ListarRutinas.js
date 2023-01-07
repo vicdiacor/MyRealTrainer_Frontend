@@ -12,46 +12,21 @@ import CircleButton from '../components/CircleButton';
 import { pairRowsElements } from '../util/UtilFunctions';
 
 
-export default function ListarEjercicios({navigation,route}) {
+export default function ListarRutinas({navigation,route}) {
 
-const [ejercicios,setEjercicios]= useState()
+const [rutinas,setRutinas]= useState()
 const [isLoading,setIsLoading]=useState(true)
 const isFocused = useIsFocused();
 
-function ejerciciosInPairs(){
-  var ejerciciosRow= {}
-   var numEjercicios= ejercicios.length
-   var i =0
-   var numRow=0
-   while(i<numEjercicios){
-       if(numEjercicios % 2==0 ){ // even ejercicios list
-        ejerciciosRow[numRow]=[ejercicios[i],ejercicios[i+1]]
-         i+=2
-         numRow+=1
-       }else{ // odd ejercicios list
-         if(i<numEjercicios-1){
-          ejerciciosRow[numRow]=[ejercicios[i],ejercicios[i+1]]
-           i+=2
-           numRow+=1
-         }else{
-          ejerciciosRow[numRow]=[ejercicios[i],null]
-           i+=1
-           numRow+=1
-         }
-       }
-
-   }
-   return ejerciciosRow
-}
 
 useEffect(()=>{
-  setEjercicios([])
+  setRutinas([])
   getCookie("emailLogged").then(email => {
-    call('/ejercicios/'+email,"GET", navigation)
+    call('/rutinas/'+email,"GET", navigation)
     .then(response => {
       if (response.ok){
         response.json().then(data => {
-            setEjercicios(data)
+            setRutinas(data)
             setIsLoading(false)
         })
       }else{
@@ -62,15 +37,16 @@ useEffect(()=>{
 })
 },[isFocused])
 
-function editEjercicio(ejercicio){
-      var form={
-        titulo:ejercicio["titulo"],
-        preparacion:ejercicio["preparacion"],
-        ejecucion:ejercicio["ejecucion"],
-        consejos:ejercicio["consejos"],
-        id: ejercicio["id"]
-    }
-    navigation.navigate('EjercicioForm',{"form":form,"mode":"edit"})
+// COMPLETAR
+function editRutina(rutina){
+      var rutinaForm = {
+        id:rutina["id"],
+        titulo:rutina["titulo"],
+        descripcion:rutina["descripcion"],
+        
+      }
+
+    navigation.navigate('RutinaForm',{"rutinaForm":rutinaForm,"entrenamientos":rutina["entrenamientos"]})
 }
 
 
@@ -86,7 +62,7 @@ function editEjercicio(ejercicio){
                    
                    color={argonTheme.COLORS.ICON}
                >
-                   {route["params"] && route["params"]["entrenamiento"]? "Asignar ejercicio" : "Mis Ejercicios"}
+                  Mis rutinas
                </Text>
             </Block>
             <Block flex safe  > 
@@ -98,11 +74,11 @@ function editEjercicio(ejercicio){
               </Block>
               
             : 
-              Object.entries(pairRowsElements(ejercicios)).map(([key, value]) => (
+              Object.entries(pairRowsElements(rutinas)).map(([key, value]) => (
                 <Block row>
                   <Block marginBottom={16} width={0.45*width}>
                   
-                  <SimpleImageCard onPress={route["params"] && route["params"]["entrenamiento"] ? ()=> navigation.navigate("SeriesForm",{...route["params"],"ejercicio":value[0]}) : ()=>editEjercicio(value[0])} element={value[0]} title={value[0]["titulo"]} />
+                  <SimpleImageCard onPress={()=>editRutina(value[0])} element={value[0]} title={value[0]["titulo"]}/>
     
                   </Block>
                   {value[1]===null? 
@@ -119,7 +95,7 @@ function editEjercicio(ejercicio){
                     <Block marginRight={width*0.0333}/>
                     <Block marginBottom={16} width={0.45*width} >
                     
-                    <SimpleImageCard onPress={route["params"] && route["params"]["entrenamiento"] ? ()=> navigation.navigate("SeriesForm",{...route["params"],"ejercicio":value[1]}) : ()=>editEjercicio(value[1])} element={value[1]} title={value[1]["titulo"]} />
+                    <SimpleImageCard onPress={()=>editRutina(value[1])} element={value[1]} title={value[1]["titulo"]} />
       
                     </Block>
                   </>
@@ -138,7 +114,7 @@ function editEjercicio(ejercicio){
             
         </ScrollView>
         <Block style={{position:"absolute",bottom: 100,alignSelf:"center",right:"5%"}}>
-        <CircleButton onPress={()=> navigation.navigate("EjercicioForm",route["params"]? {...route["params"],["mode"]:"create"}:{"mode":"create"})}/>
+        <CircleButton onPress={()=> navigation.navigate("RutinaForm")}/>
         </Block>
     </SafeAreaView>
 

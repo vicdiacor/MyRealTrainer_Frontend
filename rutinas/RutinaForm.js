@@ -75,11 +75,13 @@ export default function RutinaForm({navigation,route}) {
             data["id"]= form.id
             console.log("RUTINA UPDATE PRE CALL ============ ")
             console.log(data)
+            console.log("ENTRNENAMIENTOS UPDATE PRE CALL")
+            console.log(data.entrenamientos)
           
             call('/rutinas/'+form.id,"PUT", navigation,data)
             .then(response => {
               if (response.ok){
-                //navigation.navigate("ListarRutinas")
+                navigation.navigate("ListarRutinas")
                 setIsLoading(false)
               }else{
                 setIsLoading(false)
@@ -94,7 +96,7 @@ export default function RutinaForm({navigation,route}) {
               call('/rutinas/'+email,"POST", navigation,data)
               .then(response => {
                 if (response.ok){
-                 // navigation.navigate("ListarRutinas")
+                  navigation.navigate("ListarRutinas")
                   setIsLoading(false)
                 }else{
                   setIsLoading(false)
@@ -289,7 +291,7 @@ export default function RutinaForm({navigation,route}) {
                   </Button>
             </Block>
             
-            <Block style={{position:"absolute",bottom: 100,alignSelf:"center",right:"5%"}}>
+            <Block style={{position:"absolute",bottom: entrenamientos.length> 0 ? 175 : 100,alignSelf:"center",right:"5%"}}>
               <CircleButton onPress={ ()=> {
                 setErrors({})
                 navigation.navigate('EntrenamientoForm',{"rutinaForm":form,"entrenamientos":entrenamientos})}} />
