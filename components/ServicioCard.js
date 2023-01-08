@@ -10,7 +10,7 @@ const { width, height } = Dimensions.get("screen");
 
 
 export default function ServicioCard({navigation, servicio, style,onPressContainer,
-   imageStyle}){
+   imageStyle, mode}){
  
     const [minimumPrices,setMinimumPrices]=useState({})
     const [lugaresEntrenamiento,setLugaresEntrenamiento]=useState({})
@@ -130,7 +130,7 @@ export default function ServicioCard({navigation, servicio, style,onPressContain
        {isLoading? null: <> 
        
           <Block flex style={imgContainer}>
-            <Image source={{uri: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?fit=crop&w=840&q=80"}} style={imageStyles} />
+            <Image source={{uri: "https://img.freepik.com/foto-gratis/entrenamiento-fisico-kettlebells_1098-13823.jpg?w=1060&t=st=1673114575~exp=1673115175~hmac=b9bac408b34fe66ebbb0e0887d5349e531289d1d799ed337eed3b90db2b085c5"}} style={imageStyles} />
           </Block>
         
           <Block  flex space="between" style={styles.cardDescription}>

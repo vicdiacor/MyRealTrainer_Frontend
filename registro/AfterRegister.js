@@ -85,7 +85,7 @@ export default function AfterRegister({navigation,route}) {
                             .then(async response => {
                               
                               if (response.ok){
-                                navigation.navigate('Servicios', { screen: 'ListarMisServicios' });
+                                navigation.navigate('MisServicios', { screen: 'ListarMisServicios' });
                                 
                                 await delay(1000)
                                 setIsLoadingGuardar(false)
@@ -106,7 +106,7 @@ export default function AfterRegister({navigation,route}) {
                         }
                       }else{
                         // When the image uploader works on Amazon S3, send a request to the backend
-                        navigation.navigate('Servicios', { screen: 'ListarMisServicios' });
+                        navigation.navigate('BuscarServicios');
 
                         setIsLoadingGuardar(false)
                       }

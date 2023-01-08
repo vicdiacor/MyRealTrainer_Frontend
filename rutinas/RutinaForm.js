@@ -73,11 +73,6 @@ export default function RutinaForm({navigation,route}) {
           }
           if(form.id!=undefined && form.id!==""){ // Edit an existing rutina
             data["id"]= form.id
-            console.log("RUTINA UPDATE PRE CALL ============ ")
-            console.log(data)
-            console.log("ENTRNENAMIENTOS UPDATE PRE CALL")
-            console.log(data.entrenamientos)
-          
             call('/rutinas/'+form.id,"PUT", navigation,data)
             .then(response => {
               if (response.ok){
@@ -89,8 +84,6 @@ export default function RutinaForm({navigation,route}) {
               }
             }) 
           }else{
-            console.log("RUTINA CREATE PRE CALL ================ ")
-            console.log(data)
             // Create a new rutina
             getCookie("emailLogged").then(email => {
               call('/rutinas/'+email,"POST", navigation,data)

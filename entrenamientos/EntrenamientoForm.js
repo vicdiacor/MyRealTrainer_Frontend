@@ -143,12 +143,10 @@ export default function EntrenamientoForm({navigation,route}) {
                             let bloques = form.bloques
                             bloques.splice(index,1)
                             setForm({...form,["bloques"]:bloques})
-                            console.log(form)
+                            
                         }}
                         onPress={()=> {
                             setErrors({})
-                            
-                            console.log(bloqueSeries)
                             navigation.navigate("SeriesForm",{...route["params"],["entrenamiento"]:form,["bloque"]:{...bloqueSeries,["numOrden"]:""+index,["numSeries"]:""+bloqueSeries.series.length}})}}/>
                     </Block>
                 ))}

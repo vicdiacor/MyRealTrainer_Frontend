@@ -65,7 +65,7 @@ export default function Registro({navigation}) {
         
       call('/api/auth/signup',"POST", navigation, data)
         .then(async response => {
-          console.log(response)
+          
           if (response.ok){
             
            navigation.navigate('AfterRegister',{email:form.email,password:form.password})

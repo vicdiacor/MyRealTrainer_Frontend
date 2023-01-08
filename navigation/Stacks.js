@@ -23,6 +23,9 @@ import RutinaForm from '../rutinas/RutinaForm';
 import EntrenamientoForm from '../entrenamientos/EntrenamientoForm';
 import SeriesForm from '../series/SeriesForm';
 import ListarRutinas from '../rutinas/ListarRutinas';
+import ListPublicServicios from '../servicios/ListPublicServicios';
+import ContratarServicioForm from '../servicios/ContratarServicioForm';
+import SolicitarServicioForm from '../servicios/ContratarServicioForm';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -37,9 +40,14 @@ const MainStack = () => {
               options={{ headerShown: false }
               } />
           
-          <Tab.Screen  name="Servicios"
-              component={ServiciosStack}
+          <Tab.Screen  name="MisServicios"
+              component={MisServiciosStack}
               options={{ headerShown: false, unmountOnBlur: true}} />
+
+          <Tab.Screen  name="BuscarServicios"
+              component={BuscarServicios}
+              options={{ headerShown: false, unmountOnBlur: true}} />
+
 
            <Tab.Screen  name="Rutinas"
               component={RutinasStack}
@@ -117,10 +125,11 @@ const HomeLogin = ()=>{
         </Stack.Navigator>
      );
 }
-const ServiciosStack = ()=>{
+const MisServiciosStack = ()=>{
      return (
      <Stack.Navigator>
-          
+     
+
             
      <Stack.Screen
             name="ListarMisServicios"
@@ -151,6 +160,31 @@ const ServiciosStack = ()=>{
         </Stack.Navigator>
      );
 }
+
+const BuscarServicios = ()=>{
+     return (
+     <Stack.Navigator>
+          
+     <Stack.Screen
+            name="ListPublicServicios"
+            component={ListPublicServicios}
+            options={{ headerShown: false}}
+            
+            />
+
+               
+     <Stack.Screen
+            name="SolicitarServicioForm"
+            component={SolicitarServicioForm}
+            options={{ headerShown: false}}
+            
+            />
+
+                 
+        </Stack.Navigator>
+     );
+}
+
 
 
 

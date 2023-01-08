@@ -3,8 +3,8 @@ import jwt_decode from 'jwt-decode';
 import {Alert} from "react-native";
 import { getCookie } from "./temporal_database/SecureStore";
 
-const urlBackend ="http://192.168.1.15:8080";
-const urlFrontend = "http://192.168.1.15:19000";
+const urlBackend ="http://192.168.43.25:8080";
+const urlFrontend = "http://192.168.43.25:19000";
 
 
      async function call(pathToCall,method,navigation,body){
@@ -41,8 +41,8 @@ const urlFrontend = "http://192.168.1.15:19000";
             headers: headers_,
             body: (JSON.stringify(body))
         };
-        console.log("================== BODY TO BACKEND ====================")
-        console.log(requestOptions.body)
+       
+        
         return await fetch(urlBackend+pathToCall, requestOptions).then(response =>{
            
             return response

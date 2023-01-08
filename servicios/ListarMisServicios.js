@@ -1,21 +1,13 @@
 import React, {useEffect,useState} from 'react';
-import { View, Dimensions,ActivityIndicator,SafeAreaView,KeyboardAvoidingView, StatusBar,ScrollView,StyleSheet} from 'react-native';
+import {  Dimensions,ActivityIndicator,SafeAreaView,ScrollView,StyleSheet} from 'react-native';
 import { Block, Text ,theme} from "galio-framework";
-import FloatingLabelInput from '../components/FloatingLabelInput';
-import formErrorMessage from '../components/FormErrorMessage';
-import { Icon, Button } from '../components';
-import TarifaCard from '../components/TarifaCard';
 import { getCookie } from '../temporal_database/SecureStore';
 import call from '../Caller';
-import { delay } from '../components/Delay';
-import validateCrearServicio from './ValidateCrearServicio';
-import { Card } from "../components/";
-import { Images, argonTheme, articles } from "../constants/";
+import { argonTheme } from "../constants/";
 import ServicioCard from '../components/ServicioCard';
 import { useIsFocused } from "@react-navigation/native";
 import CircleButton from '../components/CircleButton';
 
-const { width, height } = Dimensions.get("screen");
 
 export default function ListarMisServicios({navigation,route}) {
 
@@ -38,8 +30,6 @@ function editServicio(servicio){
     }
    
     tarifa["lugares"]=lugaresChecked
-    formattedTarifas[indexTarifa]=tarifa
-    indexTarifa++
   
 
   } )
@@ -50,7 +40,7 @@ function editServicio(servicio){
     esPublico:servicio["esPublico"]
     }
   
-    navigation.navigate('CrearServicio',{"servicioForm":servicioForm,"tarifas":formattedTarifas, "mode":"edit"})
+    navigation.navigate('CrearServicio',{"servicioForm":servicioForm,"tarifas":tarifas, "mode":"edit"})
  
 }
 
@@ -59,12 +49,8 @@ useEffect(()=>{
   getCookie("emailLogged").then(email => {
     call('/servicios/'+email,"GET", navigation)
     .then(response => {
-      console.log("RESPONSE")
-      console.log(response)
       if (response.ok){
         response.json().then(data => {
-            console.log("SERVICIOS")
-            console.log(data)
             setServicios(data)
             setIsLoading(false)
         })

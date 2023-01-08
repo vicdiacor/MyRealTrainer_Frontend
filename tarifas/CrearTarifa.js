@@ -73,10 +73,14 @@ export default function CrearTarifa({navigation,route}) {
             var tarifaActual = {...form,["lugares"]:lugaresChecked}
            
             var tarifas= route["params"]["tarifas"]
-            if(route["params"]["index"]){
+            console.log("PARAMETROS DENTRO DE CREAR TARIFA")
+            console.log(route["params"]["index"])
+            if(route["params"]["index"]!==undefined){
+                console.log("GUARDANDO TARIFA EDITADA")
                 tarifas[route["params"]["index"]]=tarifaActual
             }else{
-                tarifas[Object.keys(tarifas).length]=tarifaActual
+                console.log("CREANDO NUEVA TARIFA")
+                tarifas.push(tarifaActual)
             }
             
             navigation.navigate('CrearServicio',{"servicioForm":route["params"]["servicioForm"],"tarifas":tarifas,"mode":route["params"]["mode"]})

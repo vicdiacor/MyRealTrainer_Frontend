@@ -20,9 +20,18 @@ const datePicker= (mode,defaultValue,onChangeFunction) => {
 const dateTimeFormat = (fecha,haveTime,haveDay=true) => {
 
    
-    let tempDate = new Date(fecha);
-    let fDate= haveDay? tempDate.getDate() + "/" + (tempDate.getMonth()+1) + "/" + tempDate.getFullYear(): "";
-    
+    let tempDate = new Date(fecha)
+    let fDate= "";
+    if (haveDay){
+        let day = "" + tempDate.getDate();
+        /\d\d/.test(day) ? fDate += day + "/": fDate += "0" + day + "/"
+        
+        let month = (tempDate.getMonth()+1) + "";
+        /\d\d/.test(month) ? fDate += month + "/" : fDate += "0" + month + "/"
+
+        fDate += "" + tempDate.getFullYear()
+    }
+
     if(haveTime) {
     let fTime= tempDate.getHours() + ":";
         if(tempDate.getMinutes()<10){

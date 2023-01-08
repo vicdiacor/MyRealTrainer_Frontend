@@ -207,8 +207,6 @@ function handleSubmit(){
       entrenamiento["bloques"].push(formulario)
     }
     
-    console.log("BLOQUE TRAS SUBMIT ===============")
-    console.log(formulario)
     delete route['params']["bloque"]
     delete route["params"]["ejercicio"]
     navigation.navigate("EntrenamientoForm",{...route["params"],["entrenamiento"]:entrenamiento})

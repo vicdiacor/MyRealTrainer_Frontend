@@ -16,6 +16,7 @@ import { useIsFocused } from "@react-navigation/native";
 
 
 import CircleButton from '../components/CircleButton';
+import CarouselCards from '../components/CarouselCards';
 
 export default function CrearServicio({navigation,route}) {
 
@@ -32,16 +33,25 @@ export default function CrearServicio({navigation,route}) {
         esPublico: true,
     })
 
-    const[tarifas,setTarifas]= useState({})
+    const[tarifas,setTarifas]= useState([])
 
     const toggleSwitch = () => {
    
         setForm({...form,["esPublico"]:!form["esPublico"]})
       };
     
-    
+      const RenderTarifa = ({item, index}) => {
+
+        return (
+          <Block  flex  key={index}>
+                <TarifaCard deleteFunction={()=> deleteTarifa(index)} onPressContainer={()=> editTarifa(index,item)} style={{width:width*0.9,marginBottom:10, alignSelf:"center"}} tarifa={item}/>
+          </Block>
+        )
+      }
+
     function editTarifa (index,tarifa){
-       
+        console.log("INDEX EDIIT TARIFA")
+        console.log(index)
         var tarifaForm= {
             titulo:tarifa["titulo"],
             precio:""+tarifa["precio"],
@@ -78,7 +88,7 @@ export default function CrearServicio({navigation,route}) {
                   if (response.ok){
                     response.json().then(data => {
                 
-                        Object.values(route["params"]["tarifas"]).forEach(tarifa=>{
+                        route["params"]["tarifas"].forEach(tarifa=>{
                          
                             Object.keys(tarifa["lugares"]).forEach(lugarId=>{
                                 tarifa["lugares"][lugarId]=data[lugarId]
@@ -112,7 +122,7 @@ export default function CrearServicio({navigation,route}) {
         if(numeroErrores===0){
             var tarifasSubmit= []
             
-            Object.values(tarifas).forEach( tarifa =>{ // We need an array of lugares, instead of a json
+           tarifas.forEach( tarifa =>{ // We need an array of lugares, instead of a json
             
                 var lugaresJSON= tarifa["lugares"]
                 var lugaresArray= []
@@ -168,8 +178,9 @@ export default function CrearServicio({navigation,route}) {
       }
     function deleteTarifa(index){
         setIsLoadingContent(true)
-        delete tarifas[index]
-        setTarifas({...tarifas}) // To render after state has finished
+        let tarifasAux = tarifas
+        tarifasAux.splice(index,1)
+        setTarifas(tarifasAux)
         setIsLoadingContent(false)
 
     }
@@ -253,12 +264,12 @@ export default function CrearServicio({navigation,route}) {
                     <Text style={styles.errorMessageStyle}>{formErrorMessage(errors,"tarifas")}</Text> 
                     
                 </Block> }
-                {!isLoadingContent? <>{Object.entries(tarifas).map(([index,tarifa]) => 
-                        (
-                        <TarifaCard deleteFunction={()=> deleteTarifa(index)} onPressContainer={()=> editTarifa(index,tarifa)} style={{width:width*0.85,marginBottom:30, alignSelf:"center"}} tarifa={tarifa}/>)
-
-                    )}</> :
-                    <Block center marginTop={100}>
+                {!isLoadingContent ? 
+                <Block >
+                    <CarouselCards data={tarifas} RenderItem={RenderTarifa}/>
+                </Block>
+                :
+                    <Block center >
                     <ActivityIndicator size="large" color={argonTheme.COLORS.PRIMARY} />
                     </Block>
                 }

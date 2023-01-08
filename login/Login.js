@@ -54,17 +54,26 @@ export default function Login({navigation}) {
                    
                     if(response !== undefined && response.ok){
                         const usuario = await response.json()
-                     
+                        console.log("USUARIO LOGEADO:")
+                        console.log(usuario)
                         saveCookie("idLogged",""+usuario.id);
                         saveCookie("nameLogged",""+usuario.name);
                         saveCookie("apellidosLogged",""+usuario.apellidos);
                         saveCookie("emailLogged",""+usuario.email);
-                        // createDatabaseIfNotExists() Base de datos local 
-                        navigation.navigate('Servicios', { screen: 'ListarMisServicios'});
-                        await delay(1000)
-                        setIsLoading(false)
                         
-
+                        let trainerMode = usuario.roles.some(rol => rol.name=="ROLE_ENTRENADOR")
+                        saveCookie("trainerMode",trainerMode);
+      
+                        // createDatabaseIfNotExists() Base de datos local 
+                        if(trainerMode){
+                          navigation.navigate('MisServicios', { screen: 'ListarMisServicios'});
+                          await delay(1000)
+                          setIsLoading(false)
+                        }else{
+                          navigation.navigate('BuscarServicios');
+                          await delay(1000)
+                          setIsLoading(false)
+                        }
                     }else{
                         
                         deleteCookie("AuthToken");
